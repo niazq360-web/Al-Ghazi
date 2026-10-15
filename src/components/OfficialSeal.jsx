@@ -2,25 +2,38 @@ import React from 'react';
 
 /**
  * OfficialSeal Component
- * Renders an ultra-high quality, scalable official golden notary seal with ribbons
- * based on the user's provided official seal design.
- * If customSealUrl is provided, it renders the custom image with golden ribbon accents.
+ * Ultra-high definition SVG recreation of the official "AL GHAZI DIGITAL INSTITUTE"
+ * golden metallic medallion seal based on the user's uploaded asset 1792081856717.jpg.
+ *
+ * Features:
+ * - 36 sharp triangular golden sunburst teeth with realistic metallic gradient
+ * - Raised outer and inner coin rings with radial bevel tick notches
+ * - Arched 3D embossed "AL GHAZI" on top & "DIGITAL INSTITUTE" on bottom
+ * - 5-pointed embossed gold stars flanking left and right
+ * - Dotted bead security perimeter ring
+ * - Midnight navy circular medallion disc
+ * - Iconic Islamic architectural triple domes and dual minarets with crescent finials
+ * - Integrated copper/rose-gold PCB circuit traces with terminal node dots
+ * - Royal arabesque filigree flourishes with center diamond crest
+ * - Specular diagonal light glint / metallic sheen
+ * - Optional royal red ribbon tails for certificate presentation
  */
 export default function OfficialSeal({
   customSealUrl = '',
-  size = 140,
-  instituteName = 'AL GHAZI DIGITAL INSTITUTE',
-  subtitle = 'OFFICIAL SEAL',
-  year = '2026',
+  size = 150,
+  showRibbons = true,
+  instituteName = 'AL GHAZI',
+  tagline = 'DIGITAL INSTITUTE',
   className = ''
 }) {
+  // If user provided a custom image file/URL for seal, use it
   if (customSealUrl) {
     return (
       <div
         className={`official-seal-wrapper ${className}`}
         style={{
           width: size,
-          height: size + 28,
+          height: showRibbons ? size * 1.25 : size,
           position: 'relative',
           display: 'inline-flex',
           flexDirection: 'column',
@@ -35,336 +48,480 @@ export default function OfficialSeal({
             width: size,
             height: size,
             objectFit: 'contain',
-            filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.25))'
+            filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.35))'
           }}
         />
       </div>
     );
   }
 
-  // Generate 36 serrated teeth points for outer starburst rosette
+  // Generate 36 outer serrated starburst points
   const teethCount = 36;
-  const outerR = 64;
-  const innerR = 56;
-  const center = 75;
-
+  const outerR = 98;
+  const innerR = 88;
+  const cx = 110;
+  const cy = 110;
   const points = [];
   for (let i = 0; i < teethCount * 2; i++) {
-    const angle = (i * Math.PI) / teethCount;
+    const angle = (i * Math.PI) / teethCount - Math.PI / 2;
     const r = i % 2 === 0 ? outerR : innerR;
-    const x = center + r * Math.cos(angle);
-    const y = center + r * Math.sin(angle);
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
     points.push(`${x.toFixed(2)},${y.toFixed(2)}`);
   }
-  const polygonPoints = points.join(' ');
+  const rosettePolygon = points.join(' ');
+
+  // Radial ticks between rings (around 72 small teeth ticks)
+  const ticks = [];
+  for (let i = 0; i < 72; i++) {
+    const angle = (i * 2 * Math.PI) / 72;
+    const x1 = cx + 80 * Math.cos(angle);
+    const y1 = cy + 80 * Math.sin(angle);
+    const x2 = cx + 83.5 * Math.cos(angle);
+    const y2 = cy + 83.5 * Math.sin(angle);
+    ticks.push({ x1, y1, x2, y2 });
+  }
+
+  // Beaded circle dots around inner disc (around 64 dots)
+  const beads = [];
+  for (let i = 0; i < 56; i++) {
+    const angle = (i * 2 * Math.PI) / 56;
+    const bx = cx + 55 * Math.cos(angle);
+    const by = cy + 55 * Math.sin(angle);
+    beads.push({ bx, by });
+  }
 
   return (
     <div
       className={`official-seal-container ${className}`}
       style={{
         width: size,
-        height: size * 1.25,
+        height: showRibbons ? size * 1.22 : size,
         position: 'relative',
         display: 'inline-block',
         verticalAlign: 'middle'
       }}
     >
       <svg
-        viewBox="0 0 150 185"
+        viewBox="0 0 220 268"
         width={size}
-        height={size * 1.25}
+        height={showRibbons ? size * 1.22 : size}
         xmlns="http://www.w3.org/2000/svg"
-        style={{ filter: 'drop-shadow(0 6px 12px rgba(180, 83, 9, 0.35))', overflow: 'visible' }}
+        style={{
+          filter: 'drop-shadow(0 8px 18px rgba(180, 83, 9, 0.38)) drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+          overflow: 'visible'
+        }}
       >
         <defs>
-          {/* Metallic Gold Gradients */}
-          <linearGradient id="goldMetallic" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fff6c5" />
-            <stop offset="20%" stopColor="#f7cd60" />
-            <stop offset="45%" stopColor="#df9e1d" />
-            <stop offset="60%" stopColor="#fde078" />
-            <stop offset="80%" stopColor="#c5840d" />
-            <stop offset="100%" stopColor="#7a4f00" />
+          {/* Metallic Gold Primary Gradient */}
+          <linearGradient id="goldMetallic3D" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fff7d1" />
+            <stop offset="15%" stopColor="#f7d070" />
+            <stop offset="35%" stopColor="#d99b26" />
+            <stop offset="50%" stopColor="#fff1b0" />
+            <stop offset="68%" stopColor="#b47918" />
+            <stop offset="85%" stopColor="#dfa73b" />
+            <stop offset="100%" stopColor="#784402" />
           </linearGradient>
 
-          <linearGradient id="goldRadial" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#fffbe8" />
-            <stop offset="40%" stopColor="#f5cf6d" />
-            <stop offset="75%" stopColor="#d29117" />
-            <stop offset="100%" stopColor="#9a6200" />
+          {/* Radial Gold Lighting */}
+          <radialGradient id="goldRadialShine" cx="42%" cy="38%" r="60%">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="25%" stopColor="#ffe99a" stopOpacity="0.5" />
+            <stop offset="65%" stopColor="#cca034" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#7a4603" stopOpacity="0.6" />
+          </radialGradient>
+
+          {/* Beveled Edge Gradient */}
+          <linearGradient id="goldBevelDark" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#543001" />
+            <stop offset="40%" stopColor="#9a620b" />
+            <stop offset="70%" stopColor="#ffd875" />
+            <stop offset="100%" stopColor="#fff8db" />
           </linearGradient>
 
-          <linearGradient id="goldDarkRing" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#9a6200" />
-            <stop offset="50%" stopColor="#ffea9f" />
-            <stop offset="100%" stopColor="#684200" />
+          {/* Midnight Blue Medallion Center Base */}
+          <radialGradient id="navyMedallionCenter" cx="50%" cy="45%" r="55%">
+            <stop offset="0%" stopColor="#132347" />
+            <stop offset="55%" stopColor="#0a152e" />
+            <stop offset="90%" stopColor="#040916" />
+            <stop offset="100%" stopColor="#02040a" />
+          </radialGradient>
+
+          {/* Circuit / Dome Rose-Gold Copper Gradient */}
+          <linearGradient id="circuitCopper" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fed7aa" />
+            <stop offset="25%" stopColor="#fb923c" />
+            <stop offset="60%" stopColor="#ea580c" />
+            <stop offset="85%" stopColor="#fed7aa" />
+            <stop offset="100%" stopColor="#9a3412" />
           </linearGradient>
 
-          {/* Deep Royal Red Ribbon Gradients */}
-          <linearGradient id="ribbonLeft" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#b91c1c" />
-            <stop offset="50%" stopColor="#dc2626" />
-            <stop offset="100%" stopColor="#7f1d1d" />
-          </linearGradient>
-
-          <linearGradient id="ribbonRight" x1="0%" y1="0%" x2="100%" y2="100%">
+          {/* Red Ribbon Gradients */}
+          <linearGradient id="sealRibbonLeft" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#991b1b" />
-            <stop offset="50%" stopColor="#ef4444" />
-            <stop offset="100%" stopColor="#7f1d1d" />
+            <stop offset="35%" stopColor="#dc2626" />
+            <stop offset="70%" stopColor="#b91c1c" />
+            <stop offset="100%" stopColor="#680f0f" />
           </linearGradient>
 
-          <linearGradient id="ribbonGoldBorder" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#fff3a8" />
-            <stop offset="50%" stopColor="#d4af37" />
-            <stop offset="100%" stopColor="#9a6200" />
+          <linearGradient id="sealRibbonRight" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#7f1d1d" />
+            <stop offset="45%" stopColor="#ef4444" />
+            <stop offset="75%" stopColor="#b91c1c" />
+            <stop offset="100%" stopColor="#580b0b" />
           </linearGradient>
 
           {/* Circular Text Paths */}
+          {/* Top Arc (AL GHAZI) - Radius 68 */}
           <path
-            id="textPathTop"
-            d="M 28,75 A 47,47 0 0,1 122,75"
+            id="alGhaziTopPath"
+            d="M 38,110 A 72,72 0 0,1 182,110"
             fill="none"
           />
+          {/* Bottom Arc (DIGITAL INSTITUTE) - Radius 68 */}
           <path
-            id="textPathBottom"
-            d="M 122,75 A 47,47 0 0,1 28,75"
+            id="alGhaziBottomPath"
+            d="M 182,110 A 72,72 0 0,1 38,110"
             fill="none"
           />
+
+          {/* Specular Glint Clip Path */}
+          <clipPath id="sealCircleClip">
+            <circle cx="110" cy="110" r="96" />
+          </clipPath>
         </defs>
 
         {/* ================= RIBBON TAILS (BEHIND SEAL) ================= */}
-        {/* Left Ribbon */}
-        <g>
-          {/* Shadow */}
-          <path
-            d="M 52,110 L 26,170 L 44,158 L 62,170 L 68,118 Z"
-            fill="rgba(0,0,0,0.25)"
-          />
-          {/* Left Ribbon Body */}
-          <path
-            d="M 50,105 L 24,166 L 42,154 L 60,166 L 66,114 Z"
-            fill="url(#ribbonLeft)"
-            stroke="url(#ribbonGoldBorder)"
-            strokeWidth="1.2"
-          />
-          {/* Ribbon Fold Highlight */}
-          <path
-            d="M 33,160 L 42,154 L 51,160 L 58,116 L 40,110 Z"
-            fill="rgba(255,255,255,0.12)"
-          />
-        </g>
+        {showRibbons && (
+          <g>
+            {/* Left Ribbon Tail */}
+            <path
+              d="M 74,162 L 36,252 L 64,236 L 90,252 L 96,174 Z"
+              fill="rgba(0,0,0,0.28)"
+            />
+            <path
+              d="M 72,156 L 34,246 L 62,230 L 88,246 L 94,168 Z"
+              fill="url(#sealRibbonLeft)"
+              stroke="url(#goldMetallic3D)"
+              strokeWidth="1.8"
+            />
+            {/* Left Ribbon Highlight Stripe */}
+            <path
+              d="M 48,238 L 62,230 L 76,238 L 86,172 L 60,162 Z"
+              fill="rgba(255,255,255,0.14)"
+            />
 
-        {/* Right Ribbon */}
-        <g>
-          {/* Shadow */}
-          <path
-            d="M 98,110 L 88,118 L 94,170 L 112,158 L 130,170 Z"
-            fill="rgba(0,0,0,0.25)"
-          />
-          {/* Right Ribbon Body */}
-          <path
-            d="M 100,105 L 84,114 L 90,166 L 108,154 L 126,166 Z"
-            fill="url(#ribbonRight)"
-            stroke="url(#ribbonGoldBorder)"
-            strokeWidth="1.2"
-          />
-          {/* Ribbon Fold Highlight */}
-          <path
-            d="M 99,160 L 108,154 L 117,160 L 110,116 L 92,110 Z"
-            fill="rgba(255,255,255,0.15)"
-          />
-        </g>
+            {/* Right Ribbon Tail */}
+            <path
+              d="M 146,162 L 124,174 L 130,252 L 156,236 L 184,252 Z"
+              fill="rgba(0,0,0,0.28)"
+            />
+            <path
+              d="M 148,156 L 126,168 L 132,246 L 158,230 L 186,246 Z"
+              fill="url(#sealRibbonRight)"
+              stroke="url(#goldMetallic3D)"
+              strokeWidth="1.8"
+            />
+            {/* Right Ribbon Highlight Stripe */}
+            <path
+              d="M 144,238 L 158,230 L 172,238 L 160,172 L 136,162 Z"
+              fill="rgba(255,255,255,0.18)"
+            />
+          </g>
+        )}
 
-        {/* ================= SCALLOPED ROSETTE (STARBURST) ================= */}
+        {/* ================= 1. SCALLOPED SUNBURST ROSETTE ================= */}
         <polygon
-          points={polygonPoints}
-          fill="url(#goldMetallic)"
-          stroke="#7a4f00"
+          points={rosettePolygon}
+          fill="url(#goldMetallic3D)"
+          stroke="#603702"
+          strokeWidth="1.2"
+        />
+
+        {/* Outer Bevel Shadow Ring */}
+        <circle
+          cx="110"
+          cy="110"
+          r="86"
+          fill="none"
+          stroke="url(#goldBevelDark)"
+          strokeWidth="2.5"
+        />
+
+        {/* Radial Cog/Tick Notches */}
+        <g stroke="#784402" strokeWidth="1" opacity="0.85">
+          {ticks.map((t, idx) => (
+            <line key={idx} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} />
+          ))}
+        </g>
+
+        {/* Outer Circular Ring Separator */}
+        <circle
+          cx="110"
+          cy="110"
+          r="80"
+          fill="none"
+          stroke="url(#goldMetallic3D)"
+          strokeWidth="2.8"
+        />
+
+        {/* ================= 2. LETTERING BAND (AL GHAZI & DIGITAL INSTITUTE) ================= */}
+        {/* Lettering Band Background */}
+        <circle
+          cx="110"
+          cy="110"
+          r="78.5"
+          fill="none"
+          stroke="#402002"
           strokeWidth="0.8"
         />
 
-        {/* Outer Shadow Ring */}
-        <circle
-          cx="75"
-          cy="75"
-          r="54"
-          fill="url(#goldRadial)"
-          stroke="url(#goldDarkRing)"
-          strokeWidth="1.8"
-        />
+        {/* TOP CURVED TEXT: "AL GHAZI" */}
+        <text
+          fill="#3d1f02"
+          fontSize="9.8"
+          fontWeight="900"
+          letterSpacing="0.22em"
+          fontFamily="'Plus Jakarta Sans', Arial, sans-serif"
+          style={{
+            filter: 'drop-shadow(0 1px 0 #fff1b0) drop-shadow(0 -0.8px 0 #3a1c02)'
+          }}
+        >
+          <textPath href="#alGhaziTopPath" startOffset="50%" textAnchor="middle">
+            {instituteName.toUpperCase()}
+          </textPath>
+        </text>
 
-        {/* Beaded Rope Border */}
-        <circle
-          cx="75"
-          cy="75"
-          r="51"
-          fill="none"
-          stroke="#7a4f00"
-          strokeWidth="1"
-          strokeDasharray="1.5 2.5"
-        />
+        {/* BOTTOM CURVED TEXT: "DIGITAL INSTITUTE" */}
+        <text
+          fill="#3d1f02"
+          fontSize="7.8"
+          fontWeight="900"
+          letterSpacing="0.18em"
+          fontFamily="'Plus Jakarta Sans', Arial, sans-serif"
+          style={{
+            filter: 'drop-shadow(0 1px 0 #fff1b0) drop-shadow(0 -0.8px 0 #3a1c02)'
+          }}
+        >
+          <textPath href="#alGhaziBottomPath" startOffset="50%" textAnchor="middle">
+            {tagline.toUpperCase()}
+          </textPath>
+        </text>
 
-        {/* Solid Inner Gold Ring */}
+        {/* LEFT STAR ★ (at 9 o'clock) */}
+        <g transform="translate(39, 110)">
+          {/* Beveled Star Shadow */}
+          <polygon
+            points="0,-5 1.5,-1.5 5,-1.5 2.2,0.8 3.3,4.5 0,2.2 -3.3,4.5 -2.2,0.8 -5,-1.5 -1.5,-1.5"
+            fill="url(#goldMetallic3D)"
+            stroke="#452302"
+            strokeWidth="0.7"
+          />
+        </g>
+
+        {/* RIGHT STAR ★ (at 3 o'clock) */}
+        <g transform="translate(181, 110)">
+          {/* Beveled Star Shadow */}
+          <polygon
+            points="0,-5 1.5,-1.5 5,-1.5 2.2,0.8 3.3,4.5 0,2.2 -3.3,4.5 -2.2,0.8 -5,-1.5 -1.5,-1.5"
+            fill="url(#goldMetallic3D)"
+            stroke="#452302"
+            strokeWidth="0.7"
+          />
+        </g>
+
+        {/* ================= 3. INNER BEADED ROPE RING ================= */}
         <circle
-          cx="75"
-          cy="75"
-          r="48"
+          cx="110"
+          cy="110"
+          r="58.5"
           fill="none"
-          stroke="url(#goldDarkRing)"
+          stroke="url(#goldMetallic3D)"
           strokeWidth="2"
         />
 
-        {/* Center Disc with Radial Gold Background */}
-        <circle
-          cx="75"
-          cy="75"
-          r="46"
-          fill="url(#goldRadial)"
-          stroke="#b78103"
-          strokeWidth="0.7"
-        />
-
-        {/* Circular Curved Text - Top (Institute Name) */}
-        <text
-          fill="#451a03"
-          fontSize="5.2"
-          fontWeight="900"
-          letterSpacing="0.09em"
-          fontFamily="'Plus Jakarta Sans', Arial, sans-serif"
-        >
-          <textPath href="#textPathTop" startOffset="50%" textAnchor="middle">
-            {instituteName.length > 28 ? instituteName.substring(0, 26) + '...' : instituteName}
-          </textPath>
-        </text>
-
-        {/* Circular Curved Text - Bottom (Official Seal) */}
-        <text
-          fill="#451a03"
-          fontSize="5.8"
-          fontWeight="900"
-          letterSpacing="0.14em"
-          fontFamily="'Plus Jakarta Sans', Arial, sans-serif"
-        >
-          <textPath href="#textPathBottom" startOffset="50%" textAnchor="middle">
-            ★ {subtitle} ★
-          </textPath>
-        </text>
-
-        {/* Inner Border Ring */}
-        <circle
-          cx="75"
-          cy="75"
-          r="34"
-          fill="none"
-          stroke="#7a4f00"
-          strokeWidth="0.8"
-        />
-        <circle
-          cx="75"
-          cy="75"
-          r="32.5"
-          fill="url(#goldRadial)"
-          stroke="#b78103"
-          strokeWidth="0.5"
-        />
-
-        {/* 5 Center Gold Stars */}
-        <g fill="#7a4f00">
-          {/* Center Star */}
-          <polygon points="75,54 76.5,58 80.5,58 77.2,60.5 78.5,64.5 75,62 71.5,64.5 72.8,60.5 69.5,58 73.5,58" />
-          {/* Left 1 */}
-          <polygon
-            points="66,56 67.2,59.5 70.8,59.5 67.8,61.8 69,65.2 66,63 63,65.2 64.2,61.8 61.2,59.5 64.8,59.5"
-            transform="scale(0.85) translate(12, 11)"
-          />
-          {/* Left 2 */}
-          <polygon
-            points="58,60 59,63 62,63 59.5,65 60.5,68 58,66 55.5,68 56.5,65 54,63 57,63"
-            transform="scale(0.7) translate(25, 27)"
-          />
-          {/* Right 1 */}
-          <polygon
-            points="84,56 85.2,59.5 88.8,59.5 85.8,61.8 87,65.2 84,63 81,65.2 82.2,61.8 79.2,59.5 82.8,59.5"
-            transform="scale(0.85) translate(15, 11)"
-          />
-          {/* Right 2 */}
-          <polygon
-            points="92,60 93,63 96,63 93.5,65 94.5,68 92,66 89.5,68 90.5,65 88,63 91,63"
-            transform="scale(0.7) translate(39, 27)"
-          />
+        {/* Beaded Spheres */}
+        <g fill="url(#goldMetallic3D)" stroke="#5c3403" strokeWidth="0.4">
+          {beads.map((b, idx) => (
+            <circle key={idx} cx={b.bx} cy={b.by} r="1.3" />
+          ))}
         </g>
 
-        {/* Center Shield / Crest */}
-        <g transform="translate(63, 67)">
+        {/* Inner Gold Rim */}
+        <circle
+          cx="110"
+          cy="110"
+          r="52"
+          fill="none"
+          stroke="#452302"
+          strokeWidth="1.2"
+        />
+
+        {/* ================= 4. MIDNIGHT NAVY CENTER DISC ================= */}
+        <circle
+          cx="110"
+          cy="110"
+          r="51"
+          fill="url(#navyMedallionCenter)"
+          stroke="url(#goldMetallic3D)"
+          strokeWidth="1.5"
+        />
+
+        {/* Subtle Inner Ring on Blue Disc */}
+        <circle
+          cx="110"
+          cy="110"
+          r="48.5"
+          fill="none"
+          stroke="#f59e0b"
+          strokeWidth="0.6"
+          opacity="0.4"
+        />
+
+        {/* ================= 5. CENTER EMBLEM: THREE DOMES + MINARETS + PCB TRACES ================= */}
+        <g id="centerIslamicDigitalEmblem">
+          {/* Central Mosque Dome Structure */}
+          {/* Central Dome Spire & Crescent */}
           <path
-            d="M 12,0 L 22,3 L 22,12 C 22,18 12,22 12,22 C 12,22 2,18 2,12 L 2,3 Z"
-            fill="url(#goldMetallic)"
-            stroke="#684200"
+            d="M 110,64 L 110,70"
+            stroke="url(#circuitCopper)"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+          />
+          {/* Crescent Moon */}
+          <path
+            d="M 109,64 A 2.2,2.2 0 1,1 111.8,61.8 A 1.8,1.8 0 1,0 109,64 Z"
+            fill="url(#goldMetallic3D)"
+          />
+
+          {/* Central Grand Onion Dome */}
+          <path
+            d="M 98,88 C 98,78 103,71 110,70 C 117,71 122,78 122,88 Z"
+            fill="url(#circuitCopper)"
+            stroke="#ffe494"
             strokeWidth="0.8"
           />
+          {/* Central Dome Rib Lines */}
+          <path d="M 110,70 L 110,88" stroke="#ffe494" strokeWidth="0.6" opacity="0.8" />
+          <path d="M 106,73 Q 104,80 104,88" stroke="#ffe494" strokeWidth="0.5" opacity="0.6" fill="none" />
+          <path d="M 114,73 Q 116,80 116,88" stroke="#ffe494" strokeWidth="0.5" opacity="0.6" fill="none" />
+
+          {/* Left Dome */}
           <path
-            d="M 12,2 L 20,4.5 L 20,11.5 C 20,16.5 12,20 12,20 C 12,20 4,16.5 4,11.5 L 4,4.5 Z"
-            fill="url(#goldRadial)"
+            d="M 85,82 C 85,76 89,72 93,72 C 97,72 100,76 100,82 Z"
+            fill="url(#circuitCopper)"
+            stroke="#ffe494"
+            strokeWidth="0.7"
           />
-          {/* Checkmark / Emblem in Shield */}
+          <path d="M 93,68 L 93,72" stroke="url(#circuitCopper)" strokeWidth="1.2" />
+          <circle cx="93" cy="67.5" r="1.2" fill="url(#goldMetallic3D)" />
+
+          {/* Right Dome */}
           <path
-            d="M 8,11 L 11,14 L 16,8"
+            d="M 120,82 C 120,76 123,72 127,72 C 131,72 135,76 135,82 Z"
+            fill="url(#circuitCopper)"
+            stroke="#ffe494"
+            strokeWidth="0.7"
+          />
+          <path d="M 127,68 L 127,72" stroke="url(#circuitCopper)" strokeWidth="1.2" />
+          <circle cx="127" cy="67.5" r="1.2" fill="url(#goldMetallic3D)" />
+
+          {/* Left Minaret */}
+          <g>
+            {/* Minaret Body */}
+            <rect x="76" y="80" width="6" height="30" fill="url(#circuitCopper)" stroke="#ffe494" strokeWidth="0.6" rx="0.5" />
+            {/* Balcony */}
+            <rect x="74.5" y="84" width="9" height="2.5" fill="url(#goldMetallic3D)" stroke="#5c3403" strokeWidth="0.5" rx="0.5" />
+            {/* Minaret Dome & Spire */}
+            <path d="M 76,80 C 76,76 79,74 79,74 C 79,74 82,76 82,80 Z" fill="url(#circuitCopper)" stroke="#ffe494" strokeWidth="0.6" />
+            <line x1="79" y1="74" x2="79" y2="71" stroke="#ffe494" strokeWidth="1" />
+            <circle cx="79" cy="70.5" r="1" fill="url(#goldMetallic3D)" />
+          </g>
+
+          {/* Right Minaret */}
+          <g>
+            {/* Minaret Body */}
+            <rect x="138" y="80" width="6" height="30" fill="url(#circuitCopper)" stroke="#ffe494" strokeWidth="0.6" rx="0.5" />
+            {/* Balcony */}
+            <rect x="136.5" y="84" width="9" height="2.5" fill="url(#goldMetallic3D)" stroke="#5c3403" strokeWidth="0.5" rx="0.5" />
+            {/* Minaret Dome & Spire */}
+            <path d="M 138,80 C 138,76 141,74 141,74 C 141,74 144,76 144,80 Z" fill="url(#circuitCopper)" stroke="#ffe494" strokeWidth="0.6" />
+            <line x1="141" y1="74" x2="141" y2="71" stroke="#ffe494" strokeWidth="1" />
+            <circle cx="141" cy="70.5" r="1" fill="url(#goldMetallic3D)" />
+          </g>
+
+          {/* Central Horseshoe/Pointed Islamic Archway */}
+          <path
+            d="M 98,110 L 98,96 C 98,89 104,85 110,85 C 116,89 122,89 122,96 L 122,110"
             fill="none"
-            stroke="#5c3800"
-            strokeWidth="1.5"
+            stroke="url(#circuitCopper)"
+            strokeWidth="2.4"
             strokeLinecap="round"
-            strokeLinejoin="round"
           />
+
+          <path
+            d="M 103,110 L 103,98 C 103,94 106,91 110,91 C 114,91 117,94 117,98 L 117,110"
+            fill="none"
+            stroke="#ffe494"
+            strokeWidth="1.2"
+          />
+
+          {/* DIGITAL CIRCUIT TRACES (DOWNWARD STREAMING PCB TRACKS WITH SOLDER PADS) */}
+          <g stroke="url(#circuitCopper)" strokeWidth="1.6" strokeLinecap="round" fill="none">
+            {/* Center Track */}
+            <line x1="110" y1="92" x2="110" y2="124" />
+            <circle cx="110" cy="125" r="2" fill="url(#goldMetallic3D)" stroke="#5c3403" strokeWidth="0.6" />
+
+            {/* Left Track 1 */}
+            <path d="M 104,98 L 104,116 L 98,122 L 90,122" />
+            <circle cx="89" cy="122" r="1.8" fill="url(#goldMetallic3D)" stroke="#5c3403" strokeWidth="0.5" />
+
+            {/* Left Track 2 */}
+            <path d="M 98,104 L 98,112 L 86,118 L 82,118" />
+            <circle cx="80.5" cy="118" r="1.6" fill="url(#goldMetallic3D)" stroke="#5c3403" strokeWidth="0.5" />
+
+            {/* Right Track 1 */}
+            <path d="M 116,98 L 116,116 L 122,122 L 130,122" />
+            <circle cx="131" cy="122" r="1.8" fill="url(#goldMetallic3D)" stroke="#5c3403" strokeWidth="0.5" />
+
+            {/* Right Track 2 */}
+            <path d="M 122,104 L 122,112 L 134,118 L 138,118" />
+            <circle cx="139.5" cy="118" r="1.6" fill="url(#goldMetallic3D)" stroke="#5c3403" strokeWidth="0.5" />
+          </g>
+
+          {/* ================= 6. ARABESQUE FILIGREE SCROLLS & MEDALLION ================= */}
+          <g fill="none" stroke="url(#goldMetallic3D)" strokeWidth="1.2" strokeLinecap="round">
+            {/* Lower Filigree Flourishes */}
+            <path d="M 110,128 Q 98,138 88,134 Q 82,130 84,126" />
+            <path d="M 110,128 Q 122,138 132,134 Q 138,130 136,126" />
+
+            {/* Secondary Wing Filigree */}
+            <path d="M 110,134 Q 96,146 82,138 Q 78,132 80,128" strokeWidth="1" />
+            <path d="M 110,134 Q 124,146 138,138 Q 142,132 140,128" strokeWidth="1" />
+
+            {/* Symmetrical Arabesque Base Curls */}
+            <path d="M 104,142 Q 110,146 116,142" strokeWidth="1.4" />
+          </g>
+
+          {/* Center Diamond Medallion */}
+          <g transform="translate(110, 137)">
+            <polygon points="0,-4 4,0 0,4 -4,0" fill="url(#goldMetallic3D)" stroke="#452302" strokeWidth="0.7" />
+            <circle cx="0" cy="0" r="1.2" fill="#fff7d1" />
+          </g>
         </g>
 
-        {/* Center Badge Ribbon */}
-        <g transform="translate(75, 93)">
-          <rect
-            x="-25"
-            y="-4.5"
-            width="50"
-            height="9"
-            rx="1.5"
-            fill="#7a4f00"
-            stroke="#ffea9f"
-            strokeWidth="0.6"
+        {/* ================= 7. SPECULAR DIAGONAL LIGHT SHEEN ================= */}
+        <g clipPath="url(#sealCircleClip)" opacity="0.35">
+          <ellipse
+            cx="75"
+            cy="65"
+            rx="50"
+            ry="25"
+            transform="rotate(-30 75 65)"
+            fill="url(#goldRadialShine)"
           />
-          <text
-            x="0"
-            y="2"
-            fill="#fffbe8"
-            fontSize="4.2"
-            fontWeight="900"
-            letterSpacing="0.08em"
-            textAnchor="middle"
-            fontFamily="'Plus Jakarta Sans', Arial, sans-serif"
-          >
-            AUTHENTIC
-          </text>
         </g>
-
-        {/* Year */}
-        <text
-          x="75"
-          y="105"
-          fill="#5c3800"
-          fontSize="4.5"
-          fontWeight="800"
-          letterSpacing="0.1em"
-          textAnchor="middle"
-          fontFamily="'Plus Jakarta Sans', Arial, sans-serif"
-        >
-          {year}
-        </text>
-
-        {/* Gloss / Light reflection arc */}
-        <path
-          d="M 38,55 A 44,44 0 0,1 112,55"
-          fill="none"
-          stroke="rgba(255,255,255,0.4)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
       </svg>
     </div>
   );

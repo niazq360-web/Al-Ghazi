@@ -67,10 +67,28 @@ export default function App() {
   const [globalSearch, setGlobalSearch] = useState('');
   const [toastMessage, setToastMessage] = useState('');
 
+  // Clean slate startup: purge legacy demo records
+  if (typeof window !== 'undefined' && !localStorage.getItem('ag_v8_clean_slate_active')) {
+    localStorage.removeItem('ag_students');
+    localStorage.removeItem('ag_teachers');
+    localStorage.removeItem('ag_payments');
+    localStorage.removeItem('ag_expenses');
+    localStorage.removeItem('ag_exams');
+    localStorage.removeItem('ag_exam_results');
+    localStorage.removeItem('ag_certificates');
+    localStorage.removeItem('ag_inquiries');
+    localStorage.removeItem('ag_attendance');
+    localStorage.setItem('ag_v8_clean_slate_active', 'true');
+  }
+
   // Persistent States
   const [settings, setSettings] = useState(() => {
     const saved = localStorage.getItem('ag_settings');
-    return saved ? JSON.parse(saved) : initialSettings;
+    const parsed = saved ? JSON.parse(saved) : initialSettings;
+    if (!parsed.website || parsed.website.includes('github.io')) {
+      parsed.website = 'http://alghazidigital.site.je/';
+    }
+    return parsed;
   });
 
   const [courses, setCourses] = useState(() => {
@@ -80,17 +98,35 @@ export default function App() {
 
   const [students, setStudents] = useState(() => {
     const saved = localStorage.getItem('ag_students');
-    return saved ? JSON.parse(saved) : initialStudents;
+    if (!saved) return initialStudents;
+    const parsed = JSON.parse(saved);
+    if (Array.isArray(parsed) && parsed.some(s => s.name === 'Muhammad Ali' || s.name === 'Fatima Zahra')) {
+      localStorage.removeItem('ag_students');
+      return [];
+    }
+    return parsed;
   });
 
   const [teachers, setTeachers] = useState(() => {
     const saved = localStorage.getItem('ag_teachers');
-    return saved ? JSON.parse(saved) : initialTeachers;
+    if (!saved) return initialTeachers;
+    const parsed = JSON.parse(saved);
+    if (Array.isArray(parsed) && parsed.some(t => t.name === 'Prof. Kamran Khan')) {
+      localStorage.removeItem('ag_teachers');
+      return [];
+    }
+    return parsed;
   });
 
   const [payments, setPayments] = useState(() => {
     const saved = localStorage.getItem('ag_payments');
-    return saved ? JSON.parse(saved) : initialPayments;
+    if (!saved) return initialPayments;
+    const parsed = JSON.parse(saved);
+    if (Array.isArray(parsed) && parsed.some(p => p.receiptNo === 'REC-2026-00101')) {
+      localStorage.removeItem('ag_payments');
+      return [];
+    }
+    return parsed;
   });
 
   const [expenses, setExpenses] = useState(() => {
@@ -175,6 +211,30 @@ export default function App() {
   }, [attendanceRecords]);
 
   // Toast Notification Trigger
+    const handleClearAllRecords = () => {
+    if (window.confirm('Are you sure you want to completely clear all records (Students, Teachers, Fees, Expenses, Exams & Certificates)? You will start fresh with 0 records.')) {
+      setStudents([]);
+      setTeachers([]);
+      setPayments([]);
+      setExpenses([]);
+      setExams([]);
+      setExamResults([]);
+      setCertificates([]);
+      setInquiries([]);
+      setAttendanceRecords({});
+      localStorage.removeItem('ag_students');
+      localStorage.removeItem('ag_teachers');
+      localStorage.removeItem('ag_payments');
+      localStorage.removeItem('ag_expenses');
+      localStorage.removeItem('ag_exams');
+      localStorage.removeItem('ag_exam_results');
+      localStorage.removeItem('ag_certificates');
+      localStorage.removeItem('ag_inquiries');
+      localStorage.removeItem('ag_attendance');
+      showToast('All student, teacher, fee, and expense records have been wiped clean (0 records).');
+    }
+  };
+
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 3000);
@@ -1713,6 +1773,21 @@ export default function App() {
 
               {/* Certificates Table */}
               <div className="card" style={{ padding: '1rem' }}>
+                {certificates.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#94a3b8' }}>
+                    <Award size={48} color="#f59e0b" style={{ margin: '0 auto 1rem auto', opacity: 0.8 }} />
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc', marginBottom: '0.5rem' }}>
+                      No Certificates Issued Yet
+                    </h4>
+                    <p style={{ fontSize: '0.85rem', maxWidth: '440px', margin: '0 auto 1.25rem auto' }}>
+                      Issue student graduation and completion certificates with official golden seal, 4-corner filigree designs, and security QR code linking to http://alghazidigital.site.je/.
+                    </p>
+                    <button onClick={() => setShowIssueCertModal(true)} className="btn btn-primary">
+                      <Plus size={16} />
+                      <span>Issue First Certificate</span>
+                    </button>
+                  </div>
+                ) : (
                 <div style={{ overflowX: 'auto' }}>
                   <table className="data-table">
                     <thead>
@@ -1754,6 +1829,7 @@ export default function App() {
                     </tbody>
                   </table>
                 </div>
+                )}
               </div>
             </div>
           )}
@@ -2029,6 +2105,10 @@ export default function App() {
                   <button onClick={() => setShowBackupModal(true)} className="btn btn-secondary">
                     <Download size={16} />
                     <span>Backup / Restore System</span>
+                  </button>
+                  <button onClick={handleClearAllRecords} className="btn btn-danger" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Trash2 size={16} />
+                    <span>Clear All Records</span>
                   </button>
                 </div>
               </div>
@@ -2809,6 +2889,8 @@ export default function App() {
                 const newCert = {
                   id: Date.now(),
                   certId: `${settings.certificatePrefix || 'AG-CERT-2026-'}${String(settings.nextCertSeq || 104).padStart(5, '0')}`,
+                  certificateNo: `${settings.certificatePrefix || 'AG-CERT-2026-'}${String(settings.nextCertSeq || 104).padStart(5, '0')}`,
+                  rollNo: form.rollNo?.value || 'AG-2026-' + Math.floor(100 + Math.random() * 900),
                   recipientName: form.recipientName.value,
                   fatherName: form.fatherName.value || '',
                   type: form.type.value,
@@ -2837,7 +2919,7 @@ export default function App() {
                   <option value="Participation Certificate">Workshop Participation</option>
                 </select>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
                 <div>
                   <label className="form-label">Recipient Name *</label>
                   <input type="text" name="recipientName" required placeholder="Full Name" className="form-input" />
@@ -2845,6 +2927,10 @@ export default function App() {
                 <div>
                   <label className="form-label">Father's Name</label>
                   <input type="text" name="fatherName" placeholder="Father Name" className="form-input" />
+                </div>
+                <div>
+                  <label className="form-label">Roll Number</label>
+                  <input type="text" name="rollNo" placeholder="e.g. AG-2026-081" className="form-input" />
                 </div>
               </div>
               <div>
@@ -2956,6 +3042,7 @@ export default function App() {
           if (restored.attendanceRecords) setAttendanceRecords(restored.attendanceRecords);
           showToast('All institute data restored from backup file!');
         }}
+        onClearAllRecords={handleClearAllRecords}
         onResetToDemo={() => {
           setSettings(initialSettings);
           setCourses(initialCourses);

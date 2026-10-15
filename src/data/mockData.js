@@ -8,7 +8,7 @@ export const initialSettings = {
   phoneNumber: "+92 300 1234567",
   whatsappNumber: "+92 300 1234567",
   email: "info@alghazi.edu.pk",
-  website: "https://niazq360-web.github.io/Al-Ghazi/",
+  website: "http://alghazidigital.site.je/",
   address: "Main Campus, Al Ghazi Complex, Education Corridor",
   city: "Lahore, Pakistan",
   currency: "PKR",
@@ -105,30 +105,12 @@ export const initialCourses = [
   }
 ];
 
-// Clean initial states: students, teachers, fees/payments, expenses, exam results, and certificates are empty
+// Clean initial states: students, teachers, fees/payments, expenses, exam results, certificates are 100% empty
 export const initialStudents = [];
-
 export const initialTeachers = [];
-
 export const initialPayments = [];
-
 export const initialExpenses = [];
-
-export const initialExams = [
-  {
-    id: 1,
-    title: "MERN Stack Mid-Term Practical Exam",
-    courseId: 1,
-    courseName: "Full Stack Web Development (MERN)",
-    examDate: "2026-03-01",
-    totalMarks: 100,
-    passingMarks: 50,
-    status: "Scheduled"
-  }
-];
-
+export const initialExams = [];
 export const initialExamResults = [];
-
 export const initialCertificates = [];
-
 export const initialInquiries = [];

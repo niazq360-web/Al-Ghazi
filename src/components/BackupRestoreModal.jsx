@@ -1,12 +1,13 @@
 import React, { useRef, useState } from 'react';
-import { X, Download, Upload, RefreshCw, AlertCircle, CheckCircle, Database } from 'lucide-react';
+import { X, Download, Upload, RefreshCw, AlertCircle, CheckCircle, Database, Trash2 } from 'lucide-react';
 
 export default function BackupRestoreModal({
   isOpen,
   onClose,
   allData,
   onRestoreData,
-  onResetToDemo
+  onResetToDemo,
+  onClearAllRecords
 }) {
   if (!isOpen) return null;
 
@@ -23,7 +24,6 @@ export default function BackupRestoreModal({
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
-
       setStatusMsg({ text: 'Backup downloaded successfully! Store this file safely.', type: 'success' });
     } catch (err) {
       setStatusMsg({ text: 'Failed to generate backup file.', type: 'error' });
@@ -50,10 +50,19 @@ export default function BackupRestoreModal({
     reader.readAsText(file);
   };
 
+  const handleClear = () => {
+    if (window.confirm('Are you sure you want to completely clear all records (Students, Teachers, Fees, Expenses, Exams & Certificates)? You will have a clean slate with 0 records.')) {
+      if (onClearAllRecords) {
+        onClearAllRecords();
+        setStatusMsg({ text: 'All records have been cleared! System is at a clean slate (0 records).', type: 'success' });
+      }
+    }
+  };
+
   const handleReset = () => {
-    if (window.confirm('Are you sure you want to reset all data to default demo sample data? Any unsaved custom entries will be replaced.')) {
+    if (window.confirm('Are you sure you want to reset all data? Any unsaved custom entries will be replaced.')) {
       onResetToDemo();
-      setStatusMsg({ text: 'System reset to default sample data successfully.', type: 'success' });
+      setStatusMsg({ text: 'System reset completed.', type: 'success' });
     }
   };
 
@@ -65,10 +74,10 @@ export default function BackupRestoreModal({
             <Database size={22} color="#3b82f6" />
             <div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc' }}>
-                Database Backup & Restore
+                Database Backup & Records Management
               </h3>
               <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-                Secure export, local file restore, and sample data generator
+                Secure export, local file restore, and clean slate database management
               </p>
             </div>
           </div>
@@ -136,17 +145,17 @@ export default function BackupRestoreModal({
             </div>
           </div>
 
-          {/* Reset to Demo */}
-          <div className="card" style={{ padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderColor: 'rgba(239, 68, 68, 0.3)' }}>
+          {/* Wipe All Records (Clean Slate - 0 Records) */}
+          <div className="card" style={{ padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderColor: 'rgba(239, 68, 68, 0.3)', backgroundColor: 'rgba(239, 68, 68, 0.05)' }}>
             <div>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f87171' }}>Reset to Demo Sample Data</h4>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f87171' }}>Clear All Records (Clean Slate)</h4>
               <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                Reset the institute database back to pristine Al-Ghazi sample students, courses & transactions.
+                Wipe all pre-filled student, teacher, fee, expense, exam & certificate records to start fresh with 0 records.
               </p>
             </div>
-            <button onClick={handleReset} className="btn btn-danger">
-              <RefreshCw size={16} />
-              <span>Reset to Sample Data</span>
+            <button onClick={handleClear} className="btn btn-danger">
+              <Trash2 size={16} />
+              <span>Clear All Records</span>
             </button>
           </div>
         </div>
