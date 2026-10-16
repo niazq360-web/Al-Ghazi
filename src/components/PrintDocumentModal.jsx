@@ -217,12 +217,12 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
     <div className="modal-overlay">
       <div className="modal-content modal-content-wide" style={{ maxWidth: documentType === 'certificate' ? '1060px' : '960px' }}>
         {/* Controls Toolbar */}
-        <div className="no-print" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.5rem', borderBottom: '1px solid #233554', backgroundColor: '#0d1526' }}>
+        <div className="no-print" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.5rem', borderBottom: '1px solid #e2e8f0', backgroundColor: '#ffffff' }}>
           <div>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
               Print Preview: {documentType.replace(/_/g, ' ').toUpperCase()}
             </h3>
-            <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+            <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
               {documentType === 'certificate'
                 ? 'Official Certificate with Gold Seal, Security QR, 4 Corner Designs & Digital Signatures. Formatted for A4 Landscape.'
                 : 'Formatted for standard printing. Click "Print Document" to open the system print dialogue.'}
@@ -450,9 +450,13 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                       </p>
                     </div>
                   </div>
-                  <div style={{ border: '2px dashed #94a3b8', width: '100px', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: '#64748b', textAlign: 'center', padding: '4px' }}>
-                    AFFIX RECENT PASSPORT PHOTO HERE
-                  </div>
+                  {data.photoUrl ? (
+                    <img src={data.photoUrl} alt="Student" style={{ width: '100px', height: '120px', objectFit: 'cover', borderRadius: '4px', border: '1.5px solid #0f172a' }} />
+                  ) : (
+                    <div style={{ border: '2px dashed #94a3b8', width: '100px', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: '#64748b', textAlign: 'center', padding: '4px' }}>
+                      AFFIX RECENT PASSPORT PHOTO HERE
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ backgroundColor: '#0f172a', color: '#ffffff', textAlign: 'center', padding: '6px', fontWeight: 800, fontSize: '0.95rem', letterSpacing: '0.05em', marginBottom: '16px' }}>
@@ -561,9 +565,13 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                       </p>
                     </div>
                   </div>
-                  <div style={{ border: '2px dashed #94a3b8', width: '100px', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: '#64748b', textAlign: 'center', padding: '4px' }}>
-                    FACULTY PHOTO
-                  </div>
+                  {data.photoUrl ? (
+                    <img src={data.photoUrl} alt="Faculty" style={{ width: '100px', height: '120px', objectFit: 'cover', borderRadius: '4px', border: '1.5px solid #0f172a' }} />
+                  ) : (
+                    <div style={{ border: '2px dashed #94a3b8', width: '100px', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: '#64748b', textAlign: 'center', padding: '4px' }}>
+                      FACULTY PHOTO
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ backgroundColor: '#0f172a', color: '#ffffff', textAlign: 'center', padding: '6px', fontWeight: 800, fontSize: '0.95rem', letterSpacing: '0.05em', marginBottom: '16px' }}>
@@ -607,6 +615,134 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                   <div style={{ textAlign: 'center', width: '180px' }}>
                     <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
                     <span>Director / Principal Signature</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+                        {/* ==================== 3B. STUDENT ID CARD ==================== */}
+            {documentType === 'student_id_card' && (
+              <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+                <div style={{ width: '340px', border: '2px solid #0f172a', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', backgroundColor: '#ffffff' }}>
+                  {/* Card Header */}
+                  <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #0f172a)', padding: '12px', color: '#ffffff', textAlign: 'center', position: 'relative' }}>
+                    <div style={{ fontSize: '0.95rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{settings.academyName}</div>
+                    <div style={{ fontSize: '0.68rem', color: '#fde047', fontWeight: 700 }}>STUDENT IDENTITY CARD</div>
+                  </div>
+                  {/* Card Body */}
+                  <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '10px' }}>
+                    {data.photoUrl ? (
+                      <img src={data.photoUrl} alt={data.name} style={{ width: '84px', height: '96px', objectFit: 'cover', borderRadius: '6px', border: '2px solid #2563eb' }} />
+                    ) : (
+                      <div style={{ width: '84px', height: '96px', borderRadius: '6px', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: '0.75rem', border: '1px dashed #94a3b8' }}>
+                        PHOTO
+                      </div>
+                    )}
+                    <div>
+                      <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: '0 0 2px 0' }}>{data.name}</h3>
+                      <div style={{ fontSize: '0.8rem', color: '#2563eb', fontWeight: 700 }}>Roll #: {data.rollNo}</div>
+                    </div>
+                    <div style={{ width: '100%', borderTop: '1px solid #e2e8f0', paddingTop: '8px', fontSize: '0.75rem', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '4px', color: '#334155' }}>
+                      <div><strong>Father:</strong> {data.fatherName || 'N/A'}</div>
+                      <div><strong>Program:</strong> {data.courseName}</div>
+                      <div><strong>Emergency:</strong> {data.parentPhone || data.phone}</div>
+                      <div><strong>Valid Thru:</strong> {settings.academicSession || 'Session 2026-2027'}</div>
+                    </div>
+                    {/* Card Footer Bar */}
+                    <div style={{ width: '100%', borderTop: '1px solid #0f172a', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '0.65rem', color: '#64748b' }}>
+                      <div>Ph: {settings.phoneNumber}</div>
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ borderBottom: '1px solid #0f172a', width: '80px', marginBottom: '2px' }}></div>
+                        <span>Authorized Sign</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ==================== 3C. TEACHER ID CARD ==================== */}
+            {documentType === 'teacher_id_card' && (
+              <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+                <div style={{ width: '340px', border: '2px solid #0f172a', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', backgroundColor: '#ffffff' }}>
+                  <div style={{ background: 'linear-gradient(135deg, #0f172a, #1e3a8a)', padding: '12px', color: '#ffffff', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.95rem', fontWeight: 800, textTransform: 'uppercase' }}>{settings.academyName}</div>
+                    <div style={{ fontSize: '0.68rem', color: '#60a5fa', fontWeight: 700 }}>FACULTY & STAFF CREDENTIAL</div>
+                  </div>
+                  <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '10px' }}>
+                    {data.photoUrl ? (
+                      <img src={data.photoUrl} alt={data.name} style={{ width: '84px', height: '96px', objectFit: 'cover', borderRadius: '6px', border: '2px solid #1e3a8a' }} />
+                    ) : (
+                      <div style={{ width: '84px', height: '96px', borderRadius: '6px', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: '0.75rem', border: '1px dashed #94a3b8' }}>
+                        PHOTO
+                      </div>
+                    )}
+                    <div>
+                      <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: '0 0 2px 0' }}>{data.name}</h3>
+                      <div style={{ fontSize: '0.8rem', color: '#0284c7', fontWeight: 700 }}>{data.qualification}</div>
+                    </div>
+                    <div style={{ width: '100%', borderTop: '1px solid #e2e8f0', paddingTop: '8px', fontSize: '0.75rem', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '4px', color: '#334155' }}>
+                      <div><strong>Staff ID:</strong> {data.teacherId || 'TCH-' + data.id}</div>
+                      <div><strong>Department:</strong> {data.assignedCourses || data.subject || 'Computing'}</div>
+                      <div><strong>Contact:</strong> {data.phone}</div>
+                    </div>
+                    <div style={{ width: '100%', borderTop: '1px solid #0f172a', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '0.65rem', color: '#64748b' }}>
+                      <div>Principal Office</div>
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ borderBottom: '1px solid #0f172a', width: '80px', marginBottom: '2px' }}></div>
+                        <span>Director</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ==================== 3D. TEACHER SALARY VOUCHER ==================== */}
+            {documentType === 'teacher_salary_slip' && (
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid #0f172a', paddingBottom: '12px' }}>
+                  <div>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>{settings.academyName}</h2>
+                    <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>Faculty Honorarium & Salary Voucher</p>
+                  </div>
+                  <div style={{ textAlign: 'right', fontSize: '0.8rem' }}>
+                    <div><strong>Voucher #:</strong> SAL-2026-{data.id || '01'}</div>
+                    <div><strong>Date:</strong> {new Date().toISOString().split('T')[0]}</div>
+                  </div>
+                </div>
+                <div style={{ margin: '14px 0', fontSize: '0.85rem', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+                  <div><strong>Instructor:</strong> {data.name}</div>
+                  <div><strong>Staff ID:</strong> {data.teacherId || 'TCH-' + data.id}</div>
+                  <div><strong>Subject:</strong> {data.assignedCourses || data.subject}</div>
+                  <div><strong>Period:</strong> {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}</div>
+                </div>
+                <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0', fontSize: '0.85rem' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#f1f5f9' }}>
+                      <th style={{ padding: '8px', textAlign: 'left' }}>Description</th>
+                      <th style={{ padding: '8px', textAlign: 'right' }}>Amount ({currency})</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>Basic Salary / Honorarium</td>
+                      <td style={{ padding: '8px', textAlign: 'right', borderBottom: '1px solid #e2e8f0' }}>{Number(data.monthlySalary || data.salary || 50000).toLocaleString()}</td>
+                    </tr>
+                    <tr style={{ fontWeight: 800, backgroundColor: '#f8fafc' }}>
+                      <td style={{ padding: '10px' }}>NET PAYABLE AMOUNT</td>
+                      <td style={{ padding: '10px', textAlign: 'right', color: '#16a34a', fontSize: '1rem' }}>{currency} {Number(data.monthlySalary || data.salary || 50000).toLocaleString()}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '40px', fontSize: '0.8rem' }}>
+                  <div style={{ textAlign: 'center', width: '150px' }}>
+                    <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
+                    <span>Recipient Teacher</span>
+                  </div>
+                  <div style={{ textAlign: 'center', width: '150px' }}>
+                    <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
+                    <span>Authorized Accounts</span>
                   </div>
                 </div>
               </div>

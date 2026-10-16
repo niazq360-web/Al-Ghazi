@@ -59,6 +59,7 @@ import PrintDocumentModal from './components/PrintDocumentModal';
 import FeeNotificationModal from './components/FeeNotificationModal';
 import StudentProfileModal from './components/StudentProfileModal';
 import BackupRestoreModal from './components/BackupRestoreModal';
+import ImageUploadField from './components/ImageUploadField';
 
 export default function App() {
   // Navigation & UI States
@@ -253,8 +254,22 @@ export default function App() {
   // Form Modals
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
+  const [studentPhoto, setStudentPhoto] = useState('');
   const [showAddTeacherModal, setShowAddTeacherModal] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState(null);
+  const [teacherPhoto, setTeacherPhoto] = useState('');
+
+  const openAddStudentModal = (studentToEdit = null) => {
+    setEditingStudent(studentToEdit);
+    setStudentPhoto(studentToEdit?.photoUrl || '');
+    setShowAddStudentModal(true);
+  };
+
+  const openAddTeacherModal = (teacherToEdit = null) => {
+    setEditingTeacher(teacherToEdit);
+    setTeacherPhoto(teacherToEdit?.photoUrl || '');
+    setShowAddTeacherModal(true);
+  };
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
   const [showCollectFeeModal, setShowCollectFeeModal] = useState(false);
@@ -414,7 +429,7 @@ export default function App() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#090d16' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
       {/* Toast Notification Banner */}
       {toastMessage && (
         <div
@@ -445,8 +460,8 @@ export default function App() {
       <aside
         style={{
           width: '260px',
-          backgroundColor: '#0c1322',
-          borderRight: '1px solid #1a2742',
+          backgroundColor: '#ffffff',
+          borderRight: '1px solid #e2e8f0',
           display: 'flex',
           flexDirection: 'column',
           position: 'fixed',
@@ -463,7 +478,7 @@ export default function App() {
         <div
           style={{
             padding: '1.25rem 1rem',
-            borderBottom: '1px solid #1a2742',
+            borderBottom: '1px solid #e2e8f0',
             display: 'flex',
             alignItems: 'center',
             gap: '0.75rem'
@@ -496,7 +511,7 @@ export default function App() {
               style={{
                 fontSize: '0.95rem',
                 fontWeight: 800,
-                color: '#f8fafc',
+                color: '#0f172a',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
                 overflow: 'hidden'
@@ -504,7 +519,7 @@ export default function App() {
             >
               {settings.academyName || 'Al Ghazi Digital Institute'}
             </h1>
-            <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Management Portal</span>
+            <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Management Portal</span>
           </div>
         </div>
 
@@ -549,8 +564,8 @@ export default function App() {
                   padding: '0.65rem 0.85rem',
                   borderRadius: '0.5rem',
                   border: 'none',
-                  backgroundColor: active ? 'rgba(37, 99, 235, 0.15)' : 'transparent',
-                  color: active ? '#60a5fa' : '#94a3b8',
+                  backgroundColor: active ? '#eff6ff' : 'transparent',
+                  color: active ? '#2563eb' : '#475569',
                   fontWeight: active ? 700 : 500,
                   fontSize: '0.85rem',
                   cursor: 'pointer',
@@ -581,7 +596,7 @@ export default function App() {
         </nav>
 
         {/* Quick Launch Setup Wizard Button */}
-        <div style={{ padding: '0.75rem', borderTop: '1px solid #1a2742' }}>
+        <div style={{ padding: '0.75rem', borderTop: '1px solid #e2e8f0' }}>
           <button
             onClick={() => setShowSetupWizard(true)}
             className="btn btn-secondary"
@@ -599,8 +614,8 @@ export default function App() {
         <header
           style={{
             height: '64px',
-            backgroundColor: '#0c1322',
-            borderBottom: '1px solid #1a2742',
+            backgroundColor: '#ffffff',
+            borderBottom: '1px solid #e2e8f0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -618,7 +633,7 @@ export default function App() {
             >
               <Menu size={18} />
             </button>
-            <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc', textTransform: 'capitalize' }}>
+            <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', textTransform: 'capitalize' }}>
               {activeTab.replace('-', ' ')}
             </h2>
           </div>
@@ -637,10 +652,7 @@ export default function App() {
               <span>Collect Fee</span>
             </button>
             <button
-              onClick={() => {
-                setEditingStudent(null);
-                setShowAddStudentModal(true);
-              }}
+              onClick={() => openAddStudentModal(null)}
               className="btn btn-secondary"
               style={{ padding: '0.45rem 0.85rem', fontSize: '0.8rem' }}
             >
@@ -674,13 +686,13 @@ export default function App() {
                 <div className="card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
-                      <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>TOTAL STUDENTS</span>
-                      <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#f8fafc', marginTop: '4px' }}>
+                      <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>TOTAL STUDENTS</span>
+                      <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', marginTop: '4px' }}>
                         {totalStudents}
                       </div>
                       <span style={{ fontSize: '0.75rem', color: '#34d399' }}>{activeStudents} Active Currently</span>
                     </div>
-                    <div style={{ padding: 10, borderRadius: 8, backgroundColor: 'rgba(37,99,235,0.1)', color: '#60a5fa' }}>
+                    <div style={{ padding: 10, borderRadius: 8, backgroundColor: 'rgba(37,99,235,0.1)', color: '#2563eb' }}>
                       <Users size={22} />
                     </div>
                   </div>
@@ -689,11 +701,11 @@ export default function App() {
                 <div className="card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
-                      <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>TOTAL FEES COLLECTED</span>
+                      <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>TOTAL FEES COLLECTED</span>
                       <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#34d399', marginTop: '4px' }}>
                         {currency} {totalFeeCollected.toLocaleString()}
                       </div>
-                      <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{payments.length} Valid Transactions</span>
+                      <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{payments.length} Valid Transactions</span>
                     </div>
                     <div style={{ padding: 10, borderRadius: 8, backgroundColor: 'rgba(16,185,129,0.1)', color: '#34d399' }}>
                       <CreditCard size={22} />
@@ -704,7 +716,7 @@ export default function App() {
                 <div className="card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
-                      <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>OUTSTANDING DUES</span>
+                      <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>OUTSTANDING DUES</span>
                       <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#f87171', marginTop: '4px' }}>
                         {currency} {totalOutstandingDues.toLocaleString()}
                       </div>
@@ -719,15 +731,15 @@ export default function App() {
                 <div className="card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
-                      <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>NET CASH BALANCE</span>
+                      <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>NET CASH BALANCE</span>
                       <div style={{ fontSize: '1.8rem', fontWeight: 800, color: netBalance >= 0 ? '#38bdf8' : '#f87171', marginTop: '4px' }}>
                         {currency} {netBalance.toLocaleString()}
                       </div>
-                      <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                      <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
                         Exp: {currency} {totalExpensesAmount.toLocaleString()}
                       </span>
                     </div>
-                    <div style={{ padding: 10, borderRadius: 8, backgroundColor: 'rgba(56,189,248,0.1)', color: '#38bdf8' }}>
+                    <div style={{ padding: 10, borderRadius: 8, backgroundColor: 'rgba(56,189,248,0.1)', color: '#0284c7' }}>
                       <DollarSign size={22} />
                     </div>
                   </div>
@@ -748,10 +760,10 @@ export default function App() {
                 }}
               >
                 <div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f8fafc' }}>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
                     {settings.academyName} Management Console
                   </h3>
-                  <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                  <p style={{ fontSize: '0.85rem', color: '#64748b' }}>
                     Academic Session: <strong>{settings.academicSession}</strong> • Registered under{' '}
                     <strong>{settings.registrationNumber || 'Provincial Authority'}</strong>
                   </p>
@@ -777,7 +789,7 @@ export default function App() {
                 {/* Course Enrollment Breakdown */}
                 <div className="card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc' }}>Course Enrollment Breakdown</h3>
+                    <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a' }}>Course Enrollment Breakdown</h3>
                     <button onClick={() => setActiveTab('courses')} className="btn btn-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}>
                       View All
                     </button>
@@ -789,8 +801,8 @@ export default function App() {
                       return (
                         <div key={c.id}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
-                            <span style={{ color: '#cbd5e1', fontWeight: 600 }}>{c.name}</span>
-                            <span style={{ color: '#94a3b8' }}>{count} students ({percentage}%)</span>
+                            <span style={{ color: '#334155', fontWeight: 600 }}>{c.name}</span>
+                            <span style={{ color: '#64748b' }}>{count} students ({percentage}%)</span>
                           </div>
                           <div style={{ height: '6px', borderRadius: '3px', backgroundColor: '#0f172a', overflow: 'hidden' }}>
                             <div style={{ width: `${percentage}%`, height: '100%', backgroundColor: '#3b82f6', borderRadius: '3px' }}></div>
@@ -804,7 +816,7 @@ export default function App() {
                 {/* Recent Fee Payments */}
                 <div className="card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc' }}>Recent Fee Collections</h3>
+                    <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a' }}>Recent Fee Collections</h3>
                     <button onClick={() => setActiveTab('fees')} className="btn btn-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}>
                       Fee Ledger
                     </button>
@@ -818,13 +830,13 @@ export default function App() {
                           alignItems: 'center',
                           justifyContent: 'space-between',
                           padding: '0.6rem 0.75rem',
-                          backgroundColor: '#0d1526',
+                          backgroundColor: '#f8fafc',
                           borderRadius: '0.5rem'
                         }}
                       >
                         <div>
-                          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc' }}>{p.studentName}</div>
-                          <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>{p.studentName}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
                             {p.receiptNo} • {p.paymentMethod} • {p.paymentDate}
                           </div>
                         </div>
@@ -834,7 +846,7 @@ export default function App() {
                           </div>
                           <button
                             onClick={() => openPrintDocument('fee_receipt', p)}
-                            style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: '0.7rem', cursor: 'pointer' }}
+                            style={{ background: 'none', border: 'none', color: '#2563eb', fontSize: '0.7rem', cursor: 'pointer' }}
                           >
                             Print Receipt
                           </button>
@@ -909,10 +921,7 @@ export default function App() {
                     <span>Export CSV</span>
                   </button>
                   <button
-                    onClick={() => {
-                      setEditingStudent(null);
-                      setShowAddStudentModal(true);
-                    }}
+                    onClick={() => openAddStudentModal(null)}
                     className="btn btn-primary"
                   >
                     <Plus size={15} />
@@ -941,17 +950,28 @@ export default function App() {
                     <tbody>
                       {filteredStudents.length === 0 ? (
                         <tr>
-                          <td colSpan={9} style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
+                          <td colSpan={9} style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
                             No student records matching your search/filter criteria.
                           </td>
                         </tr>
                       ) : (
                         filteredStudents.map((s) => (
                           <tr key={s.id}>
-                            <td style={{ fontWeight: 700, color: '#60a5fa' }}>{s.rollNo}</td>
+                            <td style={{ fontWeight: 700, color: '#2563eb' }}>{s.rollNo}</td>
                             <td>
-                              <div style={{ fontWeight: 700, color: '#f8fafc' }}>{s.name}</div>
-                              <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>S/D of {s.fatherName}</div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                                {s.photoUrl ? (
+                                  <img src={s.photoUrl} alt={s.name} style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '1.5px solid #2563eb' }} />
+                                ) : (
+                                  <div style={{ width: 36, height: 36, borderRadius: '50%', backgroundColor: '#2563eb', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 700 }}>
+                                    {s.name?.charAt(0)}
+                                  </div>
+                                )}
+                                <div>
+                                  <div style={{ fontWeight: 700, color: '#0f172a' }}>{s.name}</div>
+                                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>S/D of {s.fatherName}</div>
+                                </div>
+                              </div>
                             </td>
                             <td>
                               <div style={{ fontSize: '0.85rem' }}>{s.courseName}</div>
@@ -1009,10 +1029,7 @@ export default function App() {
                                   <CreditCard size={14} />
                                 </button>
                                 <button
-                                  onClick={() => {
-                                    setEditingStudent(s);
-                                    setShowAddStudentModal(true);
-                                  }}
+                                  onClick={() => openAddStudentModal(s)}
                                   className="btn btn-secondary"
                                   title="Edit Student"
                                   style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }}
@@ -1044,10 +1061,10 @@ export default function App() {
                 }}
               >
                 <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
                     Faculty Members & Instructors
                   </h3>
-                  <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                  <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
                     Manage teachers, salaries, assigned courses, ID cards & pay slips
                   </p>
                 </div>
@@ -1057,10 +1074,7 @@ export default function App() {
                     <span>Export CSV</span>
                   </button>
                   <button
-                    onClick={() => {
-                      setEditingTeacher(null);
-                      setShowAddTeacherModal(true);
-                    }}
+                    onClick={() => openAddTeacherModal(null)}
                     className="btn btn-primary"
                   >
                     <Plus size={15} />
@@ -1074,40 +1088,44 @@ export default function App() {
                 {teachers.map((t) => (
                   <div key={t.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <div
-                        style={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: '50%',
-                          backgroundColor: '#1e3a8a',
-                          color: '#ffffff',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '1.2rem',
-                          fontWeight: 800
-                        }}
-                      >
-                        {t.name.charAt(0)}
-                      </div>
+                      {t.photoUrl ? (
+                        <img src={t.photoUrl} alt={t.name} style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', border: '2px solid #2563eb' }} />
+                      ) : (
+                        <div
+                          style={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: '50%',
+                            backgroundColor: '#2563eb',
+                            color: '#ffffff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '1.2rem',
+                            fontWeight: 800
+                          }}
+                        >
+                          {t.name.charAt(0)}
+                        </div>
+                      )}
                       <div>
-                        <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#f8fafc' }}>{t.name}</h4>
-                        <div style={{ fontSize: '0.75rem', color: '#38bdf8' }}>{t.qualification}</div>
+                        <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>{t.name}</h4>
+                        <div style={{ fontSize: '0.75rem', color: '#0284c7', fontWeight: 600 }}>{t.qualification}</div>
                       </div>
                     </div>
 
-                    <div style={{ fontSize: '0.8rem', color: '#94a3b8', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                      <div><strong style={{ color: '#cbd5e1' }}>Assigned Course:</strong> {t.assignedCourses || t.subject}</div>
-                      <div><strong style={{ color: '#cbd5e1' }}>Contact:</strong> {t.phone}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748b', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                      <div><strong style={{ color: '#334155' }}>Assigned Course:</strong> {t.assignedCourses || t.subject}</div>
+                      <div><strong style={{ color: '#334155' }}>Contact:</strong> {t.phone}</div>
                       <div>
-                        <strong style={{ color: '#cbd5e1' }}>Monthly Honorarium / Salary:</strong>{' '}
+                        <strong style={{ color: '#334155' }}>Monthly Honorarium / Salary:</strong>{' '}
                         <span style={{ color: '#34d399', fontWeight: 700 }}>
                           {currency} {Number(t.monthlySalary || t.salary).toLocaleString()}
                         </span>
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '0.5rem', borderTop: '1px solid #1e293b' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '0.5rem', borderTop: '1px solid #e2e8f0' }}>
                       <button
                         onClick={() => openPrintDocument('teacher_id_card', t)}
                         className="btn btn-secondary"
@@ -1125,10 +1143,7 @@ export default function App() {
                         <span>Salary Voucher</span>
                       </button>
                       <button
-                        onClick={() => {
-                          setEditingTeacher(t);
-                          setShowAddTeacherModal(true);
-                        }}
+                        onClick={() => openAddTeacherModal(t)}
                         className="btn btn-secondary"
                         style={{ padding: '0.4rem' }}
                       >
@@ -1146,10 +1161,10 @@ export default function App() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
                     Courses, Diplomas & Training Batches
                   </h3>
-                  <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                  <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
                     Define course durations, fee structures, syllabus outlines, and assign faculty
                   </p>
                 </div>
@@ -1173,18 +1188,18 @@ export default function App() {
                     <div key={c.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
-                          <span style={{ fontSize: '0.7rem', color: '#38bdf8', fontWeight: 800 }}>{c.code}</span>
-                          <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#f8fafc', marginTop: '2px' }}>
+                          <span style={{ fontSize: '0.7rem', color: '#0284c7', fontWeight: 800 }}>{c.code}</span>
+                          <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
                             {c.name}
                           </h4>
-                          <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
                             Instructor: <strong>{c.instructor}</strong>
                           </span>
                         </div>
                         <span className="badge badge-active">{c.status}</span>
                       </div>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem', backgroundColor: '#0c1424', padding: '0.75rem', borderRadius: '0.5rem', fontSize: '0.8rem' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem', backgroundColor: '#f8fafc', padding: '0.75rem', borderRadius: '0.5rem', fontSize: '0.8rem' }}>
                         <div>
                           <span style={{ color: '#64748b', display: 'block', fontSize: '0.7rem' }}>Duration</span>
                           <strong>{c.duration}</strong>
@@ -1199,17 +1214,17 @@ export default function App() {
                         </div>
                         <div>
                           <span style={{ color: '#64748b', display: 'block', fontSize: '0.7rem' }}>Active Enrolled</span>
-                          <strong style={{ color: '#60a5fa' }}>{enrolled} Students</strong>
+                          <strong style={{ color: '#2563eb' }}>{enrolled} Students</strong>
                         </div>
                       </div>
 
                       {c.syllabus && (
-                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', lineHeight: 1.4 }}>
-                          <strong style={{ color: '#cbd5e1' }}>Syllabus:</strong> {c.syllabus}
+                        <div style={{ fontSize: '0.75rem', color: '#64748b', lineHeight: 1.4 }}>
+                          <strong style={{ color: '#334155' }}>Syllabus:</strong> {c.syllabus}
                         </div>
                       )}
 
-                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '0.5rem', borderTop: '1px solid #1e293b' }}>
+                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '0.5rem', borderTop: '1px solid #e2e8f0' }}>
                         <button
                           onClick={() => {
                             setStudentCourseFilter(c.name);
@@ -1244,20 +1259,20 @@ export default function App() {
               {/* Fee Quick Stats Bar */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                 <div className="card">
-                  <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>TOTAL COLLECTED</span>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>TOTAL COLLECTED</span>
                   <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#34d399' }}>
                     {currency} {totalFeeCollected.toLocaleString()}
                   </div>
                 </div>
                 <div className="card">
-                  <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>TOTAL PENDING DUES</span>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>TOTAL PENDING DUES</span>
                   <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f87171' }}>
                     {currency} {totalOutstandingDues.toLocaleString()}
                   </div>
                 </div>
                 <div className="card">
-                  <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>DEFAULTERS COUNT</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f8fafc' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>DEFAULTERS COUNT</span>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>
                     {defaultersList.length} Students
                   </div>
                 </div>
@@ -1329,11 +1344,11 @@ export default function App() {
                           const studentObj = students.find((s) => s.id === p.studentId || s.rollNo === p.studentRollNo);
                           return (
                             <tr key={p.id}>
-                              <td style={{ fontWeight: 700, color: '#60a5fa' }}>{p.receiptNo}</td>
+                              <td style={{ fontWeight: 700, color: '#2563eb' }}>{p.receiptNo}</td>
                               <td>{p.paymentDate}</td>
                               <td>
-                                <div style={{ fontWeight: 700, color: '#f8fafc' }}>{p.studentName}</div>
-                                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{p.studentRollNo}</div>
+                                <div style={{ fontWeight: 700, color: '#0f172a' }}>{p.studentName}</div>
+                                <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{p.studentRollNo}</div>
                               </td>
                               <td>{p.courseName}</td>
                               <td>{p.feeMonth || 'Monthly Installment'}</td>
@@ -1395,10 +1410,10 @@ export default function App() {
                       <tbody>
                         {defaultersList.map((s) => (
                           <tr key={s.id}>
-                            <td style={{ fontWeight: 700, color: '#60a5fa' }}>{s.rollNo}</td>
+                            <td style={{ fontWeight: 700, color: '#2563eb' }}>{s.rollNo}</td>
                             <td>
-                              <div style={{ fontWeight: 700, color: '#f8fafc' }}>{s.name}</div>
-                              <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Father: {s.fatherName}</div>
+                              <div style={{ fontWeight: 700, color: '#0f172a' }}>{s.name}</div>
+                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Father: {s.fatherName}</div>
                             </td>
                             <td>{s.courseName}</td>
                             <td>{s.parentPhone || s.phone}</td>
@@ -1455,8 +1470,8 @@ export default function App() {
                 }}
               >
                 <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>Daily Attendance Marker</h3>
-                  <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>Daily Attendance Marker</h3>
+                  <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
                     Mark Present, Absent, Leave or Late for students on any date
                   </p>
                 </div>
@@ -1498,8 +1513,8 @@ export default function App() {
                           <tr key={s.id}>
                             <td style={{ fontWeight: 700 }}>{s.rollNo}</td>
                             <td>
-                              <div style={{ fontWeight: 700, color: '#f8fafc' }}>{s.name}</div>
-                              <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{s.phone}</div>
+                              <div style={{ fontWeight: 700, color: '#0f172a' }}>{s.name}</div>
+                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{s.phone}</div>
                             </td>
                             <td>{s.courseName}</td>
                             <td>
@@ -1565,10 +1580,10 @@ export default function App() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
                     Examination Schedules & Results
                   </h3>
-                  <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                  <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
                     Manage mid-term & final examinations, enter marks, compute grades and print report cards
                   </p>
                 </div>
@@ -1586,19 +1601,19 @@ export default function App() {
                     <div key={exam.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
-                          <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#f8fafc' }}>{exam.title}</h4>
-                          <span style={{ fontSize: '0.8rem', color: '#38bdf8' }}>{exam.courseName}</span>
+                          <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>{exam.title}</h4>
+                          <span style={{ fontSize: '0.8rem', color: '#0284c7' }}>{exam.courseName}</span>
                         </div>
                         <span className="badge badge-active">{exam.status}</span>
                       </div>
 
-                      <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                      <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
                         <div>Date: <strong>{exam.examDate}</strong></div>
                         <div>Total Marks: <strong>{exam.totalMarks}</strong> | Passing: <strong>{exam.passingMarks}</strong></div>
                         <div>Assessed Students: <strong>{resultsForThisExam.length} evaluated</strong></div>
                       </div>
 
-                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '0.5rem', borderTop: '1px solid #1e293b' }}>
+                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '0.5rem', borderTop: '1px solid #e2e8f0' }}>
                         <button
                           onClick={() => {
                             setSelectedExamForMarks(exam);
@@ -1618,7 +1633,7 @@ export default function App() {
 
               {/* Evaluated Results Table */}
               <div className="card" style={{ padding: '1rem' }}>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc', marginBottom: '0.75rem' }}>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.75rem' }}>
                   Recorded Result Cards & Transcripts
                 </h4>
                 <div style={{ overflowX: 'auto' }}>
@@ -1640,10 +1655,10 @@ export default function App() {
                         return (
                           <tr key={r.id}>
                             <td style={{ fontWeight: 700 }}>{r.rollNo}</td>
-                            <td style={{ fontWeight: 700, color: '#f8fafc' }}>{r.studentName}</td>
+                            <td style={{ fontWeight: 700, color: '#0f172a' }}>{r.studentName}</td>
                             <td>{r.obtainedMarks} / 100</td>
                             <td style={{ fontWeight: 700 }}>{r.percentage}%</td>
-                            <td style={{ fontWeight: 800, color: '#38bdf8' }}>{r.grade}</td>
+                            <td style={{ fontWeight: 800, color: '#0284c7' }}>{r.grade}</td>
                             <td>
                               <span className={`badge ${r.status === 'Pass' ? 'badge-paid' : 'badge-unpaid'}`}>
                                 {r.status}
@@ -1683,19 +1698,19 @@ export default function App() {
               {/* Financial Snapshot */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
                 <div className="card">
-                  <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>TOTAL REVENUE (FEES)</span>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>TOTAL REVENUE (FEES)</span>
                   <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#34d399' }}>
                     {currency} {totalFeeCollected.toLocaleString()}
                   </div>
                 </div>
                 <div className="card">
-                  <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>TOTAL EXPENDITURE</span>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>TOTAL EXPENDITURE</span>
                   <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f87171' }}>
                     {currency} {totalExpensesAmount.toLocaleString()}
                   </div>
                 </div>
                 <div className="card">
-                  <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>NET SURPLUS / PROFIT</span>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>NET SURPLUS / PROFIT</span>
                   <div style={{ fontSize: '1.4rem', fontWeight: 800, color: netBalance >= 0 ? '#38bdf8' : '#f87171' }}>
                     {currency} {netBalance.toLocaleString()}
                   </div>
@@ -1711,7 +1726,7 @@ export default function App() {
               {/* Expenses Table */}
               <div className="card" style={{ padding: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>Operational Expense Ledger</h3>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>Operational Expense Ledger</h3>
                   <button onClick={() => exportToCSV('al_ghazi_expenses', expenses)} className="btn btn-secondary">
                     <Download size={14} />
                     <span>Export CSV</span>
@@ -1735,7 +1750,7 @@ export default function App() {
                         <tr key={e.id}>
                           <td style={{ fontWeight: 700 }}>{e.voucherNo || `EXP-${e.id}`}</td>
                           <td>{e.date}</td>
-                          <td style={{ fontWeight: 600, color: '#f8fafc' }}>{e.title}</td>
+                          <td style={{ fontWeight: 600, color: '#0f172a' }}>{e.title}</td>
                           <td>
                             <span className="badge badge-neutral">{e.category}</span>
                           </td>
@@ -1758,10 +1773,10 @@ export default function App() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
                     Institute Certificate Management
                   </h3>
-                  <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                  <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
                     Issue Course Completion, Character, Best Performer & Teacher Experience Certificates
                   </p>
                 </div>
@@ -1774,9 +1789,9 @@ export default function App() {
               {/* Certificates Table */}
               <div className="card" style={{ padding: '1rem' }}>
                 {certificates.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#94a3b8' }}>
+                  <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#64748b' }}>
                     <Award size={48} color="#f59e0b" style={{ margin: '0 auto 1rem auto', opacity: 0.8 }} />
-                    <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc', marginBottom: '0.5rem' }}>
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.5rem' }}>
                       No Certificates Issued Yet
                     </h4>
                     <p style={{ fontSize: '0.85rem', maxWidth: '440px', margin: '0 auto 1.25rem auto' }}>
@@ -1804,8 +1819,8 @@ export default function App() {
                     <tbody>
                       {certificates.map((cert) => (
                         <tr key={cert.id}>
-                          <td style={{ fontWeight: 800, color: '#60a5fa' }}>{cert.certId}</td>
-                          <td style={{ fontWeight: 700, color: '#f8fafc' }}>{cert.recipientName}</td>
+                          <td style={{ fontWeight: 800, color: '#2563eb' }}>{cert.certId}</td>
+                          <td style={{ fontWeight: 700, color: '#0f172a' }}>{cert.recipientName}</td>
                           <td>
                             <span className="badge badge-active">{cert.type}</span>
                           </td>
@@ -1838,20 +1853,20 @@ export default function App() {
           {activeTab === 'reports' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div className="card">
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc', marginBottom: '0.25rem' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.25rem' }}>
                   Executive Reports & Analytics Center
                 </h3>
-                <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
                   Export institutional statements, financial audits & enrollment summaries
                 </p>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
                 <div className="card">
-                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#60a5fa', marginBottom: '0.5rem' }}>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#2563eb', marginBottom: '0.5rem' }}>
                     Fee Collection Ledger Report
                   </h4>
-                  <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '1rem' }}>
+                  <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
                     Complete line-item history of all student fee receipts, payment methods & dates.
                   </p>
                   <button onClick={() => exportToCSV('al_ghazi_fee_collection_report', payments)} className="btn btn-secondary" style={{ width: '100%' }}>
@@ -1864,7 +1879,7 @@ export default function App() {
                   <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f87171', marginBottom: '0.5rem' }}>
                     Defaulters & Dues Statement
                   </h4>
-                  <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '1rem' }}>
+                  <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
                     List of students with outstanding fees, course info and parent contact numbers.
                   </p>
                   <button onClick={() => exportToCSV('al_ghazi_defaulters_report', defaultersList)} className="btn btn-secondary" style={{ width: '100%' }}>
@@ -1877,7 +1892,7 @@ export default function App() {
                   <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#34d399', marginBottom: '0.5rem' }}>
                     Profit & Loss Statement
                   </h4>
-                  <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '1rem' }}>
+                  <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
                     Total Fee Collections minus Total Operational Expenses summary.
                   </p>
                   <button onClick={() => exportToCSV('al_ghazi_expenses_report', expenses)} className="btn btn-secondary" style={{ width: '100%' }}>
@@ -1905,7 +1920,7 @@ export default function App() {
                 <div style={{ width: 64, height: 64, borderRadius: '50%', backgroundColor: '#2563eb', margin: '0 auto 1rem auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <GraduationCap size={36} color="#ffffff" />
                 </div>
-                <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#f8fafc', marginBottom: '0.5rem' }}>
+                <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>
                   {settings.academyName}
                 </h2>
                 <p style={{ fontSize: '1rem', color: '#93c5fd', maxWidth: '600px', margin: '0 auto 1.5rem auto' }}>
@@ -1929,11 +1944,11 @@ export default function App() {
               </div>
 
               {/* Certificate Online Verification Box */}
-              <div className="card" style={{ backgroundColor: '#111b2e' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f8fafc', marginBottom: '0.5rem' }}>
+              <div className="card" style={{ backgroundColor: '#ffffff' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>
                   Official Certificate Verification System
                 </h3>
-                <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '1rem' }}>
+                <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
                   Employers, institutions, and students can authenticate diplomas and credentials using the official Certificate ID.
                 </p>
                 <form onSubmit={handleVerifyCertificate} style={{ display: 'flex', gap: '0.5rem', maxWidth: '500px' }}>
@@ -1959,7 +1974,7 @@ export default function App() {
                           <CheckCircle size={18} />
                           <span>VALID & VERIFIED CREDENTIAL</span>
                         </div>
-                        <p style={{ fontSize: '0.85rem', color: '#f8fafc', marginTop: '6px' }}>
+                        <p style={{ fontSize: '0.85rem', color: '#0f172a', marginTop: '6px' }}>
                           Conferred upon <strong>{portalCertResult.cert.recipientName}</strong> for{' '}
                           <strong>{portalCertResult.cert.courseName}</strong> ({portalCertResult.cert.grade}).
                           Issued on {portalCertResult.cert.issueDate}.
@@ -1976,10 +1991,10 @@ export default function App() {
 
               {/* Online Admission Inquiry Form */}
               <div className="card">
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f8fafc', marginBottom: '0.5rem' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>
                   Online Admission Inquiry Form
                 </h3>
-                <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '1rem' }}>
+                <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
                   Interested in joining a diploma or professional course? Submit your inquiry directly to our admission desk.
                 </p>
                 <form onSubmit={handleInquirySubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
@@ -2051,10 +2066,10 @@ export default function App() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '800px' }}>
               <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f8fafc' }}>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
                     Institute Identity & Configuration
                   </h3>
-                  <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                  <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
                     Manage branding, colors, fee receipts, currency & database backups
                   </p>
                 </div>
@@ -2075,15 +2090,15 @@ export default function App() {
                     </div>
                   )}
                   <div>
-                    <h4 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f8fafc' }}>{settings.academyName}</h4>
-                    <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{settings.tagline}</p>
+                    <h4 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>{settings.academyName}</h4>
+                    <p style={{ fontSize: '0.85rem', color: '#64748b' }}>{settings.tagline}</p>
                     <p style={{ fontSize: '0.75rem', color: '#64748b' }}>
                       {settings.address}, {settings.city} • Ph: {settings.phoneNumber}
                     </p>
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', borderTop: '1px solid #1e293b', paddingTop: '1rem', fontSize: '0.85rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem', fontSize: '0.85rem' }}>
                   <div><strong>Academic Session:</strong> {settings.academicSession}</div>
                   <div><strong>Currency:</strong> {settings.currency} ({settings.currencySymbol})</div>
                   <div><strong>Receipt Prefix:</strong> {settings.receiptPrefix}</div>
@@ -2095,10 +2110,10 @@ export default function App() {
 
               {/* Database Actions */}
               <div className="card">
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc', marginBottom: '0.5rem' }}>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.5rem' }}>
                   Data Integrity & Backup
                 </h4>
-                <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '1rem' }}>
+                <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
                   Save your institute records or reset sample data at any time.
                 </p>
                 <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
@@ -2123,9 +2138,9 @@ export default function App() {
       {showCollectFeeModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #233554' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc' }}>Collect Student Fee</h3>
-              <button onClick={() => setShowCollectFeeModal(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>Collect Student Fee</h3>
+              <button onClick={() => setShowCollectFeeModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
                 <X size={20} />
               </button>
             </div>
@@ -2263,11 +2278,11 @@ export default function App() {
       {showAddStudentModal && (
         <div className="modal-overlay">
           <div className="modal-content modal-content-wide">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #233554' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>
                 {editingStudent ? 'Edit Student Details' : 'Enroll New Student'}
               </h3>
-              <button onClick={() => setShowAddStudentModal(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
+              <button onClick={() => setShowAddStudentModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
                 <X size={20} />
               </button>
             </div>
@@ -2296,7 +2311,8 @@ export default function App() {
                             remainingFee: rem,
                             status: form.status.value,
                             city: form.city.value,
-                            address: form.address.value
+                            address: form.address.value,
+                            photoUrl: studentPhoto || s.photoUrl || ''
                           }
                         : s
                     )
@@ -2331,7 +2347,8 @@ export default function App() {
                     paidFee: paid,
                     remainingFee: rem,
                     status: 'Active',
-                    remarks: form.remarks.value || ''
+                    remarks: form.remarks.value || '',
+                    photoUrl: studentPhoto || ''
                   };
                   setStudents([newStudent, ...students]);
                   showToast(`Student ${newStudent.name} enrolled with Roll #: ${newStudent.rollNo}`);
@@ -2340,6 +2357,14 @@ export default function App() {
               }}
               style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
             >
+              <ImageUploadField
+                value={studentPhoto}
+                onChange={setStudentPhoto}
+                label="Student Photo (Passport Size)"
+                placeholderText="Upload JPG/PNG photo for Student ID & Admission Form"
+                subText="Dimensions: Passport Size (JPG, PNG, WEBP)"
+              />
+
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
                 <div>
                   <label className="form-label">Student Full Name *</label>
@@ -2446,11 +2471,11 @@ export default function App() {
       {showAddTeacherModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #233554' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>
                 {editingTeacher ? 'Edit Teacher Details' : 'Add New Faculty Member'}
               </h3>
-              <button onClick={() => setShowAddTeacherModal(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
+              <button onClick={() => setShowAddTeacherModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
                 <X size={20} />
               </button>
             </div>
@@ -2468,7 +2493,8 @@ export default function App() {
                             qualification: form.qualification.value,
                             assignedCourses: form.assignedCourses.value,
                             phone: form.phone.value,
-                            monthlySalary: Number(form.monthlySalary.value)
+                            monthlySalary: Number(form.monthlySalary.value),
+                            photoUrl: teacherPhoto || t.photoUrl || ''
                           }
                         : t
                     )
@@ -2484,7 +2510,8 @@ export default function App() {
                     phone: form.phone.value,
                     monthlySalary: Number(form.monthlySalary.value),
                     joiningDate: new Date().toISOString().split('T')[0],
-                    status: 'Active'
+                    status: 'Active',
+                    photoUrl: teacherPhoto || ''
                   };
                   setTeachers([newTeacher, ...teachers]);
                   showToast(`Teacher ${newTeacher.name} added!`);
@@ -2493,6 +2520,14 @@ export default function App() {
               }}
               style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
             >
+              <ImageUploadField
+                value={teacherPhoto}
+                onChange={setTeacherPhoto}
+                label="Teacher / Faculty Photo"
+                placeholderText="Upload professional instructor headshot"
+                subText="Will appear on Faculty directory, Teacher ID card & salary voucher"
+                shape="circle"
+              />
               <div>
                 <label className="form-label">Teacher Full Name *</label>
                 <input type="text" name="name" required defaultValue={editingTeacher?.name || ''} className="form-input" />
@@ -2536,11 +2571,11 @@ export default function App() {
       {showAddCourseModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #233554' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>
                 {editingCourse ? 'Edit Course' : 'Create New Course / Batch'}
               </h3>
-              <button onClick={() => setShowAddCourseModal(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
+              <button onClick={() => setShowAddCourseModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
                 <X size={20} />
               </button>
             </div>
@@ -2636,9 +2671,9 @@ export default function App() {
       {showAddExpenseModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #233554' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc' }}>Record Operational Expense</h3>
-              <button onClick={() => setShowAddExpenseModal(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>Record Operational Expense</h3>
+              <button onClick={() => setShowAddExpenseModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
                 <X size={20} />
               </button>
             </div>
@@ -2721,9 +2756,9 @@ export default function App() {
       {showAddExamModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #233554' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc' }}>Schedule New Examination</h3>
-              <button onClick={() => setShowAddExamModal(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>Schedule New Examination</h3>
+              <button onClick={() => setShowAddExamModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
                 <X size={20} />
               </button>
             </div>
@@ -2790,16 +2825,16 @@ export default function App() {
       {showEnterMarksModal && selectedExamForMarks && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #233554' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
               <div>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc' }}>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>
                   Enter Exam Marks
                 </h3>
-                <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
                   {selectedExamForMarks.title} • {selectedExamForMarks.courseName}
                 </p>
               </div>
-              <button onClick={() => setShowEnterMarksModal(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
+              <button onClick={() => setShowEnterMarksModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
                 <X size={20} />
               </button>
             </div>
@@ -2876,9 +2911,9 @@ export default function App() {
       {showIssueCertModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #233554' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc' }}>Issue Official Certificate</h3>
-              <button onClick={() => setShowIssueCertModal(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>Issue Official Certificate</h3>
+              <button onClick={() => setShowIssueCertModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
                 <X size={20} />
               </button>
             </div>

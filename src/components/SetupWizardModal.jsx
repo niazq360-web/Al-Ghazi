@@ -39,25 +39,25 @@ export default function SetupWizardModal({ isOpen, onClose, settings, onSaveSett
     <div className="modal-overlay">
       <div className="modal-content modal-content-wide">
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #233554' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
           <div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#f8fafc' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a' }}>
               Institute Setup Wizard
             </h2>
-            <p style={{ fontSize: '0.825rem', color: '#94a3b8' }}>
+            <p style={{ fontSize: '0.825rem', color: '#64748b' }}>
               Configure your institute profile, logo, receipt styles & system defaults
             </p>
           </div>
           <button
             onClick={onClose}
-            style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+            style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}
           >
             <X size={20} />
           </button>
         </div>
 
         {/* Step indicator */}
-        <div style={{ display: 'flex', borderBottom: '1px solid #233554', backgroundColor: '#0d1526' }}>
+        <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', backgroundColor: '#f8fafc' }}>
           {[
             { num: 1, title: 'Profile & Info', icon: Building },
             { num: 2, title: 'Contact & Campus', icon: Phone },
@@ -253,8 +253,8 @@ export default function SetupWizardModal({ isOpen, onClose, settings, onSaveSett
                     )}
                   </div>
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontSize: '0.875rem', color: '#f8fafc', fontWeight: 600 }}>Upload Institute Crest or Logo</p>
-                    <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.75rem' }}>
+                    <p style={{ fontSize: '0.875rem', color: '#0f172a', fontWeight: 600 }}>Upload Institute Crest or Logo</p>
+                    <p style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.75rem' }}>
                       PNG, JPG, or SVG up to 2MB. Appears automatically on receipts, ID cards, admission forms & certificates.
                     </p>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>

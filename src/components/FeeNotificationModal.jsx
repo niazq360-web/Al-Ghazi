@@ -29,16 +29,16 @@ export default function FeeNotificationModal({ isOpen, onClose, student, payment
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #233554' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
           <div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>
               {type === 'payment' ? 'Send Fee Payment SMS / WhatsApp' : 'Send Dues Reminder Notification'}
             </h3>
-            <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+            <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
               Notify student's guardian via instant WhatsApp message or SMS text
             </p>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
             <X size={20} />
           </button>
         </div>
@@ -51,7 +51,7 @@ export default function FeeNotificationModal({ isOpen, onClose, student, payment
               readOnly
               value={`${recipientPhone} (${student.name}'s Guardian)`}
               className="form-input"
-              style={{ backgroundColor: '#1e293b', color: '#cbd5e1' }}
+              style={{ backgroundColor: '#f1f5f9', color: '#334155' }}
             />
           </div>
 

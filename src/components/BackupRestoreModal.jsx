@@ -69,19 +69,19 @@ export default function BackupRestoreModal({
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #233554' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <Database size={22} color="#3b82f6" />
             <div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>
                 Database Backup & Records Management
               </h3>
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+              <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
                 Secure export, local file restore, and clean slate database management
               </p>
             </div>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
             <X size={20} />
           </button>
         </div>
@@ -107,8 +107,8 @@ export default function BackupRestoreModal({
           {/* Download Backup */}
           <div className="card" style={{ padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc' }}>Export All Data (JSON)</h4>
-              <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a' }}>Export All Data (JSON)</h4>
+              <p style={{ fontSize: '0.75rem', color: '#64748b' }}>
                 Download all students, teachers, fees, attendance, exams & settings into a single backup file.
               </p>
             </div>
@@ -121,8 +121,8 @@ export default function BackupRestoreModal({
           {/* Restore Data */}
           <div className="card" style={{ padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc' }}>Restore from Backup File</h4>
-              <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a' }}>Restore from Backup File</h4>
+              <p style={{ fontSize: '0.75rem', color: '#64748b' }}>
                 Load previously downloaded JSON backup file to restore records.
               </p>
             </div>
@@ -149,7 +149,7 @@ export default function BackupRestoreModal({
           <div className="card" style={{ padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderColor: 'rgba(239, 68, 68, 0.3)', backgroundColor: 'rgba(239, 68, 68, 0.05)' }}>
             <div>
               <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f87171' }}>Clear All Records (Clean Slate)</h4>
-              <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+              <p style={{ fontSize: '0.75rem', color: '#64748b' }}>
                 Wipe all pre-filled student, teacher, fee, expense, exam & certificate records to start fresh with 0 records.
               </p>
             </div>
