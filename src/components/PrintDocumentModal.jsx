@@ -297,11 +297,9 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid #0f172a', paddingBottom: '12px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         {settings.logoUrl ? (
-                          <img src={settings.logoUrl} alt="Logo" style={{ width: 52, height: 52, objectFit: 'contain' }} />
+                          <img src={settings.logoUrl} alt="Logo" style={{ width: 56, height: 56, objectFit: 'contain' }} />
                         ) : (
-                          <div style={{ width: 44, height: 44, borderRadius: '8px', backgroundColor: '#2563eb', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.25rem' }}>
-                            AG
-                          </div>
+                          <OfficialSeal size={56} />
                         )}
                         <div>
                           <h1 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, textTransform: 'uppercase', letterSpacing: '0.02em', color: '#0f172a' }}>
@@ -413,12 +411,18 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
 
                     {/* Footer / Terms */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '20px' }}>
-                      <div style={{ fontSize: '0.7rem', color: '#64748b', maxWidth: '60%' }}>
+                      <div style={{ fontSize: '0.7rem', color: '#64748b', maxWidth: '55%' }}>
                         <p style={{ margin: 0 }}><strong>Note:</strong> {settings.receiptFooterText}</p>
+                        <p style={{ margin: '2px 0 0 0', fontSize: '0.65rem', color: '#94a3b8' }}>Verified Digital Receipt • {settings.website || 'http://alghazidigital.site.je/'}</p>
                       </div>
-                      <div style={{ textAlign: 'center', width: '160px' }}>
-                        <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Accounts Officer / Cashier</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div style={{ opacity: 0.85 }}>
+                          <OfficialSeal size={48} />
+                        </div>
+                        <div style={{ textAlign: 'center', width: '150px' }}>
+                          <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
+                          <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Accounts Officer / Cashier</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -432,11 +436,9 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '3px solid #0f172a', paddingBottom: '14px', marginBottom: '16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                     {settings.logoUrl ? (
-                      <img src={settings.logoUrl} alt="Logo" style={{ width: 64, height: 64, objectFit: 'contain' }} />
+                      <img src={settings.logoUrl} alt="Logo" style={{ width: 68, height: 68, objectFit: 'contain' }} />
                     ) : (
-                      <div style={{ width: 54, height: 54, borderRadius: '8px', backgroundColor: '#2563eb', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.4rem' }}>
-                        AG
-                      </div>
+                      <OfficialSeal size={68} />
                     )}
                     <div>
                       <h1 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, textTransform: 'uppercase', color: '#0f172a' }}>
@@ -550,11 +552,9 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '3px solid #0f172a', paddingBottom: '14px', marginBottom: '16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                     {settings.logoUrl ? (
-                      <img src={settings.logoUrl} alt="Logo" style={{ width: 64, height: 64, objectFit: 'contain' }} />
+                      <img src={settings.logoUrl} alt="Logo" style={{ width: 68, height: 68, objectFit: 'contain' }} />
                     ) : (
-                      <div style={{ width: 54, height: 54, borderRadius: '8px', backgroundColor: '#2563eb', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.4rem' }}>
-                        AG
-                      </div>
+                      <OfficialSeal size={68} />
                     )}
                     <div>
                       <h1 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, textTransform: 'uppercase', color: '#0f172a' }}>
@@ -623,14 +623,21 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                         {/* ==================== 3B. STUDENT ID CARD ==================== */}
             {documentType === 'student_id_card' && (
               <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-                <div style={{ width: '340px', border: '2px solid #0f172a', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', backgroundColor: '#ffffff' }}>
-                  {/* Card Header */}
-                  <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #0f172a)', padding: '12px', color: '#ffffff', textAlign: 'center', position: 'relative' }}>
-                    <div style={{ fontSize: '0.95rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{settings.academyName}</div>
-                    <div style={{ fontSize: '0.68rem', color: '#fde047', fontWeight: 700 }}>STUDENT IDENTITY CARD</div>
+                <div style={{ width: '350px', border: '2px solid #0f172a', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', backgroundColor: '#ffffff' }}>
+                  {/* Card Header with Official Emblem */}
+                  <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #0f172a)', padding: '10px 14px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {settings.logoUrl ? (
+                      <img src={settings.logoUrl} alt="Logo" style={{ width: 36, height: 36, objectFit: 'contain' }} />
+                    ) : (
+                      <OfficialSeal size={36} />
+                    )}
+                    <div style={{ flex: 1, textAlign: 'left' }}>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: 1.2 }}>{settings.academyName}</div>
+                      <div style={{ fontSize: '0.65rem', color: '#fde047', fontWeight: 700 }}>STUDENT IDENTITY CARD</div>
+                    </div>
                   </div>
                   {/* Card Body */}
-                  <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '10px' }}>
+                  <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '10px' }}>
                     {data.photoUrl ? (
                       <img src={data.photoUrl} alt={data.name} style={{ width: '84px', height: '96px', objectFit: 'cover', borderRadius: '6px', border: '2px solid #2563eb' }} />
                     ) : (
@@ -650,9 +657,12 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                     </div>
                     {/* Card Footer Bar */}
                     <div style={{ width: '100%', borderTop: '1px solid #0f172a', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '0.65rem', color: '#64748b' }}>
-                      <div>Ph: {settings.phoneNumber}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <OfficialSeal size={20} />
+                        <span>Ph: {settings.phoneNumber}</span>
+                      </div>
                       <div style={{ textAlign: 'center' }}>
-                        <div style={{ borderBottom: '1px solid #0f172a', width: '80px', marginBottom: '2px' }}></div>
+                        <div style={{ borderBottom: '1px solid #0f172a', width: '75px', marginBottom: '2px' }}></div>
                         <span>Authorized Sign</span>
                       </div>
                     </div>
@@ -664,12 +674,19 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
             {/* ==================== 3C. TEACHER ID CARD ==================== */}
             {documentType === 'teacher_id_card' && (
               <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-                <div style={{ width: '340px', border: '2px solid #0f172a', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', backgroundColor: '#ffffff' }}>
-                  <div style={{ background: 'linear-gradient(135deg, #0f172a, #1e3a8a)', padding: '12px', color: '#ffffff', textAlign: 'center' }}>
-                    <div style={{ fontSize: '0.95rem', fontWeight: 800, textTransform: 'uppercase' }}>{settings.academyName}</div>
-                    <div style={{ fontSize: '0.68rem', color: '#60a5fa', fontWeight: 700 }}>FACULTY & STAFF CREDENTIAL</div>
+                <div style={{ width: '350px', border: '2px solid #0f172a', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', backgroundColor: '#ffffff' }}>
+                  <div style={{ background: 'linear-gradient(135deg, #0f172a, #1e3a8a)', padding: '10px 14px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {settings.logoUrl ? (
+                      <img src={settings.logoUrl} alt="Logo" style={{ width: 36, height: 36, objectFit: 'contain' }} />
+                    ) : (
+                      <OfficialSeal size={36} />
+                    )}
+                    <div style={{ flex: 1, textAlign: 'left' }}>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 800, textTransform: 'uppercase', lineHeight: 1.2 }}>{settings.academyName}</div>
+                      <div style={{ fontSize: '0.65rem', color: '#60a5fa', fontWeight: 700 }}>FACULTY & STAFF CREDENTIAL</div>
+                    </div>
                   </div>
-                  <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '10px' }}>
+                  <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '10px' }}>
                     {data.photoUrl ? (
                       <img src={data.photoUrl} alt={data.name} style={{ width: '84px', height: '96px', objectFit: 'cover', borderRadius: '6px', border: '2px solid #1e3a8a' }} />
                     ) : (
@@ -687,9 +704,12 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                       <div><strong>Contact:</strong> {data.phone}</div>
                     </div>
                     <div style={{ width: '100%', borderTop: '1px solid #0f172a', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '0.65rem', color: '#64748b' }}>
-                      <div>Principal Office</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <OfficialSeal size={20} />
+                        <span>Principal Office</span>
+                      </div>
                       <div style={{ textAlign: 'center' }}>
-                        <div style={{ borderBottom: '1px solid #0f172a', width: '80px', marginBottom: '2px' }}></div>
+                        <div style={{ borderBottom: '1px solid #0f172a', width: '75px', marginBottom: '2px' }}></div>
                         <span>Director</span>
                       </div>
                     </div>
@@ -702,9 +722,16 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
             {documentType === 'teacher_salary_slip' && (
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid #0f172a', paddingBottom: '12px' }}>
-                  <div>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>{settings.academyName}</h2>
-                    <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>Faculty Honorarium & Salary Voucher</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {settings.logoUrl ? (
+                      <img src={settings.logoUrl} alt="Logo" style={{ width: 52, height: 52, objectFit: 'contain' }} />
+                    ) : (
+                      <OfficialSeal size={52} />
+                    )}
+                    <div>
+                      <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>{settings.academyName}</h2>
+                      <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>Faculty Honorarium & Salary Voucher</p>
+                    </div>
                   </div>
                   <div style={{ textAlign: 'right', fontSize: '0.8rem' }}>
                     <div><strong>Voucher #:</strong> SAL-2026-{data.id || '01'}</div>
@@ -797,22 +824,12 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                           style={{ width: 72, height: 72, objectFit: 'contain', filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.18))' }}
                         />
                       ) : (
-                        <div
-                          style={{
-                            width: 64,
-                            height: 64,
-                            borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #1e3a8a, #071329)',
-                            border: '2.5px solid #d4af37',
-                            color: '#ffffff',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.18)'
-                          }}
-                        >
-                          <Award size={36} color="#ffd54f" />
-                        </div>
+                        <OfficialSeal
+                          size={70}
+                          customSealUrl={settings.officialSealUrl || ''}
+                          instituteName={settings.academyName ? settings.academyName.replace(' DIGITAL INSTITUTE', '') : 'AL GHAZI'}
+                          tagline="DIGITAL INSTITUTE"
+                        />
                       )}
                     </div>
 
