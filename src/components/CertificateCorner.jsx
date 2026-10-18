@@ -2,29 +2,31 @@ import React from 'react';
 
 /**
  * CertificateCorner Component
- * Renders an ultra-luxurious, intricate Baroque/Islamic Arabesque corner flourish
- * with gold foil metallic styling for the 4 corners of the official certificate.
+ * Renders ornate arabesque / baroque gold filigree in each of the 4 corners of the certificate.
  */
-export default function CertificateCorner({
-  position = 'top-left', // 'top-left', 'top-right', 'bottom-left', 'bottom-right'
-  size = 90,
-  color = '#d4af37'
-}) {
+export default function CertificateCorner({ position = 'top-left', size = 96 }) {
   let transform = '';
   let stylePosition = {};
 
-  if (position === 'top-left') {
-    stylePosition = { top: 0, left: 0 };
-    transform = 'none';
-  } else if (position === 'top-right') {
-    stylePosition = { top: 0, right: 0 };
-    transform = 'scaleX(-1)';
-  } else if (position === 'bottom-left') {
-    stylePosition = { bottom: 0, left: 0 };
-    transform = 'scaleY(-1)';
-  } else if (position === 'bottom-right') {
-    stylePosition = { bottom: 0, right: 0 };
-    transform = 'scale(-1, -1)';
+  switch (position) {
+    case 'top-left':
+      stylePosition = { top: 0, left: 0 };
+      transform = 'none';
+      break;
+    case 'top-right':
+      stylePosition = { top: 0, right: 0 };
+      transform = 'scaleX(-1)';
+      break;
+    case 'bottom-left':
+      stylePosition = { bottom: 0, left: 0 };
+      transform = 'scaleY(-1)';
+      break;
+    case 'bottom-right':
+      stylePosition = { bottom: 0, right: 0 };
+      transform = 'scale(-1, -1)';
+      break;
+    default:
+      stylePosition = { top: 0, left: 0 };
   }
 
   return (
@@ -35,88 +37,63 @@ export default function CertificateCorner({
         width: size,
         height: size,
         pointerEvents: 'none',
-        zIndex: 5
+        zIndex: 5,
+        transform,
+        transformOrigin: 'top left'
       }}
     >
       <svg
-        viewBox="0 0 100 100"
         width={size}
         height={size}
-        style={{ transform, display: 'block' }}
+        viewBox="0 0 100 100"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <linearGradient id={`cornerGold-${position}`} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fff9d9" />
-            <stop offset="30%" stopColor="#eab308" />
-            <stop offset="65%" stopColor="#ca8a04" />
-            <stop offset="100%" stopColor="#854d0e" />
+          <linearGradient id="goldFiligree" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fff5ad" />
+            <stop offset="30%" stopColor="#ffd700" />
+            <stop offset="70%" stopColor="#d4af37" />
+            <stop offset="100%" stopColor="#996515" />
           </linearGradient>
         </defs>
 
-        {/* Outer Corner Solid Triangle Background Accent */}
+        {/* Outer Corner L-Frame */}
         <path
-          d="M 0,0 L 75,0 C 45,6 18,25 0,65 Z"
-          fill={`url(#cornerGold-${position})`}
-          opacity="0.18"
+          d="M 4,4 L 92,4 L 92,10 L 10,10 L 10,92 L 4,92 Z"
+          fill="url(#goldFiligree)"
+        />
+        {/* Inner Secondary Bevel Line */}
+        <path
+          d="M 14,14 L 80,14 L 80,18 L 18,18 L 18,80 L 14,80 Z"
+          fill="url(#goldFiligree)"
+          opacity="0.85"
         />
 
-        {/* Outer Heavy Corner Bracket */}
+        {/* Ornate Flourish Scrolls */}
         <path
-          d="M 4,4 L 88,4 C 70,8 48,22 36,36 C 22,48 8,70 4,88 Z"
-          fill="none"
-          stroke={`url(#cornerGold-${position})`}
-          strokeWidth="2.2"
-          strokeLinecap="round"
+          d="M 6,6 Q 40,6 50,25 Q 60,44 42,60 Q 24,76 6,56 C 18,50 24,36 18,22 C 14,12 8,8 6,6 Z"
+          fill="url(#goldFiligree)"
+          opacity="0.9"
+        />
+        <path
+          d="M 22,22 Q 45,22 56,36 Q 66,50 50,66 C 42,56 42,42 34,34 C 28,28 24,24 22,22 Z"
+          fill="#ffd700"
         />
 
-        {/* Inner Secondary Fine Bracket */}
+        {/* Diagonal Crest Ray & Rosette */}
+        <circle cx="28" cy="28" r="5" fill="url(#goldFiligree)" />
+        <circle cx="28" cy="28" r="2.5" fill="#071329" />
+
+        {/* Leaf Sprigs Along Edges */}
         <path
-          d="M 12,12 L 68,12 C 55,16 38,26 28,38 C 22,48 16,58 12,68 Z"
-          fill="none"
-          stroke={`url(#cornerGold-${position})`}
-          strokeWidth="1.2"
+          d="M 88,4 C 84,10 74,10 70,4 C 74,6 84,6 88,4 Z"
+          fill="url(#goldFiligree)"
         />
-
-        {/* Ornate Filigree Arabesque Scroll 1 (Horizontal Flange) */}
         <path
-          d="M 16,8 Q 38,4 58,18 Q 42,24 24,18"
-          fill="none"
-          stroke={`url(#cornerGold-${position})`}
-          strokeWidth="1.4"
+          d="M 4,88 C 10,84 10,74 4,70 C 6,74 6,84 4,88 Z"
+          fill="url(#goldFiligree)"
         />
-
-        {/* Ornate Filigree Arabesque Scroll 2 (Vertical Flange) */}
-        <path
-          d="M 8,16 Q 4,38 18,58 Q 24,42 18,24"
-          fill="none"
-          stroke={`url(#cornerGold-${position})`}
-          strokeWidth="1.4"
-        />
-
-        {/* Center Heart/Fleur Curls */}
-        <path
-          d="M 24,24 Q 40,32 32,46 Q 22,40 24,24 Z"
-          fill={`url(#cornerGold-${position})`}
-          opacity="0.75"
-        />
-
-        {/* Radial Beaded Quarter Arc */}
-        <path
-          d="M 80,4 A 80,80 0 0,1 4,80"
-          fill="none"
-          stroke="#9a620b"
-          strokeWidth="1"
-          strokeDasharray="2.5 3.5"
-        />
-
-        {/* Corner Apex Gem / Medallion */}
-        <circle cx="16" cy="16" r="4.5" fill={`url(#cornerGold-${position})`} stroke="#603403" strokeWidth="0.8" />
-        <circle cx="16" cy="16" r="2" fill="#ffffff" />
-
-        {/* Secondary Decorative Nodes */}
-        <circle cx="52" cy="14" r="2.2" fill="#ca8a04" />
-        <circle cx="14" cy="52" r="2.2" fill="#ca8a04" />
-        <circle cx="34" cy="34" r="2.8" fill={`url(#cornerGold-${position})`} />
       </svg>
     </div>
   );

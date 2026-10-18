@@ -1,790 +1,143 @@
-import React from 'react';
-import { X, Printer, Award, Download, FileText, CheckCircle, ShieldCheck, ExternalLink } from 'lucide-react';
+import React, { useRef } from 'react';
+import { X, Printer, Download, Award, ShieldCheck, CheckCircle2, QrCode } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import OfficialSeal from './OfficialSeal';
 import AlGhaziQrCode from './AlGhaziQrCode';
 import CertificateCorner from './CertificateCorner';
 
-export default function PrintDocumentModal({ isOpen, onClose, documentType, data, settings }) {
-  if (!isOpen || !data) return null;
+export default function PrintDocumentModal({
+  isOpen,
+  onClose,
+  documentType, // 'certificate' | 'fee_receipt' | 'admission_form' | 'teacher_form' | 'student_id_card' | 'teacher_id_card' | 'teacher_salary_slip' | 'defaulters_list' | 'result_card'
+  data = {},
+  settings = {},
+  currency = 'Rs.'
+}) {
+  const printAreaRef = useRef(null);
+
+  if (!isOpen) return null;
 
   const handlePrint = () => {
-    if (documentType === 'certificate') {
-      document.body.classList.add('printing-certificate');
-    }
     window.print();
-    setTimeout(() => {
-      document.body.classList.remove('printing-certificate');
-    }, 1200);
   };
 
-  const handleDownloadPdf = () => {
-    // Triggers standard print dialog optimized for saving as PDF
-    handlePrint();
+  const handleDownloadPDF = async () => {
+    if (!printAreaRef.current) return;
+    try {
+      const element = printAreaRef.current;
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const isLandscape = documentType === 'certificate';
+      const pdf = new jsPDF({
+        orientation: isLandscape ? 'landscape' : 'portrait',
+        unit: 'pt',
+        format: 'a4'
+      });
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`${documentType}_${data.rollNo || data.receiptNo || 'document'}.pdf`);
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      window.print();
+    }
   };
 
-  const handleDownloadDoc = () => {
-    const studentName = data.recipientName || data.name || 'Student';
-    const courseName = data.courseName || data.title || 'Professional Certification';
-    const rollNo = data.rollNo || 'N/A';
-    const fatherName = data.fatherName || '';
-    const grade = data.grade || 'A+ Distinction';
-    const issueDate = data.issueDate || data.date || new Date().toISOString().split('T')[0];
-    const certNo = data.certificateNo || 'AG-CERT-2026-001';
-    const academyName = settings.academyName || 'AL GHAZI DIGITAL INSTITUTE';
-    const website = settings.website || 'http://alghazidigital.site.je/';
-
-    const docContent = `
-      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-      <head>
-        <meta charset='utf-8'>
-        <title>Certificate - ${studentName}</title>
-        <!--[if gte mso 9]>
-        <xml>
-          <w:WordDocument>
-            <w:View>Print</w:View>
-            <w:Zoom>100</w:Zoom>
-            <w:DoNotOptimizeForBrowser/>
-          </w:WordDocument>
-        </xml>
-        <![endif]-->
-        <style>
-          @page {
-            size: 297mm 210mm landscape;
-            margin: 12mm;
-          }
-          body {
-            font-family: 'Times New Roman', serif;
-            color: #0f172a;
-            margin: 0;
-            padding: 15px;
-            text-align: center;
-            background-color: #ffffff;
-          }
-          .cert-outer {
-            border: 10px double #0a192f;
-            padding: 16px;
-            background-color: #fffdf8;
-          }
-          .cert-inner {
-            border: 3px solid #d4af37;
-            padding: 24px;
-            position: relative;
-          }
-          .institute-title {
-            font-size: 28pt;
-            font-weight: bold;
-            color: #0f265c;
-            letter-spacing: 2px;
-            margin-bottom: 2px;
-          }
-          .institute-sub {
-            font-size: 12pt;
-            font-weight: bold;
-            color: #b45309;
-            letter-spacing: 3px;
-            margin-bottom: 6px;
-          }
-          .reg-text {
-            font-size: 9pt;
-            color: #64748b;
-            margin-bottom: 18px;
-          }
-          .cert-type {
-            font-size: 16pt;
-            font-weight: bold;
-            color: #1e3a8a;
-            text-transform: uppercase;
-            border-bottom: 2px solid #d4af37;
-            display: inline-block;
-            padding: 4px 24px;
-            margin-bottom: 14px;
-          }
-          .recipient-name {
-            font-size: 32pt;
-            font-weight: bold;
-            color: #1e3a8a;
-            text-decoration: underline;
-            margin: 10px 0;
-          }
-          .body-text {
-            font-size: 12pt;
-            line-height: 1.7;
-            color: #1e293b;
-            margin: 16px auto;
-            max-width: 800px;
-          }
-          .course-title {
-            font-size: 16pt;
-            font-weight: bold;
-            color: #0f265c;
-            text-transform: uppercase;
-          }
-          .signatures-table {
-            width: 100%;
-            margin-top: 30px;
-          }
-          .seal-box {
-            display: inline-block;
-            border: 3px solid #d4af37;
-            border-radius: 50%;
-            padding: 15px;
-            background-color: #fefce8;
-            font-weight: bold;
-            color: #78350f;
-          }
-          .verification-bar {
-            margin-top: 24px;
-            border-top: 1px solid #cbd5e1;
-            padding-top: 8px;
-            font-size: 8.5pt;
-            color: #64748b;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="cert-outer">
-          <div class="cert-inner">
-            <div class="institute-title">${academyName}</div>
-            <div class="institute-sub">${settings.tagline || 'LEARN • PRACTICE • GROW'}</div>
-            <div class="reg-text">Recognized & Registered Under Govt Authority Reg #${settings.registrationNumber || 'REG-2024-AGDI-8921'} • Pakistan</div>
-            
-            <div class="cert-type">${data.type || 'Certificate of Completion & Excellence'}</div>
-            
-            <div style="font-size: 11pt; font-style: italic; color: #475569;">This official credential is systematically awarded to</div>
-            
-            <div class="recipient-name">${studentName}</div>
-            
-            <div style="font-size: 11pt; font-weight: bold; color: #334155;">
-              ${fatherName ? `Son / Daughter of: ${fatherName} • ` : ''} Roll No: ${rollNo}
-            </div>
-            
-            <div class="body-text">
-              for successfully fulfilling all academic requirements, completing practical hands-on projects,
-              and demonstrating commendable technical proficiency in the specialized discipline of:<br>
-              <span class="course-title">${courseName}</span><br>
-              with an overall evaluation of <b>${grade}</b> during the academic session.
-            </div>
-            
-            <table class="signatures-table">
-              <tr>
-                <td width="33%" align="center">
-                  <br><br>
-                  <div style="width: 160px; border-bottom: 2px solid #0f172a; margin: 0 auto 5px auto;"></div>
-                  <b>Course Instructor</b><br>
-                  <span style="font-size: 8.5pt; color: #64748b;">Head of Department</span>
-                </td>
-                <td width="34%" align="center">
-                  <div class="seal-box">
-                    ★ AL GHAZI ★<br>
-                    OFFICIAL SEAL<br>
-                    ${new Date().getFullYear()}
-                  </div>
-                </td>
-                <td width="33%" align="center">
-                  <br><br>
-                  <div style="width: 160px; border-bottom: 2px solid #0f172a; margin: 0 auto 5px auto;"></div>
-                  <b>${settings.principalName || settings.directorName || 'Principal / Director'}</b><br>
-                  <span style="font-size: 8.5pt; color: #64748b;">Authorized Signatory</span>
-                </td>
-              </tr>
-            </table>
-            
-            <div class="verification-bar">
-              Certificate ID: <b>${certNo}</b> | Issued Date: <b>${issueDate}</b> | Official Website: <b><a href="${website}">${website}</a></b>
-            </div>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
-
-    const blob = new Blob(['\ufeff', docContent], {
-      type: 'application/msword;charset=utf-8'
+  const handleDownloadDOC = () => {
+    // Generate clean HTML format suitable for Microsoft Word (.doc)
+    if (!printAreaRef.current) return;
+    const content = printAreaRef.current.innerHTML;
+    const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
+      "xmlns:w='urn:schemas-microsoft-com:office:word' "+
+      "xmlns='http://www.w3.org/TR/REC-html40'>"+
+      "<head><meta charset='utf-8'><title>Document</title></head><body>";
+    const footer = "</body></html>";
+    const sourceHTML = header + content + footer;
+    const blob = new Blob(['\ufeff', sourceHTML], {
+      type: 'application/msword'
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${studentName.replace(/[^a-zA-Z0-9]/g, '_')}_Certificate.doc`;
+    a.download = `${documentType}_${data.rollNo || data.receiptNo || 'document'}.doc`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
-  const currency = settings.currencySymbol || 'Rs.';
-
   return (
     <div className="modal-overlay">
-      <div className="modal-content modal-content-wide" style={{ maxWidth: documentType === 'certificate' ? '1060px' : '960px' }}>
-        {/* Controls Toolbar */}
-        <div className="no-print" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.5rem', borderBottom: '1px solid #e2e8f0', backgroundColor: '#ffffff' }}>
-          <div>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
-              Print Preview: {documentType.replace(/_/g, ' ').toUpperCase()}
-            </h3>
-            <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
-              {documentType === 'certificate'
-                ? 'Official Certificate with Gold Seal, Security QR, 4 Corner Designs & Digital Signatures. Formatted for A4 Landscape.'
-                : 'Formatted for standard printing. Click "Print Document" to open the system print dialogue.'}
-            </p>
+      <div className={`modal-content ${documentType === 'certificate' ? 'modal-content-full' : 'modal-content-wide'}`}>
+        {/* Modal Top Control Bar */}
+        <div
+          className="no-print"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '1rem 1.5rem',
+            borderBottom: '1px solid #e8e6df',
+            backgroundColor: '#faf9f5'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Printer size={18} color="#2563eb" />
+            <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0f172a', textTransform: 'uppercase' }}>
+              Official Document Preview: {documentType?.replace('_', ' ')}
+            </span>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            {/* Print Button */}
-            <button onClick={handlePrint} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Printer size={16} />
-              <span>Print {documentType === 'certificate' ? 'Certificate' : 'Document'}</span>
+
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button onClick={handlePrint} className="btn btn-primary" style={{ padding: '0.45rem 0.85rem' }}>
+              <Printer size={15} />
+              <span>Print Directly</span>
             </button>
-
-            {/* Download PDF Button */}
-            <button
-              onClick={handleDownloadPdf}
-              className="btn btn-secondary"
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#1e293b', borderColor: '#475569' }}
-              title="Save as PDF via Print Dialogue"
-            >
-              <Download size={16} />
-              <span>PDF</span>
+            <button onClick={handleDownloadPDF} className="btn btn-secondary" style={{ padding: '0.45rem 0.85rem' }}>
+              <Download size={15} />
+              <span>Download PDF</span>
             </button>
-
-            {/* Download DOC (Word Document) Button */}
-            {documentType === 'certificate' && (
-              <button
-                onClick={handleDownloadDoc}
-                className="btn btn-secondary"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  backgroundColor: '#1e3a8a',
-                  color: '#ffffff',
-                  borderColor: '#3b82f6'
-                }}
-                title="Download formatted Microsoft Word .doc file"
-              >
-                <FileText size={16} />
-                <span>DOC (Word)</span>
-              </button>
-            )}
-
-            <button onClick={onClose} className="btn btn-secondary">
-              <X size={16} />
-              <span>Close</span>
+            <button onClick={handleDownloadDOC} className="btn btn-secondary" style={{ padding: '0.45rem 0.85rem' }}>
+              <Download size={15} />
+              <span>Download DOC</span>
+            </button>
+            <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 4 }}>
+              <X size={20} />
             </button>
           </div>
         </div>
 
-        {/* Printable Canvas Container */}
-        <div style={{ padding: '2rem 1.5rem', backgroundColor: '#e2e8f0', overflowX: 'auto', display: 'flex', justifyContent: 'center' }}>
+        {/* Printable Canvas */}
+        <div style={{ padding: '1.5rem', overflowX: 'auto', backgroundColor: '#f1f0eb' }}>
           <div
-            id="printable-document"
+            ref={printAreaRef}
             style={{
-              width: '100%',
-              maxWidth: documentType === 'certificate' ? '1000px' : '820px',
               backgroundColor: '#ffffff',
+              margin: '0 auto',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
               color: '#0f172a',
-              padding: documentType === 'certificate' ? '0' : '28px',
-              borderRadius: '6px',
-              boxShadow: '0 8px 30px rgba(0,0,0,0.18)'
+              fontFamily: 'inherit'
             }}
           >
-            {/* ==================== 1. FEE RECEIPT ==================== */}
-            {documentType === 'fee_receipt' && (
-              <div>
-                {/* Single Receipt Generator Helper */}
-                {['STUDENT COPY', settings.dualReceipt ? 'INSTITUTE / OFFICE COPY' : null].filter(Boolean).map((copyLabel, idx) => (
-                  <div key={copyLabel} style={{ marginBottom: idx === 0 && settings.dualReceipt ? '28px' : '0', paddingBottom: idx === 0 && settings.dualReceipt ? '24px' : '0', borderBottom: idx === 0 && settings.dualReceipt ? '2px dashed #94a3b8' : 'none' }}>
-                    {/* Header */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid #0f172a', paddingBottom: '12px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        {settings.logoUrl ? (
-                          <img src={settings.logoUrl} alt="Logo" style={{ width: 56, height: 56, objectFit: 'contain' }} />
-                        ) : (
-                          <OfficialSeal size={56} />
-                        )}
-                        <div>
-                          <h1 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, textTransform: 'uppercase', letterSpacing: '0.02em', color: '#0f172a' }}>
-                            {settings.academyName}
-                          </h1>
-                          <p style={{ fontSize: '0.75rem', color: '#64748b', margin: 0, fontWeight: 500 }}>
-                            {settings.address}, {settings.city} | Ph: {settings.phoneNumber}
-                          </p>
-                          <p style={{ fontSize: '0.7rem', color: '#94a3b8', margin: 0 }}>
-                            Govt Reg: {settings.registrationNumber || 'REG-2024-AGDI-8921'} | Affiliated Center
-                          </p>
-                        </div>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ display: 'inline-block', backgroundColor: '#0f172a', color: '#ffffff', fontSize: '0.75rem', fontWeight: 800, padding: '3px 8px', borderRadius: 4, textTransform: 'uppercase', marginBottom: '4px' }}>
-                          FEE VOUCHER & RECEIPT
-                        </div>
-                        <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#2563eb' }}>
-                          {copyLabel}
-                        </div>
-                        <div style={{ fontSize: '0.75rem', color: '#475569', marginTop: '2px' }}>
-                          Receipt #: <strong style={{ color: '#0f172a' }}>{data.receiptNo}</strong>
-                        </div>
-                        <div style={{ fontSize: '0.75rem', color: '#475569' }}>
-                          Date: <strong style={{ color: '#0f172a' }}>{data.date}</strong>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Student Info Grid */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', padding: '10px 0', borderBottom: '1px solid #cbd5e1', fontSize: '0.8rem' }}>
-                      <div>
-                        <span style={{ color: '#64748b' }}>Student Name:</span><br />
-                        <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{data.studentName}</strong>
-                      </div>
-                      <div>
-                        <span style={{ color: '#64748b' }}>Father Name:</span><br />
-                        <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{data.fatherName || 'N/A'}</strong>
-                      </div>
-                      <div>
-                        <span style={{ color: '#64748b' }}>Roll # / Student ID:</span><br />
-                        <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{data.rollNo || data.studentId}</strong>
-                      </div>
-                      <div>
-                        <span style={{ color: '#64748b' }}>Course Enrolled:</span><br />
-                        <strong style={{ color: '#2563eb' }}>{data.courseName}</strong>
-                      </div>
-                      <div>
-                        <span style={{ color: '#64748b' }}>Fee Month / Period:</span><br />
-                        <strong>{data.month} {data.year || new Date().getFullYear()}</strong>
-                      </div>
-                      <div>
-                        <span style={{ color: '#64748b' }}>Payment Mode:</span><br />
-                        <span style={{ textTransform: 'uppercase', fontWeight: 700, color: '#0f172a' }}>{data.paymentMethod || 'Cash'}</span>
-                      </div>
-                    </div>
-
-                    {/* Fee Financial Summary Table */}
-                    <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0', fontSize: '0.85rem' }}>
-                      <thead>
-                        <tr style={{ backgroundColor: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
-                          <th style={{ textAlign: 'left', padding: '6px 8px' }}>Description</th>
-                          <th style={{ textAlign: 'right', padding: '6px 8px' }}>Amount ({currency})</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td style={{ padding: '6px 8px', borderBottom: '1px solid #e2e8f0' }}>Monthly Tuition Fee</td>
-                          <td style={{ textAlign: 'right', padding: '6px 8px', borderBottom: '1px solid #e2e8f0' }}>{(data.monthlyFee || data.amount).toLocaleString()}</td>
-                        </tr>
-                        {data.admissionFee > 0 && (
-                          <tr>
-                            <td style={{ padding: '6px 8px', borderBottom: '1px solid #e2e8f0' }}>Admission / Registration Fee</td>
-                            <td style={{ textAlign: 'right', padding: '6px 8px', borderBottom: '1px solid #e2e8f0' }}>{data.admissionFee.toLocaleString()}</td>
-                          </tr>
-                        )}
-                        {data.previousDues > 0 && (
-                          <tr>
-                            <td style={{ padding: '6px 8px', borderBottom: '1px solid #e2e8f0', color: '#dc2626' }}>Arrears / Previous Dues</td>
-                            <td style={{ textAlign: 'right', padding: '6px 8px', borderBottom: '1px solid #e2e8f0', color: '#dc2626' }}>+{data.previousDues.toLocaleString()}</td>
-                          </tr>
-                        )}
-                        {data.lateFine > 0 && (
-                          <tr>
-                            <td style={{ padding: '6px 8px', borderBottom: '1px solid #e2e8f0', color: '#dc2626' }}>Late Surcharge Fine</td>
-                            <td style={{ textAlign: 'right', padding: '6px 8px', borderBottom: '1px solid #e2e8f0', color: '#dc2626' }}>+{data.lateFine.toLocaleString()}</td>
-                          </tr>
-                        )}
-                        {data.discount > 0 && (
-                          <tr>
-                            <td style={{ padding: '6px 8px', borderBottom: '1px solid #e2e8f0', color: '#16a34a' }}>Concession / Discount</td>
-                            <td style={{ textAlign: 'right', padding: '6px 8px', borderBottom: '1px solid #e2e8f0', color: '#16a34a' }}>-{data.discount.toLocaleString()}</td>
-                          </tr>
-                        )}
-                        <tr style={{ backgroundColor: '#f8fafc', fontWeight: 800 }}>
-                          <td style={{ padding: '8px', borderTop: '2px solid #0f172a' }}>TOTAL AMOUNT PAID</td>
-                          <td style={{ textAlign: 'right', padding: '8px', borderTop: '2px solid #0f172a', fontSize: '1rem', color: '#16a34a' }}>
-                            {currency} {data.amount.toLocaleString()}
-                          </td>
-                        </tr>
-                        {data.balance > 0 && (
-                          <tr style={{ color: '#dc2626', fontWeight: 700 }}>
-                            <td style={{ padding: '4px 8px' }}>Remaining Balance Due:</td>
-                            <td style={{ textAlign: 'right', padding: '4px 8px' }}>{currency} {data.balance.toLocaleString()}</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-
-                    {/* Footer / Terms */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '20px' }}>
-                      <div style={{ fontSize: '0.7rem', color: '#64748b', maxWidth: '55%' }}>
-                        <p style={{ margin: 0 }}><strong>Note:</strong> {settings.receiptFooterText}</p>
-                        <p style={{ margin: '2px 0 0 0', fontSize: '0.65rem', color: '#94a3b8' }}>Verified Digital Receipt • {settings.website || 'http://alghazidigital.site.je/'}</p>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <div style={{ opacity: 0.85 }}>
-                          <OfficialSeal size={48} />
-                        </div>
-                        <div style={{ textAlign: 'center', width: '150px' }}>
-                          <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
-                          <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Accounts Officer / Cashier</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* ==================== 2. STUDENT ADMISSION FORM ==================== */}
-            {documentType === 'admission_form' && (
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '3px solid #0f172a', paddingBottom: '14px', marginBottom: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    {settings.logoUrl ? (
-                      <img src={settings.logoUrl} alt="Logo" style={{ width: 68, height: 68, objectFit: 'contain' }} />
-                    ) : (
-                      <OfficialSeal size={68} />
-                    )}
-                    <div>
-                      <h1 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, textTransform: 'uppercase', color: '#0f172a' }}>
-                        {settings.academyName}
-                      </h1>
-                      <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '2px 0' }}>
-                        {settings.address}, {settings.city} | Phone: {settings.phoneNumber}
-                      </p>
-                      <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0 }}>
-                        Official Website: {settings.website || 'http://alghazidigital.site.je/'}
-                      </p>
-                    </div>
-                  </div>
-                  {data.photoUrl ? (
-                    <img src={data.photoUrl} alt="Student" style={{ width: '100px', height: '120px', objectFit: 'cover', borderRadius: '4px', border: '1.5px solid #0f172a' }} />
-                  ) : (
-                    <div style={{ border: '2px dashed #94a3b8', width: '100px', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: '#64748b', textAlign: 'center', padding: '4px' }}>
-                      AFFIX RECENT PASSPORT PHOTO HERE
-                    </div>
-                  )}
-                </div>
-
-                <div style={{ backgroundColor: '#0f172a', color: '#ffffff', textAlign: 'center', padding: '6px', fontWeight: 800, fontSize: '0.95rem', letterSpacing: '0.05em', marginBottom: '16px' }}>
-                  STUDENT ADMISSION & REGISTRATION APPLICATION FORM
-                </div>
-
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', marginBottom: '16px' }}>
-                  <tbody>
-                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                      <td style={{ padding: '8px', fontWeight: 700, width: '22%', backgroundColor: '#f8fafc' }}>Admission Form #:</td>
-                      <td style={{ padding: '8px', width: '28%' }}>{data.admissionNo || 'AGDI-' + (data.id || 'NEW')}</td>
-                      <td style={{ padding: '8px', fontWeight: 700, width: '22%', backgroundColor: '#f8fafc' }}>Admission Date:</td>
-                      <td style={{ padding: '8px', width: '28%' }}>{data.admissionDate || new Date().toISOString().split('T')[0]}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Candidate Full Name:</td>
-                      <td style={{ padding: '8px', fontWeight: 800, color: '#0f172a' }}>{data.name}</td>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Father / Guardian Name:</td>
-                      <td style={{ padding: '8px' }}>{data.fatherName || 'N/A'}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Date of Birth:</td>
-                      <td style={{ padding: '8px' }}>{data.dob || 'N/A'}</td>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Gender:</td>
-                      <td style={{ padding: '8px' }}>{data.gender || 'N/A'}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Candidate Mobile:</td>
-                      <td style={{ padding: '8px' }}>{data.phone || 'N/A'}</td>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Parent Mobile / WhatsApp:</td>
-                      <td style={{ padding: '8px' }}>{data.parentPhone || data.whatsapp || 'N/A'}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>National CNIC / B-Form:</td>
-                      <td style={{ padding: '8px' }}>{data.cnic || 'N/A'}</td>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Email Address:</td>
-                      <td style={{ padding: '8px' }}>{data.email || 'N/A'}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Residential Address:</td>
-                      <td colSpan={3} style={{ padding: '8px' }}>{data.address || 'N/A'}, {data.city || settings.city}</td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <div style={{ backgroundColor: '#2563eb', color: '#ffffff', padding: '4px 8px', fontWeight: 700, fontSize: '0.85rem', marginBottom: '8px' }}>
-                  ACADEMIC COURSE ENROLLMENT DETAILS
-                </div>
-
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', marginBottom: '20px' }}>
-                  <tbody>
-                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                      <td style={{ padding: '8px', fontWeight: 700, width: '22%', backgroundColor: '#f8fafc' }}>Program / Course:</td>
-                      <td style={{ padding: '8px', fontWeight: 800, color: '#2563eb' }}>{data.courseName || 'Selected Diploma'}</td>
-                      <td style={{ padding: '8px', fontWeight: 700, width: '22%', backgroundColor: '#f8fafc' }}>Batch / Shift:</td>
-                      <td style={{ padding: '8px' }}>{data.batch || 'Morning / Evening'}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Total Package Fee:</td>
-                      <td style={{ padding: '8px', fontWeight: 700, color: '#16a34a' }}>{currency} {(data.totalFee || 0).toLocaleString()}</td>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Agreed Monthly Installment:</td>
-                      <td style={{ padding: '8px', fontWeight: 700, color: '#2563eb' }}>{currency} {(data.monthlyFee || 0).toLocaleString()}</td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <div style={{ marginTop: '20px', padding: '12px', backgroundColor: '#f8fafc', borderRadius: 4, fontSize: '0.75rem', color: '#475569' }}>
-                  <strong>Declaration:</strong> I hereby declare that the particulars provided above are correct to the best of my knowledge and I agree to strictly abide by the rules and regulations of {settings.academyName}.
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '48px', fontSize: '0.8rem' }}>
-                  <div style={{ textAlign: 'center', width: '180px' }}>
-                    <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
-                    <span>Student Signature</span>
-                  </div>
-                  <div style={{ textAlign: 'center', width: '180px' }}>
-                    <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
-                    <span>Father / Guardian Signature</span>
-                  </div>
-                  <div style={{ textAlign: 'center', width: '180px' }}>
-                    <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
-                    <span>Principal / Director</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* ==================== 3. TEACHER REGISTRATION FORM ==================== */}
-            {documentType === 'teacher_form' && (
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '3px solid #0f172a', paddingBottom: '14px', marginBottom: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    {settings.logoUrl ? (
-                      <img src={settings.logoUrl} alt="Logo" style={{ width: 68, height: 68, objectFit: 'contain' }} />
-                    ) : (
-                      <OfficialSeal size={68} />
-                    )}
-                    <div>
-                      <h1 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, textTransform: 'uppercase', color: '#0f172a' }}>
-                        {settings.academyName}
-                      </h1>
-                      <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '2px 0' }}>
-                        Faculty & Human Resources Division | {settings.city}
-                      </p>
-                    </div>
-                  </div>
-                  {data.photoUrl ? (
-                    <img src={data.photoUrl} alt="Faculty" style={{ width: '100px', height: '120px', objectFit: 'cover', borderRadius: '4px', border: '1.5px solid #0f172a' }} />
-                  ) : (
-                    <div style={{ border: '2px dashed #94a3b8', width: '100px', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: '#64748b', textAlign: 'center', padding: '4px' }}>
-                      FACULTY PHOTO
-                    </div>
-                  )}
-                </div>
-
-                <div style={{ backgroundColor: '#0f172a', color: '#ffffff', textAlign: 'center', padding: '6px', fontWeight: 800, fontSize: '0.95rem', letterSpacing: '0.05em', marginBottom: '16px' }}>
-                  FACULTY EMPLOYMENT & REGISTRATION RECORD
-                </div>
-
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', marginBottom: '20px' }}>
-                  <tbody>
-                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                      <td style={{ padding: '8px', fontWeight: 700, width: '22%', backgroundColor: '#f8fafc' }}>Instructor ID:</td>
-                      <td style={{ padding: '8px', width: '28%' }}>{data.teacherId || 'TCH-' + data.id}</td>
-                      <td style={{ padding: '8px', fontWeight: 700, width: '22%', backgroundColor: '#f8fafc' }}>Joining Date:</td>
-                      <td style={{ padding: '8px', width: '28%' }}>{data.joiningDate || new Date().toISOString().split('T')[0]}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Instructor Name:</td>
-                      <td style={{ padding: '8px', fontWeight: 800, color: '#0f172a' }}>{data.name}</td>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Father / Husband Name:</td>
-                      <td style={{ padding: '8px' }}>{data.fatherName || 'N/A'}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Qualification / Degree:</td>
-                      <td style={{ padding: '8px' }}>{data.qualification || 'Master / Bachelor'}</td>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Assigned Subject:</td>
-                      <td style={{ padding: '8px', fontWeight: 700, color: '#2563eb' }}>{data.subject || data.specialization || 'Computing'}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Contact Number:</td>
-                      <td style={{ padding: '8px' }}>{data.phone || 'N/A'}</td>
-                      <td style={{ padding: '8px', fontWeight: 700, backgroundColor: '#f8fafc' }}>Monthly Salary:</td>
-                      <td style={{ padding: '8px', fontWeight: 700, color: '#16a34a' }}>{currency} {(data.salary || 0).toLocaleString()}</td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '60px', fontSize: '0.8rem' }}>
-                  <div style={{ textAlign: 'center', width: '180px' }}>
-                    <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
-                    <span>Teacher / Instructor Signature</span>
-                  </div>
-                  <div style={{ textAlign: 'center', width: '180px' }}>
-                    <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
-                    <span>Director / Principal Signature</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-                        {/* ==================== 3B. STUDENT ID CARD ==================== */}
-            {documentType === 'student_id_card' && (
-              <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-                <div style={{ width: '350px', border: '2px solid #0f172a', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', backgroundColor: '#ffffff' }}>
-                  {/* Card Header with Official Emblem */}
-                  <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #0f172a)', padding: '10px 14px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    {settings.logoUrl ? (
-                      <img src={settings.logoUrl} alt="Logo" style={{ width: 36, height: 36, objectFit: 'contain' }} />
-                    ) : (
-                      <OfficialSeal size={36} />
-                    )}
-                    <div style={{ flex: 1, textAlign: 'left' }}>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: 1.2 }}>{settings.academyName}</div>
-                      <div style={{ fontSize: '0.65rem', color: '#fde047', fontWeight: 700 }}>STUDENT IDENTITY CARD</div>
-                    </div>
-                  </div>
-                  {/* Card Body */}
-                  <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '10px' }}>
-                    {data.photoUrl ? (
-                      <img src={data.photoUrl} alt={data.name} style={{ width: '84px', height: '96px', objectFit: 'cover', borderRadius: '6px', border: '2px solid #2563eb' }} />
-                    ) : (
-                      <div style={{ width: '84px', height: '96px', borderRadius: '6px', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: '0.75rem', border: '1px dashed #94a3b8' }}>
-                        PHOTO
-                      </div>
-                    )}
-                    <div>
-                      <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: '0 0 2px 0' }}>{data.name}</h3>
-                      <div style={{ fontSize: '0.8rem', color: '#2563eb', fontWeight: 700 }}>Roll #: {data.rollNo}</div>
-                    </div>
-                    <div style={{ width: '100%', borderTop: '1px solid #e2e8f0', paddingTop: '8px', fontSize: '0.75rem', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '4px', color: '#334155' }}>
-                      <div><strong>Father:</strong> {data.fatherName || 'N/A'}</div>
-                      <div><strong>Program:</strong> {data.courseName}</div>
-                      <div><strong>Emergency:</strong> {data.parentPhone || data.phone}</div>
-                      <div><strong>Valid Thru:</strong> {settings.academicSession || 'Session 2026-2027'}</div>
-                    </div>
-                    {/* Card Footer Bar */}
-                    <div style={{ width: '100%', borderTop: '1px solid #0f172a', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '0.65rem', color: '#64748b' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <OfficialSeal size={20} />
-                        <span>Ph: {settings.phoneNumber}</span>
-                      </div>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ borderBottom: '1px solid #0f172a', width: '75px', marginBottom: '2px' }}></div>
-                        <span>Authorized Sign</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* ==================== 3C. TEACHER ID CARD ==================== */}
-            {documentType === 'teacher_id_card' && (
-              <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-                <div style={{ width: '350px', border: '2px solid #0f172a', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', backgroundColor: '#ffffff' }}>
-                  <div style={{ background: 'linear-gradient(135deg, #0f172a, #1e3a8a)', padding: '10px 14px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    {settings.logoUrl ? (
-                      <img src={settings.logoUrl} alt="Logo" style={{ width: 36, height: 36, objectFit: 'contain' }} />
-                    ) : (
-                      <OfficialSeal size={36} />
-                    )}
-                    <div style={{ flex: 1, textAlign: 'left' }}>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 800, textTransform: 'uppercase', lineHeight: 1.2 }}>{settings.academyName}</div>
-                      <div style={{ fontSize: '0.65rem', color: '#60a5fa', fontWeight: 700 }}>FACULTY & STAFF CREDENTIAL</div>
-                    </div>
-                  </div>
-                  <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '10px' }}>
-                    {data.photoUrl ? (
-                      <img src={data.photoUrl} alt={data.name} style={{ width: '84px', height: '96px', objectFit: 'cover', borderRadius: '6px', border: '2px solid #1e3a8a' }} />
-                    ) : (
-                      <div style={{ width: '84px', height: '96px', borderRadius: '6px', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: '0.75rem', border: '1px dashed #94a3b8' }}>
-                        PHOTO
-                      </div>
-                    )}
-                    <div>
-                      <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: '0 0 2px 0' }}>{data.name}</h3>
-                      <div style={{ fontSize: '0.8rem', color: '#0284c7', fontWeight: 700 }}>{data.qualification}</div>
-                    </div>
-                    <div style={{ width: '100%', borderTop: '1px solid #e2e8f0', paddingTop: '8px', fontSize: '0.75rem', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '4px', color: '#334155' }}>
-                      <div><strong>Staff ID:</strong> {data.teacherId || 'TCH-' + data.id}</div>
-                      <div><strong>Department:</strong> {data.assignedCourses || data.subject || 'Computing'}</div>
-                      <div><strong>Contact:</strong> {data.phone}</div>
-                    </div>
-                    <div style={{ width: '100%', borderTop: '1px solid #0f172a', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '0.65rem', color: '#64748b' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <OfficialSeal size={20} />
-                        <span>Principal Office</span>
-                      </div>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ borderBottom: '1px solid #0f172a', width: '75px', marginBottom: '2px' }}></div>
-                        <span>Director</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* ==================== 3D. TEACHER SALARY VOUCHER ==================== */}
-            {documentType === 'teacher_salary_slip' && (
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid #0f172a', paddingBottom: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    {settings.logoUrl ? (
-                      <img src={settings.logoUrl} alt="Logo" style={{ width: 52, height: 52, objectFit: 'contain' }} />
-                    ) : (
-                      <OfficialSeal size={52} />
-                    )}
-                    <div>
-                      <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>{settings.academyName}</h2>
-                      <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>Faculty Honorarium & Salary Voucher</p>
-                    </div>
-                  </div>
-                  <div style={{ textAlign: 'right', fontSize: '0.8rem' }}>
-                    <div><strong>Voucher #:</strong> SAL-2026-{data.id || '01'}</div>
-                    <div><strong>Date:</strong> {new Date().toISOString().split('T')[0]}</div>
-                  </div>
-                </div>
-                <div style={{ margin: '14px 0', fontSize: '0.85rem', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
-                  <div><strong>Instructor:</strong> {data.name}</div>
-                  <div><strong>Staff ID:</strong> {data.teacherId || 'TCH-' + data.id}</div>
-                  <div><strong>Subject:</strong> {data.assignedCourses || data.subject}</div>
-                  <div><strong>Period:</strong> {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}</div>
-                </div>
-                <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0', fontSize: '0.85rem' }}>
-                  <thead>
-                    <tr style={{ backgroundColor: '#f1f5f9' }}>
-                      <th style={{ padding: '8px', textAlign: 'left' }}>Description</th>
-                      <th style={{ padding: '8px', textAlign: 'right' }}>Amount ({currency})</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>Basic Salary / Honorarium</td>
-                      <td style={{ padding: '8px', textAlign: 'right', borderBottom: '1px solid #e2e8f0' }}>{Number(data.monthlySalary || data.salary || 50000).toLocaleString()}</td>
-                    </tr>
-                    <tr style={{ fontWeight: 800, backgroundColor: '#f8fafc' }}>
-                      <td style={{ padding: '10px' }}>NET PAYABLE AMOUNT</td>
-                      <td style={{ padding: '10px', textAlign: 'right', color: '#16a34a', fontSize: '1rem' }}>{currency} {Number(data.monthlySalary || data.salary || 50000).toLocaleString()}</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '40px', fontSize: '0.8rem' }}>
-                  <div style={{ textAlign: 'center', width: '150px' }}>
-                    <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
-                    <span>Recipient Teacher</span>
-                  </div>
-                  <div style={{ textAlign: 'center', width: '150px' }}>
-                    <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
-                    <span>Authorized Accounts</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* ==================== 4. CERTIFICATE (MASTERPIECE WITH 4 CORNERS, OFFICIAL SEAL & QR CODE) ==================== */}
+            {/* ============================================================== */}
+            {/* 1. MASTERPIECE CERTIFICATE OF EXCELLENCE                       */}
+            {/* ============================================================== */}
             {documentType === 'certificate' && (
               <div
-                className="professional-certificate"
                 style={{
                   border: '14px solid #071329',
                   padding: '10px',
                   backgroundColor: '#ffffff',
                   position: 'relative',
-                  boxShadow: '0 12px 45px rgba(0,0,0,0.22)'
+                  width: '980px',
+                  minHeight: '680px',
+                  margin: '0 auto',
+                  boxSizing: 'border-box'
                 }}
               >
                 {/* 24K Gold Foil Accent Inset Border */}
@@ -800,20 +153,20 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                   <div
                     style={{
                       border: '1.5px solid #c59b27',
-                      padding: '28px 36px 20px 36px',
+                      padding: '30px 40px 24px 40px',
                       backgroundColor: '#fffdf8',
                       position: 'relative',
                       textAlign: 'center',
-                      backgroundImage: 'radial-gradient(rgba(212, 175, 55, 0.14) 1px, transparent 1px)',
+                      backgroundImage: 'radial-gradient(rgba(212, 175, 55, 0.15) 1px, transparent 1px)',
                       backgroundSize: '24px 24px',
                       overflow: 'hidden'
                     }}
                   >
-                    {/* ================= 4 CORNERS LUXURY BAROQUE / ARABESQUE ORNAMENTS ================= */}
-                    <CertificateCorner position="top-left" size={96} />
-                    <CertificateCorner position="top-right" size={96} />
-                    <CertificateCorner position="bottom-left" size={96} />
-                    <CertificateCorner position="bottom-right" size={96} />
+                    {/* 4 CORNERS LUXURY BAROQUE ORNAMENTS */}
+                    <CertificateCorner position="top-left" size={100} />
+                    <CertificateCorner position="top-right" size={100} />
+                    <CertificateCorner position="bottom-left" size={100} />
+                    <CertificateCorner position="bottom-right" size={100} />
 
                     {/* Top Crest / Institute Logo Header */}
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '14px', marginBottom: '8px' }}>
@@ -821,7 +174,7 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                         <img
                           src={settings.logoUrl}
                           alt="Logo"
-                          style={{ width: 72, height: 72, objectFit: 'contain', filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.18))' }}
+                          style={{ width: 72, height: 72, objectFit: 'contain' }}
                         />
                       ) : (
                         <OfficialSeal
@@ -837,48 +190,67 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                     <h1
                       className="font-serif-cert"
                       style={{
-                        fontSize: '2.3rem',
+                        fontSize: '2.4rem',
                         color: '#071329',
-                        margin: '0 0 3px 0',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.07em',
+                        margin: '0 0 2px 0',
                         fontWeight: 900,
-                        textShadow: '0 1px 2px rgba(0,0,0,0.12)'
+                        letterSpacing: '0.04em',
+                        textTransform: 'uppercase'
                       }}
                     >
-                      {settings.academyName}
+                      {settings.academyName || 'AL GHAZI DIGITAL INSTITUTE'}
                     </h1>
 
-                    <p style={{ fontSize: '0.88rem', color: '#b45309', fontWeight: 800, letterSpacing: '0.18em', margin: '0 0 3px 0', textTransform: 'uppercase' }}>
-                      {settings.tagline || 'LEARN • PRACTICE • GROW'}
-                    </p>
-
-                    <p style={{ fontSize: '0.74rem', color: '#64748b', margin: '0 0 16px 0', fontWeight: 600, letterSpacing: '0.04em' }}>
-                      Recognized & Registered Under Govt Authority Reg #{settings.registrationNumber || 'REG-2024-AGDI-8921'} • Pakistan
-                    </p>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '12px',
+                        margin: '4px 0 16px 0'
+                      }}
+                    >
+                      <div style={{ height: '1.5px', width: '80px', background: 'linear-gradient(to left, #d4af37, transparent)' }}></div>
+                      <span
+                        style={{
+                          fontSize: '0.82rem',
+                          fontWeight: 700,
+                          letterSpacing: '0.22em',
+                          textTransform: 'uppercase',
+                          color: '#b8860b'
+                        }}
+                      >
+                        GOVERNMENT REGISTERED • REG #{settings.registrationNumber || 'AG-REG-2026-904'}
+                      </span>
+                      <div style={{ height: '1.5px', width: '80px', background: 'linear-gradient(to right, #d4af37, transparent)' }}></div>
+                    </div>
 
                     {/* Certificate Title Banner */}
-                    <div style={{ margin: '8px auto 14px auto', display: 'inline-block' }}>
+                    <div
+                      style={{
+                        display: 'inline-block',
+                        padding: '6px 36px',
+                        borderTop: '2px solid #d4af37',
+                        borderBottom: '2px solid #d4af37',
+                        margin: '4px 0 14px 0'
+                      }}
+                    >
                       <div
+                        className="font-serif-cert"
                         style={{
-                          background: 'linear-gradient(90deg, #071329 0%, #1e3a8a 50%, #071329 100%)',
-                          color: '#ffffff',
-                          padding: '7px 36px',
-                          borderRadius: '4px',
-                          border: '1.5px solid #ffd54f',
-                          boxShadow: '0 4px 14px rgba(7, 19, 41, 0.3)',
+                          color: '#071329',
                           textTransform: 'uppercase',
                           letterSpacing: '0.14em',
                           fontWeight: 800,
-                          fontSize: '1.1rem'
+                          fontSize: '1.2rem'
                         }}
                       >
                         {data.type || 'Certificate of Completion & Excellence'}
                       </div>
                     </div>
 
-                    <p style={{ fontSize: '0.92rem', color: '#475569', fontStyle: 'italic', margin: '8px 0 2px 0' }}>
-                      This official credential is systematically awarded to
+                    <p style={{ fontSize: '0.92rem', color: '#475569', fontStyle: 'italic', margin: '6px 0 4px 0' }}>
+                      This official academic credential is proudly awarded to
                     </p>
 
                     {/* Recipient Full Name */}
@@ -903,18 +275,18 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                     </p>
 
                     {/* Curriculum Statement */}
-                    <p style={{ fontSize: '0.93rem', color: '#1e293b', maxWidth: '740px', margin: '12px auto 16px auto', lineHeight: 1.68 }}>
-                      for successfully fulfilling all academic requirements, completing practical hands-on projects,
+                    <p style={{ fontSize: '0.93rem', color: '#1e293b', maxWidth: '760px', margin: '12px auto 16px auto', lineHeight: 1.68 }}>
+                      for successfully fulfilling all prescribed academic requirements, completing hands-on practical projects,
                       and demonstrating commendable technical proficiency in the specialized discipline of:
                       <br />
-                      <strong style={{ fontSize: '1.3rem', color: '#071329', display: 'inline-block', marginTop: '6px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      <strong style={{ fontSize: '1.35rem', color: '#071329', display: 'inline-block', marginTop: '6px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                         {data.courseName || data.title}
                       </strong>
                       <br />
-                      with an overall evaluation of <strong style={{ color: '#16a34a' }}>{data.grade || 'A+ Distinction'}</strong> during the period of <strong>{data.duration || settings.academicSession || 'Session 2026-2027'}</strong>.
+                      with an overall evaluation grade of <strong style={{ color: '#16a34a' }}>{data.grade || 'A+ Distinction'}</strong> during the academic session of <strong>{data.duration || settings.academicSession || 'Session 2026-2027'}</strong>.
                     </p>
 
-                    {/* ================= SIGNATURES & CENTER OFFICIAL SEAL ================= */}
+                    {/* SIGNATURES & CENTER OFFICIAL SEAL */}
                     <div
                       style={{
                         display: 'grid',
@@ -924,7 +296,7 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                         padding: '0 16px'
                       }}
                     >
-                      {/* Left: Course Instructor */}
+                      {/* Left Signature: Course Instructor */}
                       <div style={{ textAlign: 'center', paddingBottom: '8px' }}>
                         <svg width="120" height="34" viewBox="0 0 140 40" style={{ margin: '0 auto' }}>
                           <path
@@ -940,7 +312,7 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                         <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Head of Department</span>
                       </div>
 
-                      {/* CENTER: OFFICIAL SEAL (METALLIC GOLD 3D EMBOSSED MEDALLION RECREATED FROM ASSET 1792081856717.jpg) */}
+                      {/* CENTER: OFFICIAL SEAL (MEDALLION RECREATED FROM ASSET 1792081856717.jpg) */}
                       <div style={{ textAlign: 'center', margin: '0 20px', position: 'relative' }}>
                         <OfficialSeal
                           size={145}
@@ -951,7 +323,7 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                         />
                       </div>
 
-                      {/* Right: Principal / Director */}
+                      {/* Right Signature: Principal / Director */}
                       <div style={{ textAlign: 'center', paddingBottom: '8px' }}>
                         <svg width="120" height="34" viewBox="0 0 140 40" style={{ margin: '0 auto' }}>
                           <path
@@ -970,7 +342,7 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                       </div>
                     </div>
 
-                    {/* ================= BOTTOM SECURITY BAR WITH OFFICIAL QR CODE & WEBSITE ================= */}
+                    {/* BOTTOM SECURITY BAR WITH OFFICIAL QR CODE & WEBSITE UNDERNEATH */}
                     <div
                       style={{
                         display: 'flex',
@@ -1012,6 +384,304 @@ export default function PrintDocumentModal({ isOpen, onClose, documentType, data
                         <div style={{ color: '#1e3a8a', fontWeight: 600 }}>Al Ghazi Academic Registry</div>
                       </div>
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ============================================================== */}
+            {/* 2. OFFICIAL FEE RECEIPT                                         */}
+            {/* ============================================================== */}
+            {documentType === 'fee_receipt' && (
+              <div style={{ width: '680px', padding: '30px', margin: '0 auto', border: '1px solid #cbd5e1' }}>
+                {/* Header with Institute Logo / Official Seal */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #0f172a', paddingBottom: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    {settings.logoUrl ? (
+                      <img src={settings.logoUrl} alt="Logo" style={{ width: 56, height: 56, objectFit: 'contain' }} />
+                    ) : (
+                      <OfficialSeal size={56} />
+                    )}
+                    <div>
+                      <h2 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#0f172a', margin: 0, textTransform: 'uppercase' }}>
+                        {settings.academyName || 'AL GHAZI DIGITAL INSTITUTE'}
+                      </h2>
+                      <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '2px 0 0 0' }}>
+                        {settings.address || 'Civil Lines, Near Judicial Complex, Gujranwala Road'}
+                      </p>
+                      <p style={{ fontSize: '0.72rem', color: '#64748b', margin: '1px 0 0 0' }}>
+                        Phone: {settings.phone || '0300-1234567'} • Web: {settings.website || 'http://alghazidigital.site.je/'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ backgroundColor: '#1e3a8a', color: '#ffffff', padding: '4px 12px', borderRadius: '4px', fontWeight: 800, fontSize: '0.85rem' }}>
+                      STUDENT FEE RECEIPT
+                    </div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0f172a', marginTop: '6px' }}>
+                      Receipt #: {data.receiptNo}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                      Date: {data.paymentDate || new Date().toISOString().split('T')[0]}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Student Particulars */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', padding: '16px 0', borderBottom: '1px solid #e2e8f0', fontSize: '0.825rem' }}>
+                  <div><strong>Student Name:</strong> {data.studentName}</div>
+                  <div><strong>Roll Number:</strong> {data.studentRollNo}</div>
+                  <div><strong>Course Enrolled:</strong> {data.courseName}</div>
+                  <div><strong>Fee Month / Installment:</strong> {data.feeMonth || 'Monthly'}</div>
+                  <div><strong>Payment Mode:</strong> {data.paymentMethod || 'Cash'}</div>
+                  <div><strong>Remarks / Memo:</strong> {data.remarks || 'Tuition Fee Payment'}</div>
+                </div>
+
+                {/* Financial Table */}
+                <table style={{ width: '100%', borderCollapse: 'collapse', margin: '16px 0', fontSize: '0.85rem' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#f1f5f9' }}>
+                      <th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '1px solid #cbd5e1' }}>Description</th>
+                      <th style={{ padding: '8px 12px', textAlign: 'right', borderBottom: '1px solid #cbd5e1' }}>Amount ({currency})</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ padding: '8px 12px', borderBottom: '1px solid #e2e8f0' }}>Total Course Fee Contracted</td>
+                      <td style={{ padding: '8px 12px', textAlign: 'right', borderBottom: '1px solid #e2e8f0' }}>{Number(data.totalFee || 0).toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '8px 12px', borderBottom: '1px solid #e2e8f0' }}>Discount / Scholarship Applied</td>
+                      <td style={{ padding: '8px 12px', textAlign: 'right', borderBottom: '1px solid #e2e8f0' }}>- {Number(data.discount || 0).toLocaleString()}</td>
+                    </tr>
+                    <tr style={{ backgroundColor: '#f0fdf4', fontWeight: 800 }}>
+                      <td style={{ padding: '10px 12px', borderBottom: '1px solid #bbf7d0', color: '#166534' }}>AMOUNT PAID TODAY</td>
+                      <td style={{ padding: '10px 12px', textAlign: 'right', borderBottom: '1px solid #bbf7d0', color: '#15803d', fontSize: '1.1rem' }}>
+                        {currency} {Number(data.paidAmount).toLocaleString()}
+                      </td>
+                    </tr>
+                    <tr style={{ fontWeight: 700 }}>
+                      <td style={{ padding: '8px 12px', color: '#991b1b' }}>Net Outstanding Dues Balance</td>
+                      <td style={{ padding: '8px 12px', textAlign: 'right', color: '#dc2626' }}>
+                        {currency} {Number(data.remainingDue || 0).toLocaleString()}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                {/* Footer with Signatures & Seal */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '30px' }}>
+                  <div style={{ textAlign: 'center', width: '160px' }}>
+                    <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
+                    <span style={{ fontSize: '0.75rem', color: '#475569' }}>Student / Depositor</span>
+                  </div>
+
+                  <div style={{ textAlign: 'center' }}>
+                    <OfficialSeal size={50} />
+                  </div>
+
+                  <div style={{ textAlign: 'center', width: '160px' }}>
+                    <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
+                    <span style={{ fontSize: '0.75rem', color: '#475569', fontWeight: 700 }}>Accounts Officer</span>
+                  </div>
+                </div>
+
+                <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.68rem', color: '#94a3b8', borderTop: '1px dotted #cbd5e1', paddingTop: '8px' }}>
+                  This is a computer-generated official receipt • Fee once paid is non-refundable • Verify: {settings.website || 'http://alghazidigital.site.je/'}
+                </div>
+              </div>
+            )}
+
+            {/* ============================================================== */}
+            {/* 3. STUDENT ADMISSION FORM                                      */}
+            {/* ============================================================== */}
+            {documentType === 'admission_form' && (
+              <div style={{ width: '700px', padding: '36px', margin: '0 auto', border: '1.5px solid #0f172a' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #0f172a', paddingBottom: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    {settings.logoUrl ? (
+                      <img src={settings.logoUrl} alt="Logo" style={{ width: 64, height: 64, objectFit: 'contain' }} />
+                    ) : (
+                      <OfficialSeal size={64} />
+                    )}
+                    <div>
+                      <h2 style={{ fontSize: '1.35rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>{settings.academyName || 'AL GHAZI DIGITAL INSTITUTE'}</h2>
+                      <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '2px 0 0 0' }}>Official Student Admission & Enrollment Dossier</p>
+                    </div>
+                  </div>
+                  {/* Photo Frame */}
+                  <div style={{ width: '90px', height: '110px', border: '1.5px solid #0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                    {data.photoUrl ? (
+                      <img src={data.photoUrl} alt={data.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <span style={{ fontSize: '0.68rem', color: '#94a3b8', textAlign: 'center' }}>Affix Passport Photo</span>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ margin: '20px 0', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', fontSize: '0.85rem' }}>
+                  <div><strong>Student Full Name:</strong> {data.name}</div>
+                  <div><strong>Roll Number:</strong> {data.rollNo}</div>
+                  <div><strong>Father Name:</strong> {data.fatherName}</div>
+                  <div><strong>Parent WhatsApp:</strong> {data.parentPhone || data.phone}</div>
+                  <div><strong>Selected Course:</strong> {data.courseName}</div>
+                  <div><strong>Batch / Shift:</strong> {data.batch || 'Regular Shift'}</div>
+                  <div><strong>Date of Admission:</strong> {data.admissionDate || new Date().toISOString().split('T')[0]}</div>
+                  <div><strong>Gender / Blood:</strong> {data.gender || 'Male'} • {data.bloodGroup || 'O+'}</div>
+                  <div><strong>Total Fee:</strong> {currency} {Number(data.totalFee || 0).toLocaleString()}</div>
+                  <div><strong>Fee Paid at Admission:</strong> {currency} {Number(data.paidFee || 0).toLocaleString()}</div>
+                  <div style={{ gridColumn: 'span 2' }}><strong>Residential Address:</strong> {data.address || 'N/A'}, {data.city || 'Lahore'}</div>
+                </div>
+
+                <div style={{ marginTop: '50px', display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                  <div style={{ textAlign: 'center', width: '180px' }}>
+                    <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
+                    <span>Student / Parent Signature</span>
+                  </div>
+                  <OfficialSeal size={50} />
+                  <div style={{ textAlign: 'center', width: '180px' }}>
+                    <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
+                    <span>Principal / Admission Officer</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ============================================================== */}
+            {/* 4. STUDENT ID CARD (FRONT & BACK)                              */}
+            {/* ============================================================== */}
+            {documentType === 'student_id_card' && (
+              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center', padding: '20px' }}>
+                {/* Front of ID Card */}
+                <div
+                  style={{
+                    width: '260px',
+                    height: '410px',
+                    borderRadius: '12px',
+                    border: '1.5px solid #cbd5e1',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    backgroundColor: '#ffffff'
+                  }}
+                >
+                  <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #071329)', color: '#ffffff', padding: '12px 10px', textAlign: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginBottom: '3px' }}>
+                      <OfficialSeal size={28} />
+                      <strong style={{ fontSize: '0.8rem', letterSpacing: '0.04em' }}>{settings.academyName || 'AL GHAZI INSTITUTE'}</strong>
+                    </div>
+                    <span style={{ fontSize: '0.62rem', color: '#ffd700', textTransform: 'uppercase', fontWeight: 700 }}>STUDENT IDENTITY CARD</span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 12px', flex: 1 }}>
+                    {data.photoUrl ? (
+                      <img src={data.photoUrl} alt={data.name} style={{ width: 84, height: 84, borderRadius: '50%', objectFit: 'cover', border: '2.5px solid #2563eb' }} />
+                    ) : (
+                      <div style={{ width: 84, height: 84, borderRadius: '50%', backgroundColor: '#2563eb', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 800 }}>
+                        {data.name?.charAt(0)}
+                      </div>
+                    )}
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: '8px 0 2px 0' }}>{data.name}</h3>
+                    <span style={{ fontSize: '0.72rem', color: '#2563eb', fontWeight: 700 }}>{data.courseName}</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#0f172a', marginTop: '4px' }}>Roll #: {data.rollNo}</span>
+                    <span style={{ fontSize: '0.68rem', color: '#64748b' }}>S/D of: {data.fatherName}</span>
+                  </div>
+
+                  <div style={{ padding: '8px 12px', backgroundColor: '#f8f7f4', borderTop: '1px solid #e8e6df', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem' }}>
+                    <span>Emergency: {data.parentPhone || data.phone}</span>
+                    <OfficialSeal size={26} />
+                  </div>
+                </div>
+
+                {/* Back of ID Card */}
+                <div
+                  style={{
+                    width: '260px',
+                    height: '410px',
+                    borderRadius: '12px',
+                    border: '1.5px solid #cbd5e1',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    backgroundColor: '#faf9f5',
+                    padding: '16px',
+                    boxSizing: 'border-box',
+                    justifyContent: 'space-between'
+                  }}
+                >
+                  <div>
+                    <h4 style={{ fontSize: '0.78rem', fontWeight: 800, color: '#071329', textAlign: 'center', borderBottom: '1px solid #cbd5e1', paddingBottom: '4px' }}>
+                      TERMS & CONDITIONS
+                    </h4>
+                    <ul style={{ fontSize: '0.65rem', color: '#475569', paddingLeft: '14px', marginTop: '8px', lineHeight: 1.5 }}>
+                      <li>This card must be worn at all times inside campus.</li>
+                      <li>Lost card must be reported immediately to registry.</li>
+                      <li>Card is non-transferable and property of the institute.</li>
+                    </ul>
+                  </div>
+
+                  <div style={{ textAlign: 'center' }}>
+                    <AlGhaziQrCode
+                      value={settings.website || "http://alghazidigital.site.je/"}
+                      websiteUrl={settings.website || "http://alghazidigital.site.je/"}
+                      size={54}
+                      label="Scan to Verify"
+                    />
+                  </div>
+
+                  <div style={{ textAlign: 'center', borderTop: '1px solid #cbd5e1', paddingTop: '6px', fontSize: '0.65rem', color: '#64748b' }}>
+                    <strong>Principal / Director Signature</strong>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ============================================================== */}
+            {/* 5. FACULTY / TEACHER ID CARD                                   */}
+            {/* ============================================================== */}
+            {documentType === 'teacher_id_card' && (
+              <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+                <div
+                  style={{
+                    width: '260px',
+                    height: '410px',
+                    borderRadius: '12px',
+                    border: '1.5px solid #cbd5e1',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    backgroundColor: '#ffffff'
+                  }}
+                >
+                  <div style={{ background: 'linear-gradient(135deg, #15803d, #064e3b)', color: '#ffffff', padding: '12px 10px', textAlign: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginBottom: '3px' }}>
+                      <OfficialSeal size={28} />
+                      <strong style={{ fontSize: '0.8rem' }}>{settings.academyName || 'AL GHAZI INSTITUTE'}</strong>
+                    </div>
+                    <span style={{ fontSize: '0.62rem', color: '#ffd700', textTransform: 'uppercase', fontWeight: 700 }}>FACULTY / INSTRUCTOR CARD</span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 12px', flex: 1 }}>
+                    {data.photoUrl ? (
+                      <img src={data.photoUrl} alt={data.name} style={{ width: 84, height: 84, borderRadius: '50%', objectFit: 'cover', border: '2.5px solid #16a34a' }} />
+                    ) : (
+                      <div style={{ width: 84, height: 84, borderRadius: '50%', backgroundColor: '#16a34a', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 800 }}>
+                        {data.name?.charAt(0)}
+                      </div>
+                    )}
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: '8px 0 2px 0' }}>{data.name}</h3>
+                    <span style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: 700 }}>{data.qualification || 'Faculty Lead'}</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#0f172a', marginTop: '4px' }}>Staff ID: {data.teacherId}</span>
+                    <span style={{ fontSize: '0.68rem', color: '#64748b' }}>Assigned: {data.assignedCourses}</span>
+                  </div>
+
+                  <div style={{ padding: '8px 12px', backgroundColor: '#f8f7f4', borderTop: '1px solid #e8e6df', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem' }}>
+                    <span>Phone: {data.phone}</span>
+                    <OfficialSeal size={26} />
                   </div>
                 </div>
               </div>

@@ -1,6 +1,5 @@
 {
   "name": "Al Ghazi Digital Institute",
-  "description": "Offline-first academy management system with fees, attendance, certificates, thermal receipts and cloud backup",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "description": "Comprehensive Digital Academy & Institute Management System with Course Admissions, Instant Fee Collection, Automated Parents SMS & WhatsApp Alerts, Attendance by Course, Financial Tracking Charts, Verifiable QR Certificates with 4 Corners Design & Institute Seal",
+  "requestFramePermissions": []
 }

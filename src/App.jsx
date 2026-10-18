@@ -1,185 +1,201 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  GraduationCap,
+  LayoutDashboard,
   Users,
+  GraduationCap,
+  BookOpen,
   CreditCard,
   CalendarCheck,
-  BookOpen,
-  DollarSign,
   Award,
+  Receipt,
   Settings,
   Plus,
   Search,
+  Filter,
+  Download,
   Printer,
+  Edit,
+  Trash2,
   CheckCircle,
+  XCircle,
+  AlertCircle,
   Clock,
-  X,
   Phone,
   Mail,
   MapPin,
-  TrendingUp,
-  FileText,
-  UserCheck,
+  ExternalLink,
   ChevronRight,
-  Download,
-  Globe,
-  Upload,
-  Trash2,
-  Edit,
-  AlertCircle,
-  Share2,
+  TrendingUp,
+  DollarSign,
   Send,
-  Filter,
   Eye,
-  RefreshCw,
   Check,
+  X,
+  Menu,
+  Globe,
+  FileText,
   ShieldCheck,
-  PieChart,
-  BarChart3,
-  HelpCircle,
-  ArrowRight,
-  Menu
+  RefreshCw,
+  QrCode
 } from 'lucide-react';
 
-import {
-  initialSettings,
-  initialCourses,
-  initialStudents,
-  initialTeachers,
-  initialPayments,
-  initialExpenses,
-  initialExams,
-  initialExamResults,
-  initialCertificates,
-  initialInquiries
-} from './data/mockData';
-
-import SetupWizardModal from './components/SetupWizardModal';
+import OfficialSeal from './components/OfficialSeal';
+import AlGhaziQrCode from './components/AlGhaziQrCode';
+import ImageUploadField from './components/ImageUploadField';
+import FinancialTrackingChart from './components/FinancialTrackingChart';
 import PrintDocumentModal from './components/PrintDocumentModal';
 import FeeNotificationModal from './components/FeeNotificationModal';
-import StudentProfileModal from './components/StudentProfileModal';
 import BackupRestoreModal from './components/BackupRestoreModal';
-import ImageUploadField from './components/ImageUploadField';
-import OfficialSeal from './components/OfficialSeal';
-import FinancialTrackingChart from './components/FinancialTrackingChart';
+import SetupWizardModal from './components/SetupWizardModal';
+import StudentProfileModal from './components/StudentProfileModal';
+
+// Initial Demo Courses
+const initialCourses = [
+  {
+    id: 1,
+    name: 'Graphic Designing & UI/UX',
+    code: 'GD-101',
+    duration: '3 Months',
+    totalFee: 15000,
+    monthlyFee: 5000,
+    instructor: 'Sir Hamza Tariq',
+    syllabus: 'Adobe Photoshop, Illustrator, Figma, Brand Identity, Social Media Posts',
+    status: 'Active'
+  },
+  {
+    id: 2,
+    name: 'Full Stack Web Development',
+    code: 'WD-201',
+    duration: '6 Months',
+    totalFee: 30000,
+    monthlyFee: 5000,
+    instructor: 'Engr. Niaz Qasim',
+    syllabus: 'HTML5, CSS3, JavaScript, React.js, Node.js, Express, MongoDB, Git',
+    status: 'Active'
+  },
+  {
+    id: 3,
+    name: 'Digital Marketing & SEO Mastery',
+    code: 'DM-301',
+    duration: '3 Months',
+    totalFee: 18000,
+    monthlyFee: 6000,
+    instructor: 'Ma\'am Ayesha Khan',
+    syllabus: 'Social Media Marketing, Google Ads, Meta Ads, Technical SEO, Content Strategy',
+    status: 'Active'
+  },
+  {
+    id: 4,
+    name: 'CIT & Office Management',
+    code: 'CIT-401',
+    duration: '2 Months',
+    totalFee: 10000,
+    monthlyFee: 5000,
+    instructor: 'Sir Usman Ali',
+    syllabus: 'MS Word, Excel Advance, PowerPoint, InPage Urdu, Typing Speed, Windows',
+    status: 'Active'
+  }
+];
+
+// Initial Settings
+const initialSettings = {
+  academyName: 'AL GHAZI DIGITAL INSTITUTE',
+  tagline: 'Excellence in IT, Design & Digital Technology',
+  registrationNumber: 'AG-REG-2026-904',
+  website: 'http://alghazidigital.site.je/',
+  phone: '0300-1234567',
+  email: 'info@alghazidigital.site.je',
+  address: 'Civil Lines, Near Judicial Complex, Gujranwala Road',
+  city: 'Gujranwala',
+  principalName: 'Prof. Muhammad Niaz',
+  directorName: 'Engr. Qasim Ali',
+  academicSession: 'Session 2026-2027',
+  currencySymbol: 'Rs.',
+  receiptPrefix: 'REC-2026-',
+  nextReceiptSeq: 101,
+  logoUrl: '',
+  officialSealUrl: ''
+};
 
 export default function App() {
-  // Navigation & UI States
-  const [activeTab, setActiveTab] = useState('dashboard');
+  // Navigation State
+  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'students' | 'teachers' | 'courses' | 'fees' | 'attendance' | 'expenses' | 'certificates'
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [globalSearch, setGlobalSearch] = useState('');
-  const [toastMessage, setToastMessage] = useState('');
 
-  // Additional Editing & Filter States
-  const [editingPayment, setEditingPayment] = useState(null);
-  const [showEditPaymentModal, setShowEditPaymentModal] = useState(false);
-  const [editingExpense, setEditingExpense] = useState(null);
-  const [editingCertificate, setEditingCertificate] = useState(null);
-  const [feeCourseFilter, setFeeCourseFilter] = useState('ALL');
-  const [attendanceCourseFilter, setAttendanceCourseFilter] = useState('ALL');
-  const [selectedCourseForStudentsModal, setSelectedCourseForStudentsModal] = useState(null);
-
-  // Clean slate startup: purge legacy demo records
-  if (typeof window !== 'undefined' && !localStorage.getItem('ag_v8_clean_slate_active')) {
-    localStorage.removeItem('ag_students');
-    localStorage.removeItem('ag_teachers');
-    localStorage.removeItem('ag_payments');
-    localStorage.removeItem('ag_expenses');
-    localStorage.removeItem('ag_exams');
-    localStorage.removeItem('ag_exam_results');
-    localStorage.removeItem('ag_certificates');
-    localStorage.removeItem('ag_inquiries');
-    localStorage.removeItem('ag_attendance');
-    localStorage.setItem('ag_v8_clean_slate_active', 'true');
-  }
-
-  // Persistent States
+  // Core Persistent State
   const [settings, setSettings] = useState(() => {
-    const saved = localStorage.getItem('ag_settings');
-    const parsed = saved ? JSON.parse(saved) : initialSettings;
-    if (!parsed.website || parsed.website.includes('github.io')) {
-      parsed.website = 'http://alghazidigital.site.je/';
-    }
-    return parsed;
+    try {
+      const saved = localStorage.getItem('ag_settings');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (!parsed.website || parsed.website.includes('github.io')) {
+          parsed.website = 'http://alghazidigital.site.je/';
+        }
+        return parsed;
+      }
+    } catch (e) {}
+    return initialSettings;
   });
 
   const [courses, setCourses] = useState(() => {
-    const saved = localStorage.getItem('ag_courses');
-    return saved ? JSON.parse(saved) : initialCourses;
+    try {
+      const saved = localStorage.getItem('ag_courses');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return initialCourses;
   });
 
   const [students, setStudents] = useState(() => {
-    const saved = localStorage.getItem('ag_students');
-    if (!saved) return initialStudents;
-    const parsed = JSON.parse(saved);
-    if (Array.isArray(parsed) && parsed.some(s => s.name === 'Muhammad Ali' || s.name === 'Fatima Zahra')) {
-      localStorage.removeItem('ag_students');
-      return [];
-    }
-    return parsed;
+    try {
+      const saved = localStorage.getItem('ag_students');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [];
   });
 
   const [teachers, setTeachers] = useState(() => {
-    const saved = localStorage.getItem('ag_teachers');
-    if (!saved) return initialTeachers;
-    const parsed = JSON.parse(saved);
-    if (Array.isArray(parsed) && parsed.some(t => t.name === 'Prof. Kamran Khan')) {
-      localStorage.removeItem('ag_teachers');
-      return [];
-    }
-    return parsed;
+    try {
+      const saved = localStorage.getItem('ag_teachers');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [];
   });
 
   const [payments, setPayments] = useState(() => {
-    const saved = localStorage.getItem('ag_payments');
-    if (!saved) return initialPayments;
-    const parsed = JSON.parse(saved);
-    if (Array.isArray(parsed) && parsed.some(p => p.receiptNo === 'REC-2026-00101')) {
-      localStorage.removeItem('ag_payments');
-      return [];
-    }
-    return parsed;
+    try {
+      const saved = localStorage.getItem('ag_payments');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [];
   });
 
   const [expenses, setExpenses] = useState(() => {
-    const saved = localStorage.getItem('ag_expenses');
-    return saved ? JSON.parse(saved) : initialExpenses;
+    try {
+      const saved = localStorage.getItem('ag_expenses');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [];
   });
 
-  const [exams, setExams] = useState(() => {
-    const saved = localStorage.getItem('ag_exams');
-    return saved ? JSON.parse(saved) : initialExams;
-  });
-
-  const [examResults, setExamResults] = useState(() => {
-    const saved = localStorage.getItem('ag_exam_results');
-    return saved ? JSON.parse(saved) : initialExamResults;
+  const [attendanceRecords, setAttendanceRecords] = useState(() => {
+    try {
+      const saved = localStorage.getItem('ag_attendance');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return {};
   });
 
   const [certificates, setCertificates] = useState(() => {
-    const saved = localStorage.getItem('ag_certificates');
-    return saved ? JSON.parse(saved) : initialCertificates;
+    try {
+      const saved = localStorage.getItem('ag_certificates');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [];
   });
 
-  const [inquiries, setInquiries] = useState(() => {
-    const saved = localStorage.getItem('ag_inquiries');
-    return saved ? JSON.parse(saved) : initialInquiries;
-  });
-
-  // Daily Attendance state (Key: YYYY-MM-DD -> { [studentId]: 'P' | 'A' | 'L' | 'T' })
-  const [attendanceDate, setAttendanceDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const [attendanceRecords, setAttendanceRecords] = useState(() => {
-    const saved = localStorage.getItem('ag_attendance');
-    return saved ? JSON.parse(saved) : {};
-  });
-
-  // Save changes to localStorage
+  // Save to LocalStorage effects
   useEffect(() => {
     localStorage.setItem('ag_settings', JSON.stringify(settings));
-    // Apply primary color to CSS variable
-    if (settings.primaryColor) {
-      document.documentElement.style.setProperty('--primary', settings.primaryColor);
-    }
   }, [settings]);
 
   useEffect(() => {
@@ -203,217 +219,354 @@ export default function App() {
   }, [expenses]);
 
   useEffect(() => {
-    localStorage.setItem('ag_exams', JSON.stringify(exams));
-  }, [exams]);
-
-  useEffect(() => {
-    localStorage.setItem('ag_exam_results', JSON.stringify(examResults));
-  }, [examResults]);
+    localStorage.setItem('ag_attendance', JSON.stringify(attendanceRecords));
+  }, [attendanceRecords]);
 
   useEffect(() => {
     localStorage.setItem('ag_certificates', JSON.stringify(certificates));
   }, [certificates]);
 
-  useEffect(() => {
-    localStorage.setItem('ag_inquiries', JSON.stringify(inquiries));
-  }, [inquiries]);
-
-  useEffect(() => {
-    localStorage.setItem('ag_attendance', JSON.stringify(attendanceRecords));
-  }, [attendanceRecords]);
-
-  // Toast Notification Trigger
-    const handleClearAllRecords = () => {
-    if (window.confirm('Are you sure you want to completely clear all records (Students, Teachers, Fees, Expenses, Exams & Certificates)? You will start fresh with 0 records.')) {
-      setStudents([]);
-      setTeachers([]);
-      setPayments([]);
-      setExpenses([]);
-      setExams([]);
-      setExamResults([]);
-      setCertificates([]);
-      setInquiries([]);
-      setAttendanceRecords({});
-      localStorage.removeItem('ag_students');
-      localStorage.removeItem('ag_teachers');
-      localStorage.removeItem('ag_payments');
-      localStorage.removeItem('ag_expenses');
-      localStorage.removeItem('ag_exams');
-      localStorage.removeItem('ag_exam_results');
-      localStorage.removeItem('ag_certificates');
-      localStorage.removeItem('ag_inquiries');
-      localStorage.removeItem('ag_attendance');
-      showToast('All student, teacher, fee, and expense records have been wiped clean (0 records).');
-    }
-  };
-
+  // Toast Notification State
+  const [toastMessage, setToastMessage] = useState('');
   const showToast = (msg) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(''), 3000);
+    setTimeout(() => setToastMessage(''), 4000);
   };
 
-  // Modals Visibility
-  const [showSetupWizard, setShowSetupWizard] = useState(false);
-  const [showPrintModal, setShowPrintModal] = useState(false);
-  const [printDocConfig, setPrintDocConfig] = useState({ type: '', data: null });
-  const [showNotificationModal, setShowNotificationModal] = useState(false);
-  const [notificationConfig, setNotificationConfig] = useState({ student: null, payment: null, type: 'payment' });
-  const [showStudentProfileModal, setShowStudentProfileModal] = useState(false);
-  const [selectedStudentForProfile, setSelectedStudentForProfile] = useState(null);
-  const [showBackupModal, setShowBackupModal] = useState(false);
-
-  // Form Modals
+  // Modals State
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
   const [studentPhoto, setStudentPhoto] = useState('');
+
   const [showAddTeacherModal, setShowAddTeacherModal] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState(null);
   const [teacherPhoto, setTeacherPhoto] = useState('');
 
-  const openAddStudentModal = (studentToEdit = null) => {
-    setEditingStudent(studentToEdit);
-    setStudentPhoto(studentToEdit?.photoUrl || '');
-    setShowAddStudentModal(true);
-  };
-
-  const openAddTeacherModal = (teacherToEdit = null) => {
-    setEditingTeacher(teacherToEdit);
-    setTeacherPhoto(teacherToEdit?.photoUrl || '');
-    setShowAddTeacherModal(true);
-  };
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
+
+  // FEE COLLECTION STATE & MODALS
   const [showCollectFeeModal, setShowCollectFeeModal] = useState(false);
   const [preselectedStudentForFee, setPreselectedStudentForFee] = useState(null);
-  const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
-  const [showAddExamModal, setShowAddExamModal] = useState(false);
-  const [showEnterMarksModal, setShowEnterMarksModal] = useState(false);
-  const [selectedExamForMarks, setSelectedExamForMarks] = useState(null);
-  const [showIssueCertModal, setShowIssueCertModal] = useState(false);
 
-  // Filter States
+  // EDIT FEE PAYMENT MODAL (For fixing mistakes in fees)
+  const [showEditPaymentModal, setShowEditPaymentModal] = useState(false);
+  const [editingPayment, setEditingPayment] = useState(null);
+
+  // EDIT EXPENSE MODAL
+  const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
+  const [editingExpense, setEditingExpense] = useState(null);
+
+  // COURSE-WISE STUDENTS MODAL
+  const [selectedCourseForStudentsModal, setSelectedCourseForStudentsModal] = useState(null);
+
+  // STUDENT PROFILE MODAL
+  const [selectedStudentForProfile, setSelectedStudentForProfile] = useState(null);
+  const [showStudentProfileModal, setShowStudentProfileModal] = useState(false);
+
+  // DOCUMENT PRINTING MODAL
+  const [showPrintModal, setShowPrintModal] = useState(false);
+  const [printDocConfig, setPrintDocConfig] = useState({ type: 'certificate', data: {} });
+
+  // PARENTS NOTIFICATION MODAL (SMS / WhatsApp)
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [notificationConfig, setNotificationConfig] = useState({ student: null, payment: null, type: 'payment' });
+
+  // BACKUP & RESTORE MODAL
+  const [showBackupModal, setShowBackupModal] = useState(false);
+
+  // SETUP WIZARD MODAL
+  const [showSetupWizard, setShowSetupWizard] = useState(false);
+
+  // FILTERS STATE
+  const [globalSearch, setGlobalSearch] = useState('');
   const [studentCourseFilter, setStudentCourseFilter] = useState('ALL');
   const [studentStatusFilter, setStudentStatusFilter] = useState('ALL');
-  const [feeSearchQuery, setFeeSearchQuery] = useState('');
-  const [feeStatusFilter, setFeeStatusFilter] = useState('ALL');
-  const [portalCertQuery, setPortalCertQuery] = useState('');
-  const [portalCertResult, setPortalCertResult] = useState(null);
+
+  const [feeCourseFilter, setFeeCourseFilter] = useState('ALL');
+  const [feeStatusFilter, setFeeStatusFilter] = useState('ALL'); // 'ALL' | 'DEFAULTERS'
+
+  const [attendanceCourseFilter, setAttendanceCourseFilter] = useState('ALL');
+  const [attendanceDate, setAttendanceDate] = useState(() => new Date().toISOString().split('T')[0]);
 
   const currency = settings.currencySymbol || 'Rs.';
 
-  // Trigger Print Helper
+  // Open Document Helper
   const openPrintDocument = (type, data) => {
     setPrintDocConfig({ type, data });
     setShowPrintModal(true);
   };
 
-  // Trigger Fee Notification Helper
+  // Open Parents Notification Helper
   const openFeeNotification = (student, payment, type = 'payment') => {
     setNotificationConfig({ student, payment, type });
     setShowNotificationModal(true);
   };
 
-  // =================== CALCULATED METRICS ===================
-  const totalStudents = students.length;
-  const activeStudents = students.filter((s) => s.status === 'Active').length;
-  const inactiveStudents = totalStudents - activeStudents;
-  const totalTeachers = teachers.length;
-  const totalCourses = courses.length;
-
-  const totalFeeCollected = useMemo(() => {
-    return payments.reduce((acc, p) => acc + Number(p.paidAmount || 0), 0);
-  }, [payments]);
-
-  const totalOutstandingDues = useMemo(() => {
-    return students.reduce((acc, s) => acc + Number(s.remainingFee || 0), 0);
-  }, [students]);
-
-  const totalExpensesAmount = useMemo(() => {
-    return expenses.reduce((acc, e) => acc + Number(e.amount || 0), 0);
-  }, [expenses]);
-
-  const netBalance = totalFeeCollected - totalExpensesAmount;
-
-  // Filtered Students
-  const filteredStudents = useMemo(() => {
-    return students.filter((s) => {
-      const matchSearch =
-        s.name.toLowerCase().includes(globalSearch.toLowerCase()) ||
-        s.rollNo.toLowerCase().includes(globalSearch.toLowerCase()) ||
-        (s.phone && s.phone.includes(globalSearch)) ||
-        (s.courseName && s.courseName.toLowerCase().includes(globalSearch.toLowerCase()));
-      const matchCourse = studentCourseFilter === 'ALL' || s.courseName === studentCourseFilter;
-      const matchStatus = studentStatusFilter === 'ALL' || s.status === studentStatusFilter;
-      return matchSearch && matchCourse && matchStatus;
-    });
-  }, [students, globalSearch, studentCourseFilter, studentStatusFilter]);
-
-  // Defaulters List
-  const defaultersList = useMemo(() => {
-    return students.filter((s) => Number(s.remainingFee) > 0);
-  }, [students]);
-
-  // Export CSV Helper
-  const exportToCSV = (filename, rows) => {
-    if (!rows || !rows.length) return;
-    const separator = ',';
-    const keys = Object.keys(rows[0]);
-    const csvContent =
-      keys.join(separator) +
-      '\n' +
-      rows
-        .map((row) =>
-          keys
-            .map((k) => {
-              let cell = row[k] === null || row[k] === undefined ? '' : row[k];
-              cell = cell instanceof Date ? cell.toLocaleString() : cell.toString().replace(/"/g, '""');
-              if (cell.search(/("|,|\n)/g) >= 0) cell = `"${cell}"`;
-              return cell;
-            })
-            .join(separator)
-        )
-        .join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.setAttribute('download', `${filename}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToast(`Exported ${filename}.csv successfully`);
+  // Open Edit Payment Helper
+  const openEditPayment = (payment) => {
+    setEditingPayment(payment);
+    setShowEditPaymentModal(true);
   };
 
-  // Online Certificate Verification (Public Portal)
-  const handleVerifyCertificate = (e) => {
+  // Open Edit Expense Helper
+  const openEditExpense = (expense) => {
+    setEditingExpense(expense);
+    setShowAddExpenseModal(true);
+  };
+
+  // Open Student Modal Helper
+  const openStudentModal = (student = null) => {
+    setEditingStudent(student);
+    setStudentPhoto(student?.photoUrl || '');
+    setShowAddStudentModal(true);
+  };
+
+  // Open Teacher Modal Helper
+  const openTeacherModal = (teacher = null) => {
+    setEditingTeacher(teacher);
+    setTeacherPhoto(teacher?.photoUrl || '');
+    setShowAddTeacherModal(true);
+  };
+
+  // Open Course Modal Helper
+  const openCourseModal = (course = null) => {
+    setEditingCourse(course);
+    setShowAddCourseModal(true);
+  };
+
+  // ==============================================================
+  // 1. CRITICAL FEE COLLECTION HANDLER (WITH PARENTS SMS TRIGGER)
+  // ==============================================================
+  const handleCollectFeeSubmit = (e) => {
     e.preventDefault();
-    if (!portalCertQuery.trim()) return;
-    const found = certificates.find(
-      (c) => c.certId.toLowerCase().trim() === portalCertQuery.toLowerCase().trim()
+    const form = e.target;
+    const selectedStudentId = form.studentId.value;
+    const paidAmount = Number(form.paidAmount.value) || 0;
+    const discountAmount = Number(form.discountAmount.value) || 0;
+    const feeMonth = form.feeMonth?.value || 'Monthly Installment';
+    const paymentMethod = form.paymentMethod?.value || 'Cash';
+    const paymentDate = form.paymentDate?.value || new Date().toISOString().split('T')[0];
+    const remarks = form.remarks?.value || 'Tuition Fee Payment';
+
+    if (!selectedStudentId) {
+      alert('Please select a student.');
+      return;
+    }
+    if (paidAmount <= 0) {
+      alert('Please enter a valid payment amount greater than 0.');
+      return;
+    }
+
+    // Match student flexibly by ID or Roll Number
+    const targetStudentIndex = students.findIndex(
+      (s) => String(s.id) === String(selectedStudentId) || s.rollNo === selectedStudentId
     );
-    if (found) {
-      setPortalCertResult({ found: true, cert: found });
-    } else {
-      setPortalCertResult({ found: false, id: portalCertQuery });
+
+    if (targetStudentIndex === -1) {
+      alert('Selected student not found in records.');
+      return;
+    }
+
+    const currentStudent = students[targetStudentIndex];
+    const currentPaid = Number(currentStudent.paidFee || 0);
+    const totalFee = Number(currentStudent.totalFee || 0);
+
+    const newPaidFee = currentPaid + paidAmount;
+    const newRemainingDue = Math.max(0, totalFee - newPaidFee - discountAmount);
+
+    // 1. Update Student Record
+    const updatedStudent = {
+      ...currentStudent,
+      paidFee: newPaidFee,
+      remainingFee: newRemainingDue,
+      discount: (Number(currentStudent.discount || 0)) + discountAmount
+    };
+
+    const updatedStudentsList = [...students];
+    updatedStudentsList[targetStudentIndex] = updatedStudent;
+    setStudents(updatedStudentsList);
+    localStorage.setItem('ag_students', JSON.stringify(updatedStudentsList));
+
+    // 2. Generate Official Receipt
+    const receiptSeq = (settings.nextReceiptSeq || 101);
+    const receiptNo = `${settings.receiptPrefix || 'REC-2026-'}${String(receiptSeq).padStart(5, '0')}`;
+
+    const newPaymentRecord = {
+      id: Date.now(),
+      receiptNo,
+      studentId: updatedStudent.id,
+      studentRollNo: updatedStudent.rollNo,
+      studentName: updatedStudent.name,
+      fatherName: updatedStudent.fatherName,
+      courseName: updatedStudent.courseName,
+      paidAmount: paidAmount,
+      totalFee: totalFee,
+      discount: discountAmount,
+      remainingDue: newRemainingDue,
+      feeMonth,
+      paymentMethod,
+      paymentDate,
+      remarks
+    };
+
+    const updatedPaymentsList = [newPaymentRecord, ...payments];
+    setPayments(updatedPaymentsList);
+    localStorage.setItem('ag_payments', JSON.stringify(updatedPaymentsList));
+
+    // Update settings sequence
+    setSettings((prev) => ({
+      ...prev,
+      nextReceiptSeq: receiptSeq + 1
+    }));
+
+    setShowCollectFeeModal(false);
+    setPreselectedStudentForFee(null);
+
+    showToast(`Fee of ${currency} ${paidAmount.toLocaleString()} received for ${updatedStudent.name}! Opening Parents Alert...`);
+
+    // 3. AUTOMATICALLY OPEN PARENTS SMS / WHATSAPP ALERT!
+    setTimeout(() => {
+      openFeeNotification(updatedStudent, newPaymentRecord, 'payment');
+    }, 400);
+  };
+
+  // ==============================================================
+  // 2. SAVE EDITED FEE PAYMENT (FIX MISTAKES IN FEE RECORDS)
+  // ==============================================================
+  const handleSaveEditedPayment = (e) => {
+    e.preventDefault();
+    if (!editingPayment) return;
+    const form = e.target;
+    const newPaidAmount = Number(form.paidAmount.value) || 0;
+    const newPaymentDate = form.paymentDate.value;
+    const newFeeMonth = form.feeMonth.value;
+    const newPaymentMethod = form.paymentMethod.value;
+    const newRemarks = form.remarks.value;
+
+    const oldAmount = Number(editingPayment.paidAmount) || 0;
+    const diff = newPaidAmount - oldAmount;
+
+    // 1. Adjust Student balance
+    const updatedStudentsList = students.map((s) => {
+      if (s.id === editingPayment.studentId || s.rollNo === editingPayment.studentRollNo) {
+        const curPaid = Number(s.paidFee) || 0;
+        const total = Number(s.totalFee) || 0;
+        const adjPaid = curPaid + diff;
+        const adjRemaining = Math.max(0, total - adjPaid - (Number(s.discount) || 0));
+        return {
+          ...s,
+          paidFee: adjPaid,
+          remainingFee: adjRemaining
+        };
+      }
+      return s;
+    });
+
+    setStudents(updatedStudentsList);
+    localStorage.setItem('ag_students', JSON.stringify(updatedStudentsList));
+
+    // 2. Update Payment record
+    const updatedPaymentsList = payments.map((p) => {
+      if (p.id === editingPayment.id) {
+        return {
+          ...p,
+          paidAmount: newPaidAmount,
+          paymentDate: newPaymentDate,
+          feeMonth: newFeeMonth,
+          paymentMethod: newPaymentMethod,
+          remarks: newRemarks,
+          remainingDue: Math.max(0, (Number(p.remainingDue) || 0) - diff)
+        };
+      }
+      return p;
+    });
+
+    setPayments(updatedPaymentsList);
+    localStorage.setItem('ag_payments', JSON.stringify(updatedPaymentsList));
+
+    setShowEditPaymentModal(false);
+    setEditingPayment(null);
+    showToast('Payment record updated and student dues balance adjusted successfully!');
+  };
+
+  // Delete Payment & revert balance
+  const handleDeletePayment = (payment) => {
+    if (window.confirm(`Are you sure you want to delete receipt #${payment.receiptNo} of ${currency} ${payment.paidAmount}? This will revert student dues.`)) {
+      const amount = Number(payment.paidAmount) || 0;
+      // Revert student balance
+      setStudents((prev) =>
+        prev.map((s) => {
+          if (s.id === payment.studentId || s.rollNo === payment.studentRollNo) {
+            const curPaid = Number(s.paidFee) || 0;
+            const total = Number(s.totalFee) || 0;
+            const adjPaid = Math.max(0, curPaid - amount);
+            const adjRemaining = Math.max(0, total - adjPaid - (Number(s.discount) || 0));
+            return {
+              ...s,
+              paidFee: adjPaid,
+              remainingFee: adjRemaining
+            };
+          }
+          return s;
+        })
+      );
+      setPayments((prev) => prev.filter((p) => p.id !== payment.id));
+      showToast(`Receipt #${payment.receiptNo} deleted and student balance restored.`);
     }
   };
 
-  // Submit Online Inquiry (Public Portal)
-  const [inquiryForm, setInquiryForm] = useState({ name: '', phone: '', email: '', courseInterest: '', message: '' });
-  const handleInquirySubmit = (e) => {
+  // ==============================================================
+  // 3. EXPENSE HANDLER (ADD & EDIT)
+  // ==============================================================
+  const handleExpenseSubmit = (e) => {
     e.preventDefault();
-    const newInq = {
-      id: Date.now(),
-      ...inquiryForm,
-      date: new Date().toISOString().split('T')[0],
-      status: 'Pending'
-    };
-    setInquiries([newInq, ...inquiries]);
-    setInquiryForm({ name: '', phone: '', email: '', courseInterest: '', message: '' });
-    showToast('Your admission inquiry has been received! Our counselors will contact you.');
+    const form = e.target;
+    const title = form.title.value;
+    const category = form.category.value;
+    const amount = Number(form.amount.value) || 0;
+    const date = form.date.value;
+    const paidTo = form.paidTo.value;
+    const paymentMethod = form.paymentMethod.value;
+
+    if (editingExpense) {
+      setExpenses((prev) =>
+        prev.map((exp) =>
+          exp.id === editingExpense.id
+            ? { ...exp, title, category, amount, date, paidTo, paymentMethod }
+            : exp
+        )
+      );
+      showToast('Expense updated successfully!');
+    } else {
+      const newExp = {
+        id: Date.now(),
+        voucherNo: `EXP-${String(expenses.length + 101).padStart(4, '0')}`,
+        title,
+        category,
+        amount,
+        date,
+        paidTo,
+        paymentMethod
+      };
+      setExpenses([newExp, ...expenses]);
+      showToast(`Expense of ${currency} ${amount.toLocaleString()} recorded!`);
+    }
+
+    setShowAddExpenseModal(false);
+    setEditingExpense(null);
   };
 
-  // Attendance helpers
+  const handleDeleteExpense = (exp) => {
+    if (window.confirm(`Are you sure you want to delete expense "${exp.title}" (${currency} ${exp.amount})?`)) {
+      setExpenses((prev) => prev.filter((e) => e.id !== exp.id));
+      showToast(`Expense deleted.`);
+    }
+  };
+
+  // ==============================================================
+  // 4. ATTENDANCE HANDLERS (BY COURSE)
+  // ==============================================================
   const handleMarkAttendance = (studentId, status) => {
     setAttendanceRecords((prev) => {
       const dayRecords = prev[attendanceDate] || {};
@@ -427,151 +580,112 @@ export default function App() {
     });
   };
 
-  const handleMarkAllPresent = () => {
-    const updated = { ...(attendanceRecords[attendanceDate] || {}) };
-    const targetStudents = attendanceCourseFilter === 'ALL'
-      ? students
-      : students.filter((s) => s.courseName === attendanceCourseFilter);
-
-    targetStudents.forEach((s) => {
-      updated[s.id] = 'P';
+  const handleMarkBatchPresent = () => {
+    const targetStudents = students.filter(
+      (s) => attendanceCourseFilter === 'ALL' || s.courseName === attendanceCourseFilter
+    );
+    setAttendanceRecords((prev) => {
+      const dayRecords = { ...(prev[attendanceDate] || {}) };
+      targetStudents.forEach((s) => {
+        dayRecords[s.id] = 'P';
+      });
+      return {
+        ...prev,
+        [attendanceDate]: dayRecords
+      };
     });
-    setAttendanceRecords((prev) => ({
-      ...prev,
-      [attendanceDate]: updated
-    }));
-    showToast(`Students in ${attendanceCourseFilter === 'ALL' ? 'all courses' : attendanceCourseFilter} marked present.`);
+    showToast(`Marked ${targetStudents.length} students as Present for ${attendanceDate}!`);
   };
 
-  // Fee Payment Editing & Deletion Helpers
-  const openEditPaymentModal = (payment) => {
-    setEditingPayment(payment);
-    setShowEditPaymentModal(true);
-  };
+  // ==============================================================
+  // METRICS & COMPUTATIONS
+  // ==============================================================
+  const totalStudents = students.length;
+  const activeStudents = students.filter((s) => s.status === 'Active').length;
 
-  const handleSaveEditedPayment = (updatedData) => {
-    const original = editingPayment;
-    if (!original) return;
+  const totalFeeCollected = useMemo(() => {
+    return payments.reduce((sum, p) => sum + (Number(p.paidAmount) || 0), 0);
+  }, [payments]);
 
-    const oldAmount = Number(original.paidAmount) || 0;
-    const newAmount = Number(updatedData.paidAmount) || 0;
-    const diff = newAmount - oldAmount;
+  const totalOutstandingDues = useMemo(() => {
+    return students.reduce((sum, s) => sum + (Number(s.remainingFee) || 0), 0);
+  }, [students]);
 
-    // 1. Update Student's paidFee and remainingFee
-    setStudents((prev) =>
-      prev.map((s) => {
-        if (s.id === original.studentId || s.rollNo === original.studentRollNo) {
-          const currentPaid = Number(s.paidFee) || 0;
-          const currentTotal = Number(s.totalFee) || 0;
-          const updatedPaid = currentPaid + diff;
-          const updatedRemaining = Math.max(0, currentTotal - updatedPaid);
-          return {
-            ...s,
-            paidFee: updatedPaid,
-            remainingFee: updatedRemaining
-          };
-        }
-        return s;
-      })
+  const totalExpensesAmount = useMemo(() => {
+    return expenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+  }, [expenses]);
+
+  const netBalance = totalFeeCollected - totalExpensesAmount;
+
+  const defaultersList = useMemo(() => {
+    return students.filter((s) => Number(s.remainingFee) > 0);
+  }, [students]);
+
+  // Filtered Students List
+  const filteredStudents = useMemo(() => {
+    return students.filter((s) => {
+      const matchSearch =
+        !globalSearch ||
+        s.name.toLowerCase().includes(globalSearch.toLowerCase()) ||
+        s.rollNo.toLowerCase().includes(globalSearch.toLowerCase()) ||
+        (s.phone && s.phone.includes(globalSearch)) ||
+        (s.parentPhone && s.parentPhone.includes(globalSearch));
+
+      const matchCourse =
+        studentCourseFilter === 'ALL' || s.courseName === studentCourseFilter;
+
+      const matchStatus =
+        studentStatusFilter === 'ALL' || s.status === studentStatusFilter;
+
+      return matchSearch && matchCourse && matchStatus;
+    });
+  }, [students, globalSearch, studentCourseFilter, studentStatusFilter]);
+
+  // Export CSV Helper
+  const exportToCSV = (filename, dataRows) => {
+    if (!dataRows || !dataRows.length) {
+      alert('No records available to export.');
+      return;
+    }
+    const headers = Object.keys(dataRows[0]).join(',');
+    const rows = dataRows.map((r) =>
+      Object.values(r)
+        .map((val) => `"${String(val).replace(/"/g, '""')}"`)
+        .join(',')
     );
-
-    // 2. Update Payment Record
-    setPayments((prev) =>
-      prev.map((p) => {
-        if (p.id === original.id) {
-          return {
-            ...p,
-            ...updatedData,
-            paidAmount: newAmount,
-            remainingDue: Math.max(0, (Number(p.remainingDue) || 0) - diff)
-          };
-        }
-        return p;
-      })
-    );
-
-    setShowEditPaymentModal(false);
-    setEditingPayment(null);
-    showToast('Payment record updated successfully!');
-  };
-
-  const handleDeletePayment = (payment) => {
-    if (window.confirm(`Are you sure you want to delete payment receipt #${payment.receiptNo} (${currency} ${payment.paidAmount})? This will revert the student balance.`)) {
-      const amount = Number(payment.paidAmount) || 0;
-
-      // Revert student's balance
-      setStudents((prev) =>
-        prev.map((s) => {
-          if (s.id === payment.studentId || s.rollNo === payment.studentRollNo) {
-            const currentPaid = Number(s.paidFee) || 0;
-            const currentTotal = Number(s.totalFee) || 0;
-            const updatedPaid = Math.max(0, currentPaid - amount);
-            const updatedRemaining = Math.max(0, currentTotal - updatedPaid);
-            return {
-              ...s,
-              paidFee: updatedPaid,
-              remainingFee: updatedRemaining
-            };
-          }
-          return s;
-        })
-      );
-
-      setPayments((prev) => prev.filter((p) => p.id !== payment.id));
-      showToast(`Payment receipt #${payment.receiptNo} has been deleted.`);
-    }
-  };
-
-  // Expense Editing & Deletion Helpers
-  const openEditExpenseModal = (expense) => {
-    setEditingExpense(expense);
-    setShowAddExpenseModal(true);
-  };
-
-  const handleDeleteExpense = (expense) => {
-    if (window.confirm(`Are you sure you want to delete expense "${expense.title}" (${currency} ${expense.amount})?`)) {
-      setExpenses((prev) => prev.filter((e) => e.id !== expense.id));
-      showToast(`Expense "${expense.title}" has been deleted.`);
-    }
-  };
-
-  // Certificate Editing & Deletion Helpers
-  const openEditCertModal = (cert) => {
-    setEditingCertificate(cert);
-    setShowIssueCertModal(true);
-  };
-
-  const handleDeleteCertificate = (cert) => {
-    if (window.confirm(`Are you sure you want to delete certificate ${cert.certId} for ${cert.recipientName}?`)) {
-      setCertificates((prev) => prev.filter((c) => c.id !== cert.id));
-      showToast(`Certificate ${cert.certId} has been deleted.`);
-    }
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers, ...rows].join('\n');
+    const link = document.createElement('a');
+    link.setAttribute('href', encodeURI(csvContent));
+    link.setAttribute('download', `${filename}_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   };
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8f7f4' }}>
-      {/* Toast Notification Banner */}
+      {/* Toast Notification */}
       {toastMessage && (
         <div
           style={{
             position: 'fixed',
-            top: '20px',
-            right: '20px',
+            top: 20,
+            right: 20,
             zIndex: 9999,
-            backgroundColor: '#1e3a8a',
+            backgroundColor: '#0f172a',
             color: '#ffffff',
-            padding: '12px 20px',
+            padding: '12px 18px',
             borderRadius: '8px',
-            boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
-            border: '1px solid #3b82f6',
-            fontWeight: 600,
-            fontSize: '0.875rem'
+            fontSize: '0.85rem',
+            fontWeight: 600
           }}
+          className="animate-fade-in"
         >
-          <CheckCircle size={18} color="#60a5fa" />
+          <CheckCircle size={18} color="#22c55e" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -588,110 +702,93 @@ export default function App() {
           top: 0,
           bottom: 0,
           left: 0,
-          zIndex: 50,
-          transform: mobileMenuOpen ? 'translateX(0)' : 'none',
-          transition: 'transform 0.3s ease'
+          zIndex: 50
         }}
-        className={mobileMenuOpen ? 'sidebar-open' : 'sidebar-desktop'}
       >
-        {/* Brand Header */}
+        {/* Institute Brand Header */}
         <div
           style={{
             padding: '1.25rem 1rem',
             borderBottom: '1px solid #e8e6df',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.75rem'
+            gap: '10px',
+            backgroundColor: '#faf9f5'
           }}
         >
           {settings.logoUrl ? (
-            <img
-              src={settings.logoUrl}
-              alt="Logo"
-              style={{ width: 44, height: 44, objectFit: 'contain', borderRadius: 6 }}
-            />
+            <img src={settings.logoUrl} alt="Logo" style={{ width: 42, height: 42, objectFit: 'contain' }} />
           ) : (
-            <OfficialSeal size={44} />
+            <OfficialSeal size={42} />
           )}
           <div style={{ overflow: 'hidden' }}>
             <h1
               style={{
-                fontSize: '0.95rem',
-                fontWeight: 800,
+                fontSize: '0.925rem',
+                fontWeight: 900,
                 color: '#0f172a',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
-                overflow: 'hidden'
+                lineHeight: 1.2,
+                textTransform: 'uppercase',
+                letterSpacing: '0.02em',
+                margin: 0
               }}
             >
-              {settings.academyName || 'Al Ghazi Digital Institute'}
+              {settings.academyName || 'AL GHAZI INSTITUTE'}
             </h1>
-            <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Management Portal</span>
+            <span style={{ fontSize: '0.7rem', color: '#64748b', display: 'block', marginTop: '2px' }}>
+              Management System
+            </span>
           </div>
         </div>
 
-        {/* Navigation Items */}
-        <nav
-          style={{
-            padding: '0.75rem',
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.2rem',
-            overflowY: 'auto'
-          }}
-        >
+        {/* Navigation Links */}
+        <nav style={{ padding: '0.75rem', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '3px' }}>
           {[
-            { id: 'dashboard', label: 'Dashboard', icon: TrendingUp },
-            { id: 'students', label: 'Students', icon: Users, badge: students.length },
-            { id: 'teachers', label: 'Faculty & Staff', icon: UserCheck, badge: teachers.length },
-            { id: 'courses', label: 'Courses & Batches', icon: BookOpen },
-            { id: 'fees', label: 'Fee Collection & Dues', icon: CreditCard },
-            { id: 'attendance', label: 'Attendance', icon: CalendarCheck },
-            { id: 'exams', label: 'Exams & Results', icon: Award },
-            { id: 'expenses', label: 'Expenses & Accounts', icon: DollarSign },
-            { id: 'certificates', label: 'Certificate Generator', icon: Award },
-            { id: 'reports', label: 'Reports & Analytics', icon: BarChart3 },
-            { id: 'portal', label: 'Public Academy Portal', icon: Globe },
-            { id: 'settings', label: 'Settings & Identity', icon: Settings }
+            { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
+            { id: 'students', label: 'Students Directory', icon: Users, badge: totalStudents },
+            { id: 'courses', label: 'Courses & Admissions', icon: BookOpen, badge: courses.length },
+            { id: 'fees', label: 'Fee Collection & Dues', icon: CreditCard, badge: defaultersList.length ? `${defaultersList.length} Dues` : undefined },
+            { id: 'attendance', label: 'Attendance (By Course)', icon: CalendarCheck },
+            { id: 'teachers', label: 'Faculty & Teachers', icon: GraduationCap, badge: teachers.length },
+            { id: 'expenses', label: 'Operating Expenses', icon: Receipt },
+            { id: 'certificates', label: 'Issued Certificates', icon: Award, badge: certificates.length }
           ].map((item) => {
             const Icon = item.icon;
             const active = activeTab === item.id;
             return (
               <button
                 key={item.id}
-                onClick={() => {
-                  setActiveTab(item.id);
-                  setMobileMenuOpen(false);
-                }}
+                onClick={() => setActiveTab(item.id)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: '0.65rem 0.85rem',
+                  width: '100%',
+                  padding: '0.6rem 0.85rem',
                   borderRadius: '0.5rem',
                   border: 'none',
-                  backgroundColor: active ? '#eff6ff' : 'transparent',
-                  color: active ? '#2563eb' : '#475569',
-                  fontWeight: active ? 700 : 500,
-                  fontSize: '0.85rem',
+                  backgroundColor: active ? '#2563eb' : 'transparent',
+                  color: active ? '#ffffff' : '#334155',
+                  fontWeight: active ? 700 : 600,
+                  fontSize: '0.825rem',
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'all 0.15s'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <Icon size={18} />
+                  <Icon size={17} />
                   <span>{item.label}</span>
                 </div>
                 {item.badge !== undefined && (
                   <span
                     style={{
-                      fontSize: '0.7rem',
+                      fontSize: '0.68rem',
                       padding: '2px 6px',
                       borderRadius: '9999px',
-                      backgroundColor: active ? '#2563eb' : '#1e293b',
-                      color: '#ffffff'
+                      backgroundColor: active ? 'rgba(255,255,255,0.25)' : '#edebe3',
+                      color: active ? '#ffffff' : '#475569',
+                      fontWeight: 700
                     }}
                   >
                     {item.badge}
@@ -702,27 +799,27 @@ export default function App() {
           })}
         </nav>
 
-        {/* Quick Launch Setup Wizard Button */}
-        <div style={{ padding: '0.75rem', borderTop: '1px solid #e2e8f0' }}>
+        {/* Footer Actions */}
+        <div style={{ padding: '0.75rem', borderTop: '1px solid #e8e6df', backgroundColor: '#faf9f5' }}>
           <button
             onClick={() => setShowSetupWizard(true)}
             className="btn btn-secondary"
-            style={{ width: '100%', fontSize: '0.75rem', padding: '0.45rem', gap: '0.4rem' }}
+            style={{ width: '100%', fontSize: '0.75rem', padding: '0.45rem', gap: '5px' }}
           >
             <Settings size={14} />
-            <span>Launch Setup Wizard</span>
+            <span>Institute Branding & Wizard</span>
           </button>
         </div>
       </aside>
 
-      {/* ===================== MAIN CONTENT ===================== */}
+      {/* ===================== MAIN CANVAS ===================== */}
       <div style={{ marginLeft: '260px', flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {/* Top Header Bar */}
         <header
           style={{
-            height: '64px',
+            height: '60px',
             backgroundColor: '#ffffff',
-            borderBottom: '1px solid #e2e8f0',
+            borderBottom: '1px solid #e8e6df',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -733,19 +830,11 @@ export default function App() {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="btn btn-secondary mobile-menu-toggle"
-              style={{ display: 'none', padding: '0.4rem' }}
-            >
-              <Menu size={18} />
-            </button>
-            <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', textTransform: 'capitalize' }}>
-              {activeTab.replace('-', ' ')}
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', textTransform: 'capitalize' }}>
+              {activeTab === 'dashboard' ? 'Institute Executive Dashboard' : activeTab.replace('-', ' ')}
             </h2>
           </div>
 
-          {/* Quick Action Buttons in Top Header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <button
               onClick={() => {
@@ -759,12 +848,12 @@ export default function App() {
               <span>Collect Fee</span>
             </button>
             <button
-              onClick={() => openAddStudentModal(null)}
+              onClick={() => openStudentModal(null)}
               className="btn btn-secondary"
               style={{ padding: '0.45rem 0.85rem', fontSize: '0.8rem' }}
             >
               <Plus size={15} />
-              <span>Add Student</span>
+              <span>Enroll Student</span>
             </button>
             <button
               onClick={() => setShowBackupModal(true)}
@@ -772,88 +861,54 @@ export default function App() {
               title="Backup Database"
               style={{ padding: '0.45rem', fontSize: '0.8rem' }}
             >
-              <Download size={16} />
+              <Download size={15} />
             </button>
           </div>
         </header>
 
-        {/* Main Body Canvas */}
+        {/* Content Body */}
         <main style={{ padding: '1.5rem', flex: 1 }}>
-          {/* ===================== TAB 1: DASHBOARD ===================== */}
+          {/* ============================================================== */}
+          {/* TAB 1: DASHBOARD (HALF-WHITE IVORY WITH TRACKING CHART)        */}
+          {/* ============================================================== */}
           {activeTab === 'dashboard' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               {/* Top KPI Cards Grid */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                  gap: '1rem'
-                }}
-              >
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem' }}>
                 <div className="card">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div>
-                      <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>TOTAL STUDENTS</span>
-                      <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', marginTop: '4px' }}>
-                        {totalStudents}
-                      </div>
-                      <span style={{ fontSize: '0.75rem', color: '#34d399' }}>{activeStudents} Active Currently</span>
-                    </div>
-                    <div style={{ padding: 10, borderRadius: 8, backgroundColor: 'rgba(37,99,235,0.1)', color: '#2563eb' }}>
-                      <Users size={22} />
-                    </div>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>TOTAL STUDENTS</span>
+                  <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', marginTop: '4px' }}>
+                    {totalStudents}
                   </div>
+                  <span style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: 600 }}>{activeStudents} Currently Active</span>
                 </div>
 
                 <div className="card">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div>
-                      <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>TOTAL FEES COLLECTED</span>
-                      <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#34d399', marginTop: '4px' }}>
-                        {currency} {totalFeeCollected.toLocaleString()}
-                      </div>
-                      <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{payments.length} Valid Transactions</span>
-                    </div>
-                    <div style={{ padding: 10, borderRadius: 8, backgroundColor: 'rgba(16,185,129,0.1)', color: '#34d399' }}>
-                      <CreditCard size={22} />
-                    </div>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>TOTAL FEES REVENUE</span>
+                  <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#16a34a', marginTop: '4px' }}>
+                    {currency} {totalFeeCollected.toLocaleString()}
                   </div>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>{payments.length} verified transactions</span>
                 </div>
 
                 <div className="card">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div>
-                      <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>OUTSTANDING DUES</span>
-                      <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#f87171', marginTop: '4px' }}>
-                        {currency} {totalOutstandingDues.toLocaleString()}
-                      </div>
-                      <span style={{ fontSize: '0.75rem', color: '#f87171' }}>{defaultersList.length} Students Pending</span>
-                    </div>
-                    <div style={{ padding: 10, borderRadius: 8, backgroundColor: 'rgba(239,68,68,0.1)', color: '#f87171' }}>
-                      <AlertCircle size={22} />
-                    </div>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>OUTSTANDING DUES</span>
+                  <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#dc2626', marginTop: '4px' }}>
+                    {currency} {totalOutstandingDues.toLocaleString()}
                   </div>
+                  <span style={{ fontSize: '0.72rem', color: '#dc2626', fontWeight: 600 }}>{defaultersList.length} students pending</span>
                 </div>
 
                 <div className="card">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div>
-                      <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>NET CASH BALANCE</span>
-                      <div style={{ fontSize: '1.8rem', fontWeight: 800, color: netBalance >= 0 ? '#38bdf8' : '#f87171', marginTop: '4px' }}>
-                        {currency} {netBalance.toLocaleString()}
-                      </div>
-                      <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                        Exp: {currency} {totalExpensesAmount.toLocaleString()}
-                      </span>
-                    </div>
-                    <div style={{ padding: 10, borderRadius: 8, backgroundColor: 'rgba(56,189,248,0.1)', color: '#0284c7' }}>
-                      <DollarSign size={22} />
-                    </div>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>NET CASH BALANCE</span>
+                  <div style={{ fontSize: '1.8rem', fontWeight: 800, color: netBalance >= 0 ? '#0284c7' : '#dc2626', marginTop: '4px' }}>
+                    {currency} {netBalance.toLocaleString()}
                   </div>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Exp: {currency} {totalExpensesAmount.toLocaleString()}</span>
                 </div>
               </div>
 
-              {/* Financial Health & Tracking Chart */}
+              {/* BEHTREEN FINANCIAL TRACKING CHART (FEES VS EXPENSES) */}
               <FinancialTrackingChart
                 payments={payments}
                 expenses={expenses}
@@ -862,48 +917,8 @@ export default function App() {
                 currency={currency}
               />
 
-              {/* Action Banner */}
-              <div
-                className="card"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(37,99,235,0.08), rgba(245,158,11,0.08))',
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '1rem',
-                  borderColor: '#e8e6df'
-                }}
-              >
-                <div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
-                    {settings.academyName} Management Console
-                  </h3>
-                  <p style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                    Academic Session: <strong>{settings.academicSession}</strong> • Registered under{' '}
-                    <strong>{settings.registrationNumber || 'Provincial Authority'}</strong> • Portal:{' '}
-                    <strong>{settings.website || 'http://alghazidigital.site.je/'}</strong>
-                  </p>
-                </div>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <button onClick={() => setShowSetupWizard(true)} className="btn btn-secondary">
-                    <Settings size={15} />
-                    <span>Institute Setup Wizard</span>
-                  </button>
-                  <button onClick={() => openPrintDocument('defaulters_list', defaultersList)} className="btn btn-secondary">
-                    <Printer size={15} />
-                    <span>Print Defaulters List</span>
-                  </button>
-                  <button onClick={() => setActiveTab('portal')} className="btn btn-primary">
-                    <Globe size={15} />
-                    <span>View Public Academy Portal</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Two Column Layout: Course-Wise Admissions & Recent Payments */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.5rem' }}>
-                {/* Course Enrollment & Admitted Students Directory */}
+              {/* Course-Wise Admitted Students Section */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.25rem' }}>
                 <div className="card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                     <div>
@@ -914,13 +929,14 @@ export default function App() {
                         Click any course to view all admitted students
                       </span>
                     </div>
-                    <button onClick={() => setActiveTab('courses')} className="btn btn-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}>
+                    <button onClick={() => setActiveTab('courses')} className="btn btn-secondary" style={{ padding: '0.25rem 0.55rem', fontSize: '0.72rem' }}>
                       All Courses
                     </button>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                     {courses.map((c) => {
-                      const enrolledStudents = students.filter((s) => s.courseId === c.id || s.courseName === c.name);
+                      const enrolledStudents = students.filter((s) => s.courseName === c.name || s.courseId === c.id);
                       const count = enrolledStudents.length;
                       const percentage = totalStudents ? Math.round((count / totalStudents) * 100) : 0;
                       return (
@@ -952,7 +968,7 @@ export default function App() {
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#64748b' }}>
                             <span>Instructor: <strong>{c.instructor}</strong></span>
-                            <span>{percentage}% of total student body</span>
+                            <span>{percentage}% of total admissions</span>
                           </div>
                         </div>
                       );
@@ -960,7 +976,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Recent Fee Payments with Edit Option */}
+                {/* Recent Fee Payments (with Quick Edit & SMS Alert) */}
                 <div className="card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                     <div>
@@ -968,66 +984,80 @@ export default function App() {
                         Recent Fee Collections
                       </h3>
                       <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                        Line-item receipts with quick edit option
+                        Receipts with quick edit and parents SMS alerts
                       </span>
                     </div>
-                    <button onClick={() => setActiveTab('fees')} className="btn btn-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}>
+                    <button onClick={() => setActiveTab('fees')} className="btn btn-secondary" style={{ padding: '0.25rem 0.55rem', fontSize: '0.72rem' }}>
                       Fee Ledger
                     </button>
                   </div>
+
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     {payments.length === 0 ? (
                       <div style={{ textAlign: 'center', padding: '1.5rem', color: '#64748b', fontSize: '0.8rem' }}>
-                        No fee payments recorded yet.
+                        No fee payments recorded yet. Click "Collect Fee" above to start.
                       </div>
                     ) : (
-                      payments.slice(0, 4).map((p) => (
-                        <div
-                          key={p.id}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '0.65rem 0.85rem',
-                            backgroundColor: '#faf9f5',
-                            border: '1px solid #e8e6df',
-                            borderRadius: '0.5rem'
-                          }}
-                        >
-                          <div>
-                            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>{p.studentName}</div>
-                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                              {p.receiptNo} • {p.courseName} • {p.paymentDate}
-                            </div>
-                          </div>
-                          <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      payments.slice(0, 5).map((p) => {
+                        const studentObj = students.find((s) => s.id === p.studentId || s.rollNo === p.studentRollNo);
+                        return (
+                          <div
+                            key={p.id}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '0.65rem 0.85rem',
+                              backgroundColor: '#faf9f5',
+                              border: '1px solid #e8e6df',
+                              borderRadius: '0.5rem'
+                            }}
+                          >
                             <div>
-                              <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#16a34a' }}>
-                                {currency} {Number(p.paidAmount).toLocaleString()}
+                              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>{p.studentName}</div>
+                              <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                                {p.receiptNo} • {p.courseName} • {p.paymentDate}
                               </div>
-                              <div style={{ fontSize: '0.68rem', color: '#64748b' }}>{p.paymentMethod}</div>
                             </div>
-                            <div style={{ display: 'flex', gap: '4px' }}>
-                              <button
-                                onClick={() => openEditPaymentModal(p)}
-                                className="btn btn-secondary"
-                                title="Edit Payment"
-                                style={{ padding: '0.25rem 0.45rem', fontSize: '0.72rem' }}
-                              >
-                                <Edit size={12} />
-                              </button>
-                              <button
-                                onClick={() => openPrintDocument('fee_receipt', p)}
-                                className="btn btn-secondary"
-                                title="Print Fee Receipt"
-                                style={{ padding: '0.25rem 0.45rem', fontSize: '0.72rem' }}
-                              >
-                                <Printer size={12} />
-                              </button>
+                            <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <div>
+                                <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#16a34a' }}>
+                                  {currency} {Number(p.paidAmount).toLocaleString()}
+                                </div>
+                                <div style={{ fontSize: '0.68rem', color: '#64748b' }}>{p.paymentMethod}</div>
+                              </div>
+                              <div style={{ display: 'flex', gap: '4px' }}>
+                                <button
+                                  onClick={() => openEditPayment(p)}
+                                  className="btn btn-secondary"
+                                  title="Edit Payment (Fix Mistake)"
+                                  style={{ padding: '0.25rem 0.45rem', fontSize: '0.72rem' }}
+                                >
+                                  <Edit size={12} />
+                                </button>
+                                {studentObj && (
+                                  <button
+                                    onClick={() => openFeeNotification(studentObj, p, 'payment')}
+                                    className="btn btn-success"
+                                    title="Send Parents WhatsApp/SMS Alert"
+                                    style={{ padding: '0.25rem 0.45rem', fontSize: '0.72rem' }}
+                                  >
+                                    <Send size={12} />
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => openPrintDocument('fee_receipt', p)}
+                                  className="btn btn-secondary"
+                                  title="Print Official Fee Receipt"
+                                  style={{ padding: '0.25rem 0.45rem', fontSize: '0.72rem' }}
+                                >
+                                  <Printer size={12} />
+                                </button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))
+                        );
+                      })
                     )}
                   </div>
                 </div>
@@ -1035,7 +1065,9 @@ export default function App() {
             </div>
           )}
 
-          {/* ===================== TAB 2: STUDENTS ===================== */}
+          {/* ============================================================== */}
+          {/* TAB 2: STUDENTS DIRECTORY                                      */}
+          {/* ============================================================== */}
           {activeTab === 'students' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {/* Filter and Search Bar */}
@@ -1051,11 +1083,11 @@ export default function App() {
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, minWidth: '240px' }}>
-                  <div style={{ position: 'relative', width: '100%', maxWidth: '320px' }}>
+                  <div style={{ position: 'relative', width: '100%', maxWidth: '300px' }}>
                     <Search size={16} style={{ position: 'absolute', left: 10, top: 10, color: '#64748b' }} />
                     <input
                       type="text"
-                      placeholder="Search by name, roll, phone..."
+                      placeholder="Search name, roll, phone..."
                       value={globalSearch}
                       onChange={(e) => setGlobalSearch(e.target.value)}
                       className="form-input"
@@ -1074,34 +1106,16 @@ export default function App() {
                       <option key={c.id} value={c.name}>{c.name}</option>
                     ))}
                   </select>
-
-                  <select
-                    value={studentStatusFilter}
-                    onChange={(e) => setStudentStatusFilter(e.target.value)}
-                    className="form-select"
-                    style={{ width: 'auto' }}
-                  >
-                    <option value="ALL">All Status</option>
-                    <option value="Active">Active</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button
-                    onClick={() => exportToCSV('al_ghazi_students', filteredStudents)}
-                    className="btn btn-secondary"
-                  >
+                  <button onClick={() => exportToCSV('al_ghazi_students', filteredStudents)} className="btn btn-secondary">
                     <Download size={15} />
                     <span>Export CSV</span>
                   </button>
-                  <button
-                    onClick={() => openAddStudentModal(null)}
-                    className="btn btn-primary"
-                  >
+                  <button onClick={() => openStudentModal(null)} className="btn btn-primary">
                     <Plus size={15} />
-                    <span>Add New Student</span>
+                    <span>+ Enroll New Student</span>
                   </button>
                 </div>
               </div>
@@ -1118,22 +1132,21 @@ export default function App() {
                         <th>Parent WhatsApp</th>
                         <th style={{ textAlign: 'right' }}>Total Fee</th>
                         <th style={{ textAlign: 'right' }}>Paid</th>
-                        <th style={{ textAlign: 'right' }}>Balance</th>
-                        <th>Status</th>
+                        <th style={{ textAlign: 'right' }}>Remaining Due</th>
                         <th style={{ textAlign: 'center' }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredStudents.length === 0 ? (
                         <tr>
-                          <td colSpan={9} style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                            No student records matching your search/filter criteria.
+                          <td colSpan={8} style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                            No student records found. Click "+ Enroll New Student" to register students.
                           </td>
                         </tr>
                       ) : (
                         filteredStudents.map((s) => (
                           <tr key={s.id}>
-                            <td style={{ fontWeight: 700, color: '#2563eb' }}>{s.rollNo}</td>
+                            <td style={{ fontWeight: 800, color: '#2563eb' }}>{s.rollNo}</td>
                             <td>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                                 {s.photoUrl ? (
@@ -1145,32 +1158,26 @@ export default function App() {
                                 )}
                                 <div>
                                   <div style={{ fontWeight: 700, color: '#0f172a' }}>{s.name}</div>
-                                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>S/D of {s.fatherName}</div>
+                                  <div style={{ fontSize: '0.72rem', color: '#64748b' }}>S/D of {s.fatherName}</div>
                                 </div>
                               </div>
                             </td>
                             <td>
-                              <div style={{ fontSize: '0.85rem' }}>{s.courseName}</div>
-                              <div style={{ fontSize: '0.7rem', color: '#64748b' }}>{s.batch || 'Regular'}</div>
+                              <div style={{ fontSize: '0.825rem', fontWeight: 600 }}>{s.courseName}</div>
                             </td>
                             <td>{s.parentPhone || s.phone}</td>
-                            <td style={{ textAlign: 'right' }}>{Number(s.totalFee).toLocaleString()}</td>
-                            <td style={{ textAlign: 'right', color: '#34d399', fontWeight: 600 }}>
-                              {Number(s.paidFee).toLocaleString()}
+                            <td style={{ textAlign: 'right' }}>{Number(s.totalFee || 0).toLocaleString()}</td>
+                            <td style={{ textAlign: 'right', color: '#16a34a', fontWeight: 700 }}>
+                              {Number(s.paidFee || 0).toLocaleString()}
                             </td>
                             <td
                               style={{
                                 textAlign: 'right',
-                                fontWeight: 700,
-                                color: Number(s.remainingFee) > 0 ? '#f87171' : '#34d399'
+                                fontWeight: 800,
+                                color: Number(s.remainingFee) > 0 ? '#dc2626' : '#16a34a'
                               }}
                             >
-                              {currency} {Number(s.remainingFee).toLocaleString()}
-                            </td>
-                            <td>
-                              <span className={`badge ${s.status === 'Active' ? 'badge-active' : 'badge-neutral'}`}>
-                                {s.status}
-                              </span>
+                              {currency} {Number(s.remainingFee || 0).toLocaleString()}
                             </td>
                             <td>
                               <div style={{ display: 'flex', gap: '0.35rem', justifyContent: 'center' }}>
@@ -1180,18 +1187,10 @@ export default function App() {
                                     setShowStudentProfileModal(true);
                                   }}
                                   className="btn btn-secondary"
-                                  title="View Full Profile"
+                                  title="View Profile"
                                   style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }}
                                 >
-                                  <Eye size={14} />
-                                </button>
-                                <button
-                                  onClick={() => openPrintDocument('student_id_card', s)}
-                                  className="btn btn-secondary"
-                                  title="Print ID Card"
-                                  style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }}
-                                >
-                                  <Printer size={14} />
+                                  <Eye size={13} />
                                 </button>
                                 <button
                                   onClick={() => {
@@ -1202,15 +1201,24 @@ export default function App() {
                                   title="Collect Fee"
                                   style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }}
                                 >
-                                  <CreditCard size={14} />
+                                  <CreditCard size={13} />
+                                  <span>Collect</span>
                                 </button>
                                 <button
-                                  onClick={() => openAddStudentModal(s)}
+                                  onClick={() => openPrintDocument('student_id_card', s)}
+                                  className="btn btn-secondary"
+                                  title="Print ID Card"
+                                  style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }}
+                                >
+                                  <Printer size={13} />
+                                </button>
+                                <button
+                                  onClick={() => openStudentModal(s)}
                                   className="btn btn-secondary"
                                   title="Edit Student"
                                   style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }}
                                 >
-                                  <Edit size={14} />
+                                  <Edit size={13} />
                                 </button>
                               </div>
                             </td>
@@ -1224,8 +1232,10 @@ export default function App() {
             </div>
           )}
 
-          {/* ===================== TAB 3: TEACHERS ===================== */}
-          {activeTab === 'teachers' && (
+          {/* ============================================================== */}
+          {/* TAB 3: COURSES & ADMISSIONS                                    */}
+          {/* ============================================================== */}
+          {activeTab === 'courses' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div
                 className="card"
@@ -1237,165 +1247,40 @@ export default function App() {
                 }}
               >
                 <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
-                    Faculty Members & Instructors
-                  </h3>
-                  <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                    Manage teachers, salaries, assigned courses, ID cards & pay slips
+                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>Academic Programs & Courses</h3>
+                  <p style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                    Manage curriculum, batch timings, fees, and view students admitted in each course
                   </p>
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button onClick={() => exportToCSV('al_ghazi_teachers', teachers)} className="btn btn-secondary">
-                    <Download size={15} />
-                    <span>Export CSV</span>
-                  </button>
-                  <button
-                    onClick={() => openAddTeacherModal(null)}
-                    className="btn btn-primary"
-                  >
-                    <Plus size={15} />
-                    <span>Add New Teacher</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Teachers Grid Cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
-                {teachers.map((t) => (
-                  <div key={t.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      {t.photoUrl ? (
-                        <img src={t.photoUrl} alt={t.name} style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', border: '2px solid #2563eb' }} />
-                      ) : (
-                        <div
-                          style={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: '50%',
-                            backgroundColor: '#2563eb',
-                            color: '#ffffff',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '1.2rem',
-                            fontWeight: 800
-                          }}
-                        >
-                          {t.name.charAt(0)}
-                        </div>
-                      )}
-                      <div>
-                        <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>{t.name}</h4>
-                        <div style={{ fontSize: '0.75rem', color: '#0284c7', fontWeight: 600 }}>{t.qualification}</div>
-                      </div>
-                    </div>
-
-                    <div style={{ fontSize: '0.8rem', color: '#64748b', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                      <div><strong style={{ color: '#334155' }}>Assigned Course:</strong> {t.assignedCourses || t.subject}</div>
-                      <div><strong style={{ color: '#334155' }}>Contact:</strong> {t.phone}</div>
-                      <div>
-                        <strong style={{ color: '#334155' }}>Monthly Honorarium / Salary:</strong>{' '}
-                        <span style={{ color: '#34d399', fontWeight: 700 }}>
-                          {currency} {Number(t.monthlySalary || t.salary).toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '0.5rem', borderTop: '1px solid #e2e8f0' }}>
-                      <button
-                        onClick={() => openPrintDocument('teacher_id_card', t)}
-                        className="btn btn-secondary"
-                        style={{ flex: 1, padding: '0.4rem', fontSize: '0.75rem' }}
-                      >
-                        <Printer size={13} />
-                        <span>Print ID Card</span>
-                      </button>
-                      <button
-                        onClick={() => openPrintDocument('teacher_salary_slip', t)}
-                        className="btn btn-secondary"
-                        style={{ flex: 1, padding: '0.4rem', fontSize: '0.75rem' }}
-                      >
-                        <FileText size={13} />
-                        <span>Salary Voucher</span>
-                      </button>
-                      <button
-                        onClick={() => openAddTeacherModal(t)}
-                        className="btn btn-secondary"
-                        style={{ padding: '0.4rem' }}
-                      >
-                        <Edit size={14} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* ===================== TAB 4: COURSES ===================== */}
-          {activeTab === 'courses' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
-                    Courses, Diplomas & Training Batches
-                  </h3>
-                  <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                    Define course durations, fee structures, syllabus outlines, and assign faculty
-                  </p>
-                </div>
-                <button
-                  onClick={() => {
-                    setEditingCourse(null);
-                    setShowAddCourseModal(true);
-                  }}
-                  className="btn btn-primary"
-                >
+                <button onClick={() => openCourseModal(null)} className="btn btn-primary">
                   <Plus size={15} />
-                  <span>Add New Course</span>
+                  <span>+ Add New Course</span>
                 </button>
               </div>
 
-              {/* Courses Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
                 {courses.map((c) => {
-                  const enrolledStudents = students.filter((s) => s.courseId === c.id || s.courseName === c.name);
+                  const enrolledStudents = students.filter((s) => s.courseName === c.name || s.courseId === c.id);
                   const enrolled = enrolledStudents.length;
                   return (
                     <div key={c.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
-                          <span style={{ fontSize: '0.7rem', color: '#0284c7', fontWeight: 800 }}>{c.code}</span>
-                          <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
-                            {c.name}
-                          </h4>
-                          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                            Instructor: <strong>{c.instructor}</strong>
-                          </span>
+                          <span style={{ fontSize: '0.7rem', color: '#2563eb', fontWeight: 800 }}>{c.code}</span>
+                          <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: '2px 0 0 0' }}>{c.name}</h4>
+                          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Instructor: {c.instructor}</span>
                         </div>
-                        <span className="badge badge-active">{c.status}</span>
+                        <span className="badge badge-active">Active</span>
                       </div>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem', backgroundColor: '#faf9f5', border: '1px solid #e8e6df', padding: '0.75rem', borderRadius: '0.5rem', fontSize: '0.8rem' }}>
-                        <div>
-                          <span style={{ color: '#64748b', display: 'block', fontSize: '0.7rem' }}>Duration</span>
-                          <strong>{c.duration}</strong>
-                        </div>
-                        <div>
-                          <span style={{ color: '#64748b', display: 'block', fontSize: '0.7rem' }}>Total Fee</span>
-                          <strong style={{ color: '#16a34a' }}>{currency} {Number(c.totalFee).toLocaleString()}</strong>
-                        </div>
-                        <div>
-                          <span style={{ color: '#64748b', display: 'block', fontSize: '0.7rem' }}>Monthly Installment</span>
-                          <strong>{currency} {Number(c.monthlyFee || 0).toLocaleString()}</strong>
-                        </div>
-                        <div>
-                          <span style={{ color: '#64748b', display: 'block', fontSize: '0.7rem' }}>Admitted Students</span>
-                          <strong style={{ color: '#2563eb' }}>{enrolled} Students</strong>
-                        </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem', padding: '0.5rem 0', borderTop: '1px solid #edebe3', borderBottom: '1px solid #edebe3', fontSize: '0.8rem' }}>
+                        <div>Duration: <strong>{c.duration}</strong></div>
+                        <div>Total Fee: <strong style={{ color: '#16a34a' }}>{currency} {Number(c.totalFee).toLocaleString()}</strong></div>
+                        <div>Monthly: <strong>{currency} {Number(c.monthlyFee || 0).toLocaleString()}</strong></div>
+                        <div>Admitted: <strong style={{ color: '#2563eb' }}>{enrolled} Students</strong></div>
                       </div>
 
-                      {/* Admitted Students List in Course */}
+                      {/* Course Admitted Students Quick List */}
                       <div style={{ backgroundColor: '#faf9f5', border: '1px solid #e8e6df', borderRadius: '6px', padding: '8px 10px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                           <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#334155' }}>
@@ -1433,12 +1318,6 @@ export default function App() {
                         )}
                       </div>
 
-                      {c.syllabus && (
-                        <div style={{ fontSize: '0.75rem', color: '#64748b', lineHeight: 1.4 }}>
-                          <strong style={{ color: '#334155' }}>Syllabus:</strong> {c.syllabus}
-                        </div>
-                      )}
-
                       <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '0.5rem', borderTop: '1px solid #e8e6df' }}>
                         <button
                           onClick={() => setSelectedCourseForStudentsModal(c)}
@@ -1449,10 +1328,7 @@ export default function App() {
                           <span>View {enrolled} Students</span>
                         </button>
                         <button
-                          onClick={() => {
-                            setEditingCourse(c);
-                            setShowAddCourseModal(true);
-                          }}
+                          onClick={() => openCourseModal(c)}
                           className="btn btn-secondary"
                           title="Edit Course"
                           style={{ padding: '0.4rem' }}
@@ -1467,26 +1343,28 @@ export default function App() {
             </div>
           )}
 
-          {/* ===================== TAB 5: FEE COLLECTION & DUES ===================== */}
+          {/* ============================================================== */}
+          {/* TAB 4: FEE COLLECTION & DUES                                  */}
+          {/* ============================================================== */}
           {activeTab === 'fees' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {/* Fee Quick Stats Bar */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                 <div className="card">
-                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>TOTAL COLLECTED</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#34d399' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>TOTAL COLLECTED</span>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#16a34a' }}>
                     {currency} {totalFeeCollected.toLocaleString()}
                   </div>
                 </div>
                 <div className="card">
-                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>TOTAL PENDING DUES</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f87171' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>TOTAL PENDING DUES</span>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#dc2626' }}>
                     {currency} {totalOutstandingDues.toLocaleString()}
                   </div>
                 </div>
                 <div className="card">
-                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>DEFAULTERS COUNT</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>DEFAULTERS COUNT</span>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>
                     {defaultersList.length} Students
                   </div>
                 </div>
@@ -1505,10 +1383,10 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Subtabs: Transactions History vs Defaulters & Course Filter */}
+              {/* Subtabs & Course-Wise Fee Filter */}
               <div className="card" style={{ padding: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     <button
                       onClick={() => setFeeStatusFilter('ALL')}
                       className={`btn ${feeStatusFilter === 'ALL' ? 'btn-primary' : 'btn-secondary'}`}
@@ -1525,9 +1403,9 @@ export default function App() {
                     </button>
                   </div>
 
-                  {/* Course-wise Fee Filter */}
+                  {/* Course Filter for Fees */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155' }}>
                       Course Filter:
                     </span>
                     <select
@@ -1547,16 +1425,6 @@ export default function App() {
                       })}
                     </select>
                   </div>
-
-                  {feeStatusFilter === 'DEFAULTERS' && (
-                    <button
-                      onClick={() => openPrintDocument('defaulters_list', defaultersList)}
-                      className="btn btn-secondary"
-                    >
-                      <Printer size={15} />
-                      <span>Print Defaulters Statement</span>
-                    </button>
-                  )}
                 </div>
 
                 {feeStatusFilter === 'ALL' ? (
@@ -1569,7 +1437,7 @@ export default function App() {
                           <th>Date</th>
                           <th>Student Name & Roll</th>
                           <th>Course Name</th>
-                          <th>Fee Month / Period</th>
+                          <th>Fee Month</th>
                           <th>Method</th>
                           <th style={{ textAlign: 'right' }}>Amount Paid</th>
                           <th style={{ textAlign: 'right' }}>Balance Due</th>
@@ -1583,20 +1451,16 @@ export default function App() {
                             const studentObj = students.find((s) => s.id === p.studentId || s.rollNo === p.studentRollNo);
                             return (
                               <tr key={p.id}>
-                                <td style={{ fontWeight: 700, color: '#2563eb' }}>{p.receiptNo}</td>
+                                <td style={{ fontWeight: 800, color: '#2563eb' }}>{p.receiptNo}</td>
                                 <td>{p.paymentDate}</td>
                                 <td>
                                   <div style={{ fontWeight: 700, color: '#0f172a' }}>{p.studentName}</div>
-                                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{p.studentRollNo}</div>
+                                  <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{p.studentRollNo}</div>
                                 </td>
-                                <td>
-                                  <span style={{ fontWeight: 600, color: '#0f172a' }}>{p.courseName}</span>
-                                </td>
-                                <td>{p.feeMonth || 'Monthly Installment'}</td>
-                                <td>
-                                  <span className="badge badge-neutral">{p.paymentMethod}</span>
-                                </td>
-                                <td style={{ textAlign: 'right', fontWeight: 700, color: '#16a34a' }}>
+                                <td><span style={{ fontWeight: 600 }}>{p.courseName}</span></td>
+                                <td>{p.feeMonth || 'Monthly'}</td>
+                                <td><span className="badge badge-neutral">{p.paymentMethod}</span></td>
+                                <td style={{ textAlign: 'right', fontWeight: 800, color: '#16a34a' }}>
                                   {currency} {Number(p.paidAmount).toLocaleString()}
                                 </td>
                                 <td style={{ textAlign: 'right', fontWeight: 700, color: Number(p.remainingDue || 0) > 0 ? '#dc2626' : '#16a34a' }}>
@@ -1605,7 +1469,7 @@ export default function App() {
                                 <td>
                                   <div style={{ display: 'flex', gap: '0.35rem', justifyContent: 'center' }}>
                                     <button
-                                      onClick={() => openEditPaymentModal(p)}
+                                      onClick={() => openEditPayment(p)}
                                       className="btn btn-secondary"
                                       title="Edit Fee Payment (Fix Any Mistake)"
                                       style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem', gap: '3px' }}
@@ -1620,14 +1484,13 @@ export default function App() {
                                       style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }}
                                     >
                                       <Printer size={13} />
-                                      <span>Print</span>
                                     </button>
                                     {studentObj && (
                                       <button
                                         onClick={() => openFeeNotification(studentObj, p, 'payment')}
                                         className="btn btn-success"
-                                        title="Send WhatsApp/SMS Alert"
-                                        style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }}
+                                        title="Send WhatsApp/SMS Alert to Parent"
+                                        style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem', gap: '3px' }}
                                       >
                                         <Send size={13} />
                                         <span>Alert</span>
@@ -1636,7 +1499,7 @@ export default function App() {
                                     <button
                                       onClick={() => handleDeletePayment(p)}
                                       className="btn btn-secondary"
-                                      title="Delete Payment (Revert Balance)"
+                                      title="Delete Payment (Reverts Balance)"
                                       style={{ padding: '0.3rem 0.45rem', fontSize: '0.75rem', color: '#ef4444' }}
                                     >
                                       <Trash2 size={13} />
@@ -1657,40 +1520,38 @@ export default function App() {
                         <tr>
                           <th>Roll #</th>
                           <th>Student Name</th>
-                          <th>Course Name</th>
+                          <th>Course</th>
                           <th>Parent WhatsApp</th>
                           <th style={{ textAlign: 'right' }}>Total Fee</th>
                           <th style={{ textAlign: 'right' }}>Paid</th>
-                          <th style={{ textAlign: 'right' }}>Outstanding Dues</th>
-                          <th style={{ textAlign: 'center' }}>Quick Actions</th>
+                          <th style={{ textAlign: 'right' }}>Pending Dues</th>
+                          <th style={{ textAlign: 'center' }}>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {defaultersList
-                          .filter((s) => feeCourseFilter === 'ALL' || s.courseName === feeCourseFilter)
-                          .map((s) => (
+                        {defaultersList.map((s) => (
                           <tr key={s.id}>
-                            <td style={{ fontWeight: 700, color: '#2563eb' }}>{s.rollNo}</td>
+                            <td style={{ fontWeight: 800, color: '#dc2626' }}>{s.rollNo}</td>
                             <td>
                               <div style={{ fontWeight: 700, color: '#0f172a' }}>{s.name}</div>
-                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Father: {s.fatherName}</div>
+                              <div style={{ fontSize: '0.72rem', color: '#64748b' }}>S/D of {s.fatherName}</div>
                             </td>
                             <td>{s.courseName}</td>
                             <td>{s.parentPhone || s.phone}</td>
                             <td style={{ textAlign: 'right' }}>{Number(s.totalFee).toLocaleString()}</td>
-                            <td style={{ textAlign: 'right', color: '#34d399' }}>{Number(s.paidFee).toLocaleString()}</td>
-                            <td style={{ textAlign: 'right', fontWeight: 800, color: '#f87171' }}>
+                            <td style={{ textAlign: 'right', color: '#16a34a' }}>{Number(s.paidFee).toLocaleString()}</td>
+                            <td style={{ textAlign: 'right', color: '#dc2626', fontWeight: 800, fontSize: '0.95rem' }}>
                               {currency} {Number(s.remainingFee).toLocaleString()}
                             </td>
                             <td>
-                              <div style={{ display: 'flex', gap: '0.35rem', justifyContent: 'center' }}>
+                              <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
                                 <button
-                                  onClick={() => openFeeNotification(s, null, 'reminder')}
-                                  className="btn btn-warning"
-                                  style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }}
+                                  onClick={() => openFeeNotification(s, null, 'due_reminder')}
+                                  className="btn btn-danger"
+                                  style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem', gap: '3px' }}
                                 >
                                   <Send size={13} />
-                                  <span>Send Reminder</span>
+                                  <span>Send Due Reminder</span>
                                 </button>
                                 <button
                                   onClick={() => {
@@ -1715,7 +1576,9 @@ export default function App() {
             </div>
           )}
 
-          {/* ===================== TAB 6: ATTENDANCE ===================== */}
+          {/* ============================================================== */}
+          {/* TAB 5: ATTENDANCE (BY COURSE)                                  */}
+          {/* ============================================================== */}
           {activeTab === 'attendance' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div
@@ -1730,9 +1593,9 @@ export default function App() {
                 }}
               >
                 <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>Daily Attendance Marker</h3>
-                  <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                    Mark Present, Absent, Leave or Late for students on any date
+                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>Daily Attendance Marker</h3>
+                  <p style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                    Mark Present, Absent, Leave or Late by Course Batch
                   </p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
@@ -1765,14 +1628,14 @@ export default function App() {
                       style={{ padding: '0.4rem 0.75rem' }}
                     />
                   </div>
-                  <button onClick={handleMarkAllPresent} className="btn btn-success" style={{ alignSelf: 'flex-end' }}>
+                  <button onClick={handleMarkBatchPresent} className="btn btn-success" style={{ alignSelf: 'flex-end' }}>
                     <CheckCircle size={15} />
                     <span>Mark Batch Present</span>
                   </button>
                 </div>
               </div>
 
-              {/* Attendance Sheet Table */}
+              {/* Attendance Sheet */}
               <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
                 <div style={{ overflowX: 'auto' }}>
                   <table className="data-table">
@@ -1781,7 +1644,7 @@ export default function App() {
                         <th>Roll #</th>
                         <th>Student Name</th>
                         <th>Course</th>
-                        <th>Status Today</th>
+                        <th>Status on {attendanceDate}</th>
                         <th style={{ textAlign: 'center' }}>Mark Status</th>
                       </tr>
                     </thead>
@@ -1789,66 +1652,52 @@ export default function App() {
                       {students
                         .filter((s) => attendanceCourseFilter === 'ALL' || s.courseName === attendanceCourseFilter)
                         .map((s) => {
-                        const dayStatus = (attendanceRecords[attendanceDate] || {})[s.id] || 'P';
-                        return (
-                          <tr key={s.id}>
-                            <td style={{ fontWeight: 700 }}>{s.rollNo}</td>
-                            <td>
-                              <div style={{ fontWeight: 700, color: '#0f172a' }}>{s.name}</div>
-                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{s.phone}</div>
-                            </td>
-                            <td>{s.courseName}</td>
-                            <td>
-                              <span
-                                className={`badge ${
-                                  dayStatus === 'P'
-                                    ? 'badge-paid'
-                                    : dayStatus === 'A'
-                                    ? 'badge-unpaid'
-                                    : dayStatus === 'L'
-                                    ? 'badge-partial'
-                                    : 'badge-neutral'
-                                }`}
-                              >
-                                {dayStatus === 'P'
-                                  ? 'Present'
-                                  : dayStatus === 'A'
-                                  ? 'Absent'
-                                  : dayStatus === 'L'
-                                  ? 'Leave'
-                                  : 'Late'}
-                              </span>
-                            </td>
-                            <td>
-                              <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'center' }}>
-                                {[
-                                  { code: 'P', label: 'Present', color: '#10b981' },
-                                  { code: 'A', label: 'Absent', color: '#ef4444' },
-                                  { code: 'L', label: 'Leave', color: '#f59e0b' },
-                                  { code: 'T', label: 'Late', color: '#64748b' }
-                                ].map((st) => (
-                                  <button
-                                    key={st.code}
-                                    onClick={() => handleMarkAttendance(s.id, st.code)}
-                                    style={{
-                                      padding: '0.3rem 0.6rem',
-                                      borderRadius: 4,
-                                      border: dayStatus === st.code ? `2px solid ${st.color}` : '1px solid #334155',
-                                      backgroundColor: dayStatus === st.code ? `${st.color}25` : 'transparent',
-                                      color: dayStatus === st.code ? st.color : '#94a3b8',
-                                      fontWeight: 700,
-                                      fontSize: '0.75rem',
-                                      cursor: 'pointer'
-                                    }}
-                                  >
-                                    {st.code}
-                                  </button>
-                                ))}
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                          const dayStatus = (attendanceRecords[attendanceDate] || {})[s.id] || 'P';
+                          return (
+                            <tr key={s.id}>
+                              <td style={{ fontWeight: 800 }}>{s.rollNo}</td>
+                              <td>
+                                <div style={{ fontWeight: 700, color: '#0f172a' }}>{s.name}</div>
+                                <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{s.phone}</div>
+                              </td>
+                              <td>{s.courseName}</td>
+                              <td>
+                                <span
+                                  className={`badge ${
+                                    dayStatus === 'P'
+                                      ? 'badge-present'
+                                      : dayStatus === 'A'
+                                      ? 'badge-absent'
+                                      : dayStatus === 'L'
+                                      ? 'badge-warning'
+                                      : 'badge-neutral'
+                                  }`}
+                                >
+                                  {dayStatus === 'P' ? 'Present' : dayStatus === 'A' ? 'Absent' : dayStatus === 'L' ? 'Leave' : 'Late'}
+                                </span>
+                              </td>
+                              <td>
+                                <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
+                                  {['P', 'A', 'L'].map((st) => (
+                                    <button
+                                      key={st}
+                                      onClick={() => handleMarkAttendance(s.id, st)}
+                                      className={`btn ${dayStatus === st ? (st === 'P' ? 'btn-success' : st === 'A' ? 'btn-danger' : 'btn-secondary') : 'btn-secondary'}`}
+                                      style={{
+                                        padding: '0.25rem 0.55rem',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 800,
+                                        backgroundColor: dayStatus === st ? undefined : '#faf9f5'
+                                      }}
+                                    >
+                                      {st}
+                                    </button>
+                                  ))}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
                     </tbody>
                   </table>
                 </div>
@@ -1856,158 +1705,131 @@ export default function App() {
             </div>
           )}
 
-          {/* ===================== TAB 7: EXAMS & RESULTS ===================== */}
-          {activeTab === 'exams' && (
+          {/* ============================================================== */}
+          {/* TAB 6: FACULTY & TEACHERS                                      */}
+          {/* ============================================================== */}
+          {activeTab === 'teachers' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div
+                className="card"
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '1rem'
+                }}
+              >
                 <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
-                    Examination Schedules & Results
-                  </h3>
-                  <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                    Manage mid-term & final examinations, enter marks, compute grades and print report cards
+                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>Faculty & Instructors</h3>
+                  <p style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                    Manage teachers, salaries, assigned courses, ID cards & pay vouchers
                   </p>
                 </div>
-                <button onClick={() => setShowAddExamModal(true)} className="btn btn-primary">
-                  <Plus size={15} />
-                  <span>Schedule New Exam</span>
-                </button>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button onClick={() => openTeacherModal(null)} className="btn btn-primary">
+                    <Plus size={15} />
+                    <span>+ Add New Faculty Member</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Exams Cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
-                {exams.map((exam) => {
-                  const resultsForThisExam = examResults.filter((r) => r.examId === exam.id);
-                  return (
-                    <div key={exam.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
+                {teachers.length === 0 ? (
+                  <div className="card" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                    No teachers registered yet. Click "+ Add New Faculty Member" to add instructors.
+                  </div>
+                ) : (
+                  teachers.map((t) => (
+                    <div key={t.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        {t.photoUrl ? (
+                          <img src={t.photoUrl} alt={t.name} style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover', border: '2px solid #16a34a' }} />
+                        ) : (
+                          <div style={{ width: 50, height: 50, borderRadius: '50%', backgroundColor: '#16a34a', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', fontWeight: 800 }}>
+                            {t.name.charAt(0)}
+                          </div>
+                        )}
                         <div>
-                          <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>{exam.title}</h4>
-                          <span style={{ fontSize: '0.8rem', color: '#0284c7' }}>{exam.courseName}</span>
+                          <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>{t.name}</h4>
+                          <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 700 }}>{t.qualification || 'Instructor'}</span>
+                          <span style={{ fontSize: '0.7rem', color: '#64748b', display: 'block' }}>ID: {t.teacherId}</span>
                         </div>
-                        <span className="badge badge-active">{exam.status}</span>
                       </div>
 
-                      <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                        <div>Date: <strong>{exam.examDate}</strong></div>
-                        <div>Total Marks: <strong>{exam.totalMarks}</strong> | Passing: <strong>{exam.passingMarks}</strong></div>
-                        <div>Assessed Students: <strong>{resultsForThisExam.length} evaluated</strong></div>
+                      <div style={{ fontSize: '0.8rem', padding: '0.5rem 0', borderTop: '1px solid #edebe3', borderBottom: '1px solid #edebe3' }}>
+                        <div>Assigned: <strong>{t.assignedCourses}</strong></div>
+                        <div>Monthly Salary: <strong style={{ color: '#16a34a' }}>{currency} {Number(t.monthlySalary || 0).toLocaleString()}</strong></div>
+                        <div>Phone: <strong>{t.phone}</strong></div>
                       </div>
 
-                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '0.5rem', borderTop: '1px solid #e2e8f0' }}>
+                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto' }}>
                         <button
-                          onClick={() => {
-                            setSelectedExamForMarks(exam);
-                            setShowEnterMarksModal(true);
-                          }}
-                          className="btn btn-primary"
-                          style={{ flex: 1, padding: '0.4rem', fontSize: '0.75rem' }}
+                          onClick={() => openPrintDocument('teacher_id_card', t)}
+                          className="btn btn-secondary"
+                          style={{ flex: 1, padding: '0.35rem', fontSize: '0.72rem' }}
+                        >
+                          <Printer size={13} />
+                          <span>Print ID Card</span>
+                        </button>
+                        <button
+                          onClick={() => openPrintDocument('teacher_form', t)}
+                          className="btn btn-secondary"
+                          style={{ padding: '0.35rem', fontSize: '0.72rem' }}
+                        >
+                          <Printer size={13} />
+                          <span>Form</span>
+                        </button>
+                        <button
+                          onClick={() => openTeacherModal(t)}
+                          className="btn btn-secondary"
+                          style={{ padding: '0.35rem' }}
                         >
                           <Edit size={13} />
-                          <span>Enter / Edit Marks</span>
                         </button>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-
-              {/* Evaluated Results Table */}
-              <div className="card" style={{ padding: '1rem' }}>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.75rem' }}>
-                  Recorded Result Cards & Transcripts
-                </h4>
-                <div style={{ overflowX: 'auto' }}>
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>Roll #</th>
-                        <th>Student Name</th>
-                        <th>Marks Obtained</th>
-                        <th>Percentage</th>
-                        <th>Grade</th>
-                        <th>Status</th>
-                        <th style={{ textAlign: 'center' }}>Print Result Card</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {examResults.map((r) => {
-                        const examObj = exams.find((e) => e.id === r.examId);
-                        return (
-                          <tr key={r.id}>
-                            <td style={{ fontWeight: 700 }}>{r.rollNo}</td>
-                            <td style={{ fontWeight: 700, color: '#0f172a' }}>{r.studentName}</td>
-                            <td>{r.obtainedMarks} / 100</td>
-                            <td style={{ fontWeight: 700 }}>{r.percentage}%</td>
-                            <td style={{ fontWeight: 800, color: '#0284c7' }}>{r.grade}</td>
-                            <td>
-                              <span className={`badge ${r.status === 'Pass' ? 'badge-paid' : 'badge-unpaid'}`}>
-                                {r.status}
-                              </span>
-                            </td>
-                            <td>
-                              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                <button
-                                  onClick={() =>
-                                    openPrintDocument('exam_result_card', {
-                                      ...r,
-                                      examTitle: examObj?.title,
-                                      courseName: examObj?.courseName
-                                    })
-                                  }
-                                  className="btn btn-secondary"
-                                  style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                >
-                                  <Printer size={13} />
-                                  <span>Print Marksheet</span>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                  ))
+                )}
               </div>
             </div>
           )}
 
-          {/* ===================== TAB 8: EXPENSES & ACCOUNTS ===================== */}
+          {/* ============================================================== */}
+          {/* TAB 7: OPERATING EXPENSES                                      */}
+          {/* ============================================================== */}
           {activeTab === 'expenses' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {/* Financial Snapshot */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem' }}>
                 <div className="card">
-                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>TOTAL REVENUE (FEES)</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#34d399' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>TOTAL REVENUE (FEES)</span>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#16a34a' }}>
                     {currency} {totalFeeCollected.toLocaleString()}
                   </div>
                 </div>
                 <div className="card">
-                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>TOTAL EXPENDITURE</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f87171' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>TOTAL EXPENDITURE</span>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#dc2626' }}>
                     {currency} {totalExpensesAmount.toLocaleString()}
                   </div>
                 </div>
                 <div className="card">
-                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>NET SURPLUS / PROFIT</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: netBalance >= 0 ? '#38bdf8' : '#f87171' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>NET SURPLUS</span>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: netBalance >= 0 ? '#0284c7' : '#dc2626' }}>
                     {currency} {netBalance.toLocaleString()}
                   </div>
                 </div>
                 <div className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <button onClick={() => setShowAddExpenseModal(true)} className="btn btn-primary" style={{ width: '100%' }}>
+                  <button onClick={() => openEditExpense(null)} className="btn btn-primary" style={{ width: '100%', padding: '0.75rem' }}>
                     <Plus size={16} />
                     <span>+ Add New Expense</span>
                   </button>
                 </div>
               </div>
 
-              {/* Expenses Table */}
+              {/* Expenses Ledger Table */}
               <div className="card" style={{ padding: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>Operational Expense Ledger</h3>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>Expense Ledger & Vouchers</h3>
                   <button onClick={() => exportToCSV('al_ghazi_expenses', expenses)} className="btn btn-secondary">
                     <Download size={14} />
                     <span>Export CSV</span>
@@ -2019,7 +1841,7 @@ export default function App() {
                       <tr>
                         <th>Voucher #</th>
                         <th>Date</th>
-                        <th>Title & Description</th>
+                        <th>Title</th>
                         <th>Category</th>
                         <th>Paid To</th>
                         <th>Method</th>
@@ -2028,41 +1850,47 @@ export default function App() {
                       </tr>
                     </thead>
                     <tbody>
-                      {expenses.map((e) => (
-                        <tr key={e.id}>
-                          <td style={{ fontWeight: 700 }}>{e.voucherNo || `EXP-${e.id}`}</td>
-                          <td>{e.date}</td>
-                          <td style={{ fontWeight: 600, color: '#0f172a' }}>{e.title}</td>
-                          <td>
-                            <span className="badge badge-neutral">{e.category}</span>
-                          </td>
-                          <td>{e.paidTo}</td>
-                          <td>{e.paymentMethod}</td>
-                          <td style={{ textAlign: 'right', fontWeight: 800, color: '#dc2626' }}>
-                            {currency} {Number(e.amount).toLocaleString()}
-                          </td>
-                          <td style={{ textAlign: 'center' }}>
-                            <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
-                              <button
-                                onClick={() => openEditExpenseModal(e)}
-                                className="btn btn-secondary"
-                                title="Edit Expense"
-                                style={{ padding: '0.25rem 0.45rem', fontSize: '0.72rem' }}
-                              >
-                                <Edit size={12} />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteExpense(e)}
-                                className="btn btn-secondary"
-                                title="Delete Expense"
-                                style={{ padding: '0.25rem 0.45rem', fontSize: '0.72rem', color: '#ef4444' }}
-                              >
-                                <Trash2 size={12} />
-                              </button>
-                            </div>
+                      {expenses.length === 0 ? (
+                        <tr>
+                          <td colSpan={8} style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                            No expenses recorded yet. Click "+ Add New Expense" to record rent, salaries, utilities, marketing, etc.
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        expenses.map((e) => (
+                          <tr key={e.id}>
+                            <td style={{ fontWeight: 800 }}>{e.voucherNo || `EXP-${e.id}`}</td>
+                            <td>{e.date}</td>
+                            <td style={{ fontWeight: 700, color: '#0f172a' }}>{e.title}</td>
+                            <td><span className="badge badge-neutral">{e.category}</span></td>
+                            <td>{e.paidTo}</td>
+                            <td>{e.paymentMethod}</td>
+                            <td style={{ textAlign: 'right', fontWeight: 800, color: '#dc2626' }}>
+                              {currency} {Number(e.amount).toLocaleString()}
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
+                              <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
+                                <button
+                                  onClick={() => openEditExpense(e)}
+                                  className="btn btn-secondary"
+                                  title="Edit Expense"
+                                  style={{ padding: '0.25rem 0.45rem', fontSize: '0.72rem' }}
+                                >
+                                  <Edit size={12} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteExpense(e)}
+                                  className="btn btn-secondary"
+                                  title="Delete Expense"
+                                  style={{ padding: '0.25rem 0.45rem', fontSize: '0.72rem', color: '#ef4444' }}
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -2070,380 +1898,102 @@ export default function App() {
             </div>
           )}
 
-          {/* ===================== TAB 9: CERTIFICATES ===================== */}
+          {/* ============================================================== */}
+          {/* TAB 8: ISSUED CERTIFICATES (4 CORNERS, OFFICIAL SEAL & QR)     */}
+          {/* ============================================================== */}
           {activeTab === 'certificates' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div
+                className="card"
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '1rem'
+                }}
+              >
                 <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
-                    Institute Certificate Management
+                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
+                    Authentic Verifiable Certificate Generator
                   </h3>
-                  <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                    Issue Course Completion, Character, Best Performer & Teacher Experience Certificates
+                  <p style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                    Issued with 4 luxury baroque corners, official metallic gold institute seal & verification QR code
                   </p>
                 </div>
-                <button onClick={() => setShowIssueCertModal(true)} className="btn btn-primary">
-                  <Plus size={15} />
-                  <span>Issue New Certificate</span>
+                <button
+                  onClick={() => {
+                    const sample = {
+                      certificateNo: `AG-CERT-2026-${String(certificates.length + 1).padStart(3, '0')}`,
+                      recipientName: students[0]?.name || 'Muhammad Usman Ali',
+                      fatherName: students[0]?.fatherName || 'Muhammad Tariq',
+                      rollNo: students[0]?.rollNo || 'AG-2026-0001',
+                      courseName: students[0]?.courseName || 'Full Stack Web Development',
+                      grade: 'A+ Distinction',
+                      duration: 'Session 2026-2027',
+                      issueDate: new Date().toISOString().split('T')[0]
+                    };
+                    openPrintDocument('certificate', sample);
+                  }}
+                  className="btn btn-gold"
+                >
+                  <Award size={16} />
+                  <span>Generate New Certificate</span>
                 </button>
               </div>
 
-              {/* Certificates Table */}
-              <div className="card" style={{ padding: '1rem' }}>
-                {certificates.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#64748b' }}>
-                    <Award size={48} color="#f59e0b" style={{ margin: '0 auto 1rem auto', opacity: 0.8 }} />
-                    <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.5rem' }}>
-                      No Certificates Issued Yet
-                    </h4>
-                    <p style={{ fontSize: '0.85rem', maxWidth: '440px', margin: '0 auto 1.25rem auto' }}>
-                      Issue student graduation and completion certificates with official golden seal, 4-corner filigree designs, and security QR code linking to http://alghazidigital.site.je/.
-                    </p>
-                    <button onClick={() => setShowIssueCertModal(true)} className="btn btn-primary">
-                      <Plus size={16} />
-                      <span>Issue First Certificate</span>
-                    </button>
-                  </div>
-                ) : (
+              {/* Issue certificate for students */}
+              <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
                 <div style={{ overflowX: 'auto' }}>
                   <table className="data-table">
                     <thead>
                       <tr>
-                        <th>Certificate ID</th>
-                        <th>Recipient Full Name</th>
-                        <th>Certificate Type</th>
-                        <th>Course / Role</th>
-                        <th>Grade / Distinction</th>
-                        <th>Issue Date</th>
-                        <th style={{ textAlign: 'center' }}>Print Certificate</th>
+                        <th>Roll #</th>
+                        <th>Student Name</th>
+                        <th>Course</th>
+                        <th>Fee Clearance</th>
+                        <th style={{ textAlign: 'center' }}>Issue & Print Certificate</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {certificates.map((cert) => (
-                        <tr key={cert.id}>
-                          <td style={{ fontWeight: 800, color: '#2563eb' }}>{cert.certId}</td>
-                          <td style={{ fontWeight: 700, color: '#0f172a' }}>{cert.recipientName}</td>
+                      {students.map((s) => (
+                        <tr key={s.id}>
+                          <td style={{ fontWeight: 800 }}>{s.rollNo}</td>
                           <td>
-                            <span className="badge badge-active">{cert.type}</span>
+                            <div style={{ fontWeight: 700 }}>{s.name}</div>
+                            <div style={{ fontSize: '0.72rem', color: '#64748b' }}>S/D of {s.fatherName}</div>
                           </td>
-                          <td>{cert.courseName}</td>
-                          <td>{cert.grade}</td>
-                          <td>{cert.issueDate}</td>
+                          <td>{s.courseName}</td>
                           <td>
-                            <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
-                              <button
-                                onClick={() => openEditCertModal(cert)}
-                                className="btn btn-secondary"
-                                title="Edit Certificate (Correct Mistake)"
-                                style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem', gap: '3px' }}
-                              >
-                                <Edit size={13} />
-                                <span>Edit</span>
-                              </button>
-                              <button
-                                onClick={() => openPrintDocument('certificate', cert)}
-                                className="btn btn-secondary"
-                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                              >
-                                <Printer size={13} />
-                                <span>Print</span>
-                              </button>
-                              <button
-                                onClick={() => handleDeleteCertificate(cert)}
-                                className="btn btn-secondary"
-                                title="Delete Certificate"
-                                style={{ padding: '0.3rem 0.45rem', fontSize: '0.75rem', color: '#ef4444' }}
-                              >
-                                <Trash2 size={13} />
-                              </button>
-                            </div>
+                            <span className={`badge ${Number(s.remainingFee) === 0 ? 'badge-paid' : 'badge-unpaid'}`}>
+                              {Number(s.remainingFee) === 0 ? 'Fee Fully Cleared' : `Dues: ${currency}${s.remainingFee}`}
+                            </span>
+                          </td>
+                          <td style={{ textAlign: 'center' }}>
+                            <button
+                              onClick={() => {
+                                const certData = {
+                                  certificateNo: `AG-CERT-2026-${s.rollNo.replace(/[^0-9]/g, '').slice(-3) || '001'}`,
+                                  recipientName: s.name,
+                                  fatherName: s.fatherName,
+                                  rollNo: s.rollNo,
+                                  courseName: s.courseName,
+                                  grade: 'A+ Distinction',
+                                  duration: settings.academicSession || 'Session 2026-2027',
+                                  issueDate: new Date().toISOString().split('T')[0]
+                                };
+                                openPrintDocument('certificate', certData);
+                              }}
+                              className="btn btn-gold"
+                              style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem' }}
+                            >
+                              <Award size={14} />
+                              <span>Print / Download Certificate</span>
+                            </button>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* ===================== TAB 10: REPORTS & ANALYTICS ===================== */}
-          {activeTab === 'reports' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div className="card">
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.25rem' }}>
-                  Executive Reports & Analytics Center
-                </h3>
-                <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                  Export institutional statements, financial audits & enrollment summaries
-                </p>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-                <div className="card">
-                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#2563eb', marginBottom: '0.5rem' }}>
-                    Fee Collection Ledger Report
-                  </h4>
-                  <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
-                    Complete line-item history of all student fee receipts, payment methods & dates.
-                  </p>
-                  <button onClick={() => exportToCSV('al_ghazi_fee_collection_report', payments)} className="btn btn-secondary" style={{ width: '100%' }}>
-                    <Download size={15} />
-                    <span>Export Fee Report (CSV)</span>
-                  </button>
-                </div>
-
-                <div className="card">
-                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f87171', marginBottom: '0.5rem' }}>
-                    Defaulters & Dues Statement
-                  </h4>
-                  <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
-                    List of students with outstanding fees, course info and parent contact numbers.
-                  </p>
-                  <button onClick={() => exportToCSV('al_ghazi_defaulters_report', defaultersList)} className="btn btn-secondary" style={{ width: '100%' }}>
-                    <Download size={15} />
-                    <span>Export Defaulters (CSV)</span>
-                  </button>
-                </div>
-
-                <div className="card">
-                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#34d399', marginBottom: '0.5rem' }}>
-                    Profit & Loss Statement
-                  </h4>
-                  <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
-                    Total Fee Collections minus Total Operational Expenses summary.
-                  </p>
-                  <button onClick={() => exportToCSV('al_ghazi_expenses_report', expenses)} className="btn btn-secondary" style={{ width: '100%' }}>
-                    <Download size={15} />
-                    <span>Export Expenses (CSV)</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ===================== TAB 11: PUBLIC PORTAL ===================== */}
-          {activeTab === 'portal' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {/* Public Hero Banner */}
-              <div
-                className="card"
-                style={{
-                  background: 'linear-gradient(135deg, #1e3a8a, #0b1120)',
-                  textAlign: 'center',
-                  padding: '3rem 1.5rem',
-                  border: '1px solid #3b82f6'
-                }}
-              >
-                <div style={{ width: 64, height: 64, borderRadius: '50%', backgroundColor: '#2563eb', margin: '0 auto 1rem auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <GraduationCap size={36} color="#ffffff" />
-                </div>
-                <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>
-                  {settings.academyName}
-                </h2>
-                <p style={{ fontSize: '1rem', color: '#93c5fd', maxWidth: '600px', margin: '0 auto 1.5rem auto' }}>
-                  {settings.tagline} • Admissions open for {settings.academicSession}
-                </p>
-                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                  <a
-                    href={`https://wa.me/${(settings.whatsappNumber || '').replace(/[^0-9]/g, '')}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn btn-success"
-                  >
-                    <Send size={16} />
-                    <span>Chat on WhatsApp</span>
-                  </a>
-                  <a href={`tel:${settings.phoneNumber}`} className="btn btn-secondary">
-                    <Phone size={16} />
-                    <span>Call: {settings.phoneNumber}</span>
-                  </a>
-                </div>
-              </div>
-
-              {/* Certificate Online Verification Box */}
-              <div className="card" style={{ backgroundColor: '#ffffff' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>
-                  Official Certificate Verification System
-                </h3>
-                <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
-                  Employers, institutions, and students can authenticate diplomas and credentials using the official Certificate ID.
-                </p>
-                <form onSubmit={handleVerifyCertificate} style={{ display: 'flex', gap: '0.5rem', maxWidth: '500px' }}>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. AG-CERT-2026-00101"
-                    value={portalCertQuery}
-                    onChange={(e) => setPortalCertQuery(e.target.value)}
-                    className="form-input"
-                  />
-                  <button type="submit" className="btn btn-primary">
-                    <ShieldCheck size={16} />
-                    <span>Verify</span>
-                  </button>
-                </form>
-
-                {portalCertResult && (
-                  <div style={{ marginTop: '1rem', padding: '1rem', borderRadius: '0.5rem', backgroundColor: portalCertResult.found ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${portalCertResult.found ? '#10b981' : '#ef4444'}` }}>
-                    {portalCertResult.found ? (
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#34d399', fontWeight: 800 }}>
-                          <CheckCircle size={18} />
-                          <span>VALID & VERIFIED CREDENTIAL</span>
-                        </div>
-                        <p style={{ fontSize: '0.85rem', color: '#0f172a', marginTop: '6px' }}>
-                          Conferred upon <strong>{portalCertResult.cert.recipientName}</strong> for{' '}
-                          <strong>{portalCertResult.cert.courseName}</strong> ({portalCertResult.cert.grade}).
-                          Issued on {portalCertResult.cert.issueDate}.
-                        </p>
-                      </div>
-                    ) : (
-                      <div style={{ color: '#f87171', fontSize: '0.85rem' }}>
-                        No certificate found matching ID: <strong>{portalCertResult.id}</strong>. Please verify the ID on your printed document.
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Online Admission Inquiry Form */}
-              <div className="card">
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>
-                  Online Admission Inquiry Form
-                </h3>
-                <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
-                  Interested in joining a diploma or professional course? Submit your inquiry directly to our admission desk.
-                </p>
-                <form onSubmit={handleInquirySubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-                  <div>
-                    <label className="form-label">Full Name *</label>
-                    <input
-                      type="text"
-                      required
-                      value={inquiryForm.name}
-                      onChange={(e) => setInquiryForm({ ...inquiryForm, name: e.target.value })}
-                      className="form-input"
-                    />
-                  </div>
-                  <div>
-                    <label className="form-label">Mobile Number *</label>
-                    <input
-                      type="text"
-                      required
-                      value={inquiryForm.phone}
-                      onChange={(e) => setInquiryForm({ ...inquiryForm, phone: e.target.value })}
-                      className="form-input"
-                    />
-                  </div>
-                  <div>
-                    <label className="form-label">Email</label>
-                    <input
-                      type="email"
-                      value={inquiryForm.email}
-                      onChange={(e) => setInquiryForm({ ...inquiryForm, email: e.target.value })}
-                      className="form-input"
-                    />
-                  </div>
-                  <div>
-                    <label className="form-label">Course of Interest *</label>
-                    <select
-                      required
-                      value={inquiryForm.courseInterest}
-                      onChange={(e) => setInquiryForm({ ...inquiryForm, courseInterest: e.target.value })}
-                      className="form-select"
-                    >
-                      <option value="">Select Course...</option>
-                      {courses.map((c) => (
-                        <option key={c.id} value={c.name}>{c.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div style={{ gridColumn: '1 / -1' }}>
-                    <label className="form-label">Message / Queries</label>
-                    <textarea
-                      rows={2}
-                      value={inquiryForm.message}
-                      onChange={(e) => setInquiryForm({ ...inquiryForm, message: e.target.value })}
-                      className="form-textarea"
-                    />
-                  </div>
-                  <div>
-                    <button type="submit" className="btn btn-primary">
-                      <span>Submit Inquiry</span>
-                      <ArrowRight size={16} />
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-
-          {/* ===================== TAB 12: SETTINGS ===================== */}
-          {activeTab === 'settings' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '800px' }}>
-              <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
-                    Institute Identity & Configuration
-                  </h3>
-                  <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                    Manage branding, colors, fee receipts, currency & database backups
-                  </p>
-                </div>
-                <button onClick={() => setShowSetupWizard(true)} className="btn btn-primary">
-                  <Settings size={16} />
-                  <span>Open Setup Wizard</span>
-                </button>
-              </div>
-
-              {/* Current Institute Summary Card */}
-              <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  {settings.logoUrl ? (
-                    <img src={settings.logoUrl} alt="Logo" style={{ width: 64, height: 64, objectFit: 'contain' }} />
-                  ) : (
-                    <div style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <GraduationCap size={32} color="#60a5fa" />
-                    </div>
-                  )}
-                  <div>
-                    <h4 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>{settings.academyName}</h4>
-                    <p style={{ fontSize: '0.85rem', color: '#64748b' }}>{settings.tagline}</p>
-                    <p style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                      {settings.address}, {settings.city} • Ph: {settings.phoneNumber}
-                    </p>
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem', fontSize: '0.85rem' }}>
-                  <div><strong>Academic Session:</strong> {settings.academicSession}</div>
-                  <div><strong>Currency:</strong> {settings.currency} ({settings.currencySymbol})</div>
-                  <div><strong>Receipt Prefix:</strong> {settings.receiptPrefix}</div>
-                  <div><strong>Principal:</strong> {settings.principalName}</div>
-                  <div><strong>Director:</strong> {settings.directorName}</div>
-                  <div><strong>SMS Header:</strong> {settings.smsSenderName}</div>
-                </div>
-              </div>
-
-              {/* Database Actions */}
-              <div className="card">
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.5rem' }}>
-                  Data Integrity & Backup
-                </h4>
-                <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
-                  Save your institute records or reset sample data at any time.
-                </p>
-                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                  <button onClick={() => setShowBackupModal(true)} className="btn btn-secondary">
-                    <Download size={16} />
-                    <span>Backup / Restore System</span>
-                  </button>
-                  <button onClick={handleClearAllRecords} className="btn btn-danger" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Trash2 size={16} />
-                    <span>Clear All Records</span>
-                  </button>
                 </div>
               </div>
             </div>
@@ -2451,62 +2001,51 @@ export default function App() {
         </main>
       </div>
 
-      {/* ===================== FORM MODALS ===================== */}
-
-      {/* COLLECT FEE MODAL */}
+      {/* ============================================================== */}
+      {/* MODAL: COLLECT STUDENT FEE (FIXED & FULLY FUNCTIONAL)          */}
+      {/* ============================================================== */}
       {showCollectFeeModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>Collect Student Fee</h3>
-              <button onClick={() => setShowCollectFeeModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
+            {/* Modal Header with Institute Logo / Official Seal */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '1.25rem 1.5rem',
+                borderBottom: '1px solid #e8e6df',
+                backgroundColor: '#faf9f5'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                {settings.logoUrl ? (
+                  <img src={settings.logoUrl} alt="Logo" style={{ width: 38, height: 38, objectFit: 'contain' }} />
+                ) : (
+                  <OfficialSeal size={38} />
+                )}
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                    Receive & Collect Student Fee
+                  </h3>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                    {settings.academyName} • Accounts & Cashier Desk
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowCollectFeeModal(false);
+                  setPreselectedStudentForFee(null);
+                }}
+                style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 4 }}
+              >
                 <X size={20} />
               </button>
             </div>
+
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.target;
-                const studentId = Number(form.studentId.value);
-                const selectedStudent = students.find((s) => s.id === studentId);
-                const paid = Number(form.paidAmount.value);
-                const discount = Number(form.discountAmount.value || 0);
-                const fine = Number(form.fineAmount.value || 0);
-                const newPaid = Number(selectedStudent.paidFee || 0) + paid;
-                const newRemaining = Math.max(0, Number(selectedStudent.totalFee) - newPaid - discount);
-
-                const newReceipt = {
-                  id: Date.now(),
-                  receiptNo: `${settings.receiptPrefix || 'REC-2026-'}${String(settings.nextReceiptSeq || 105).padStart(5, '0')}`,
-                  studentId: selectedStudent.id,
-                  studentRollNo: selectedStudent.rollNo,
-                  studentName: selectedStudent.name,
-                  courseName: selectedStudent.courseName,
-                  feeMonth: form.feeMonth.value,
-                  dueDate: form.dueDate.value,
-                  actualFee: Number(selectedStudent.monthlyFee || selectedStudent.totalFee),
-                  discountAmount: discount,
-                  fineAmount: fine,
-                  paidAmount: paid,
-                  remainingDue: newRemaining,
-                  paymentDate: form.paymentDate.value,
-                  paymentMethod: form.paymentMethod.value,
-                  remarks: form.remarks.value,
-                  receivedBy: form.receivedBy.value || 'Admin',
-                  status: 'Paid'
-                };
-
-                setPayments([newReceipt, ...payments]);
-                setStudents(
-                  students.map((s) => (s.id === selectedStudent.id ? { ...s, paidFee: newPaid, remainingFee: newRemaining } : s))
-                );
-                setSettings({ ...settings, nextReceiptSeq: (settings.nextReceiptSeq || 105) + 1 });
-                setShowCollectFeeModal(false);
-                showToast(`Fee payment of ${currency} ${paid.toLocaleString()} recorded!`);
-
-                // Open print modal & prompt WhatsApp alert
-                openPrintDocument('fee_receipt', newReceipt);
-              }}
+              onSubmit={handleCollectFeeSubmit}
               style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
             >
               <div>
@@ -2517,10 +2056,10 @@ export default function App() {
                   defaultValue={preselectedStudentForFee?.id || ''}
                   className="form-select"
                 >
-                  <option value="">Choose Student...</option>
+                  <option value="">-- Choose Student by Name & Roll --</option>
                   {students.map((s) => (
                     <option key={s.id} value={s.id}>
-                      {s.rollNo} - {s.name} ({s.courseName} | Due: {currency} {Number(s.remainingFee).toLocaleString()})
+                      {s.name} ({s.rollNo}) - Course: {s.courseName} | Due: {currency} {Number(s.remainingFee || 0).toLocaleString()}
                     </option>
                   ))}
                 </select>
@@ -2528,64 +2067,103 @@ export default function App() {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                 <div>
-                  <label className="form-label">Fee Month / Installment *</label>
-                  <input type="text" name="feeMonth" required defaultValue="October 2026" className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Payment Date *</label>
-                  <input type="date" name="paymentDate" required defaultValue={new Date().toISOString().split('T')[0]} className="form-input" />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-                <div>
                   <label className="form-label">Amount Paid ({currency}) *</label>
-                  <input type="number" name="paidAmount" required min="1" placeholder="5000" className="form-input" />
+                  <input
+                    type="number"
+                    name="paidAmount"
+                    required
+                    min="1"
+                    placeholder="e.g. 5000"
+                    defaultValue={preselectedStudentForFee?.monthlyFee || 5000}
+                    className="form-input"
+                    style={{ fontSize: '1rem', fontWeight: 800, color: '#16a34a' }}
+                  />
                 </div>
                 <div>
-                  <label className="form-label">Discount Amount</label>
-                  <input type="number" name="discountAmount" defaultValue="0" min="0" className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Late Fine</label>
-                  <input type="number" name="fineAmount" defaultValue="0" min="0" className="form-input" />
+                  <label className="form-label">Concession / Discount ({currency})</label>
+                  <input
+                    type="number"
+                    name="discountAmount"
+                    defaultValue="0"
+                    min="0"
+                    className="form-input"
+                  />
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                 <div>
-                  <label className="form-label">Payment Method *</label>
-                  <select name="paymentMethod" required className="form-select">
-                    <option value="Cash">Cash</option>
-                    <option value="EasyPaisa">EasyPaisa</option>
+                  <label className="form-label">Fee Month / Installment Period</label>
+                  <select name="feeMonth" className="form-select">
+                    {['Admission Installment', 'October 2026', 'November 2026', 'December 2026', 'January 2027', 'February 2027', 'Full Course Clearance'].map((m) => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="form-label">Payment Date</label>
+                  <input
+                    type="date"
+                    name="paymentDate"
+                    defaultValue={new Date().toISOString().split('T')[0]}
+                    className="form-input"
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+                <div>
+                  <label className="form-label">Payment Mode</label>
+                  <select name="paymentMethod" className="form-select">
+                    <option value="Cash">Cash (Campus Counter)</option>
                     <option value="JazzCash">JazzCash</option>
-                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="EasyPaisa">EasyPaisa</option>
+                    <option value="Bank Transfer">Bank Transfer / Online</option>
                     <option value="Cheque">Cheque</option>
                   </select>
                 </div>
                 <div>
-                  <label className="form-label">Due Date</label>
-                  <input type="date" name="dueDate" defaultValue={new Date().toISOString().split('T')[0]} className="form-input" />
+                  <label className="form-label">Remarks / Memo</label>
+                  <input
+                    type="text"
+                    name="remarks"
+                    placeholder="e.g. Tuition fee received in cash"
+                    className="form-input"
+                  />
                 </div>
               </div>
 
-              <div>
-                <label className="form-label">Received By</label>
-                <input type="text" name="receivedBy" defaultValue="Admin Officer" className="form-input" />
+              <div
+                style={{
+                  padding: '10px 14px',
+                  backgroundColor: '#f0fdf4',
+                  borderRadius: '6px',
+                  border: '1px solid #bbf7d0',
+                  fontSize: '0.78rem',
+                  color: '#166534',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                <Send size={16} />
+                <span>Submitting will instantly update student balance and prompt WhatsApp/SMS alert to Parents!</span>
               </div>
 
-              <div>
-                <label className="form-label">Remarks / Note</label>
-                <input type="text" name="remarks" placeholder="Fee receipt notes..." className="form-input" />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
-                <button type="button" onClick={() => setShowCollectFeeModal(false)} className="btn btn-secondary">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowCollectFeeModal(false);
+                    setPreselectedStudentForFee(null);
+                  }}
+                  className="btn btn-secondary"
+                >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-success">
+                <button type="submit" className="btn btn-success" style={{ padding: '0.6rem 1.25rem', gap: '6px' }}>
                   <Check size={16} />
-                  <span>Record Payment & Print Receipt</span>
+                  <span>Receive Payment & Alert Parents</span>
                 </button>
               </div>
             </form>
@@ -2593,30 +2171,330 @@ export default function App() {
         </div>
       )}
 
-      {/* ADD / EDIT STUDENT MODAL */}
-      {showAddStudentModal && (
+      {/* ============================================================== */}
+      {/* MODAL: EDIT FEE PAYMENT (FIX MISTAKES IN FEE RECORDS)           */}
+      {/* ============================================================== */}
+      {showEditPaymentModal && editingPayment && (
         <div className="modal-overlay">
-          <div className="modal-content modal-content-wide">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>
-                {editingStudent ? 'Edit Student Details' : 'Enroll New Student'}
-              </h3>
-              <button onClick={() => setShowAddStudentModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
+          <div className="modal-content">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '1.25rem 1.5rem',
+                borderBottom: '1px solid #e8e6df',
+                backgroundColor: '#faf9f5'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <OfficialSeal size={36} />
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                    Edit Fee Receipt #{editingPayment.receiptNo}
+                  </h3>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                    Correct any typo or mistake in student fee payment
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowEditPaymentModal(false);
+                  setEditingPayment(null);
+                }}
+                style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}
+              >
                 <X size={20} />
               </button>
             </div>
+
+            <form
+              onSubmit={handleSaveEditedPayment}
+              style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
+            >
+              <div style={{ padding: '8px 12px', backgroundColor: '#f8f7f4', borderRadius: '6px', fontSize: '0.8rem' }}>
+                <strong>Student:</strong> {editingPayment.studentName} ({editingPayment.studentRollNo}) • Course: {editingPayment.courseName}
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+                <div>
+                  <label className="form-label">Corrected Paid Amount ({currency}) *</label>
+                  <input
+                    type="number"
+                    name="paidAmount"
+                    required
+                    min="1"
+                    defaultValue={editingPayment.paidAmount}
+                    className="form-input"
+                    style={{ fontSize: '1rem', fontWeight: 800, color: '#16a34a' }}
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Payment Date</label>
+                  <input
+                    type="date"
+                    name="paymentDate"
+                    defaultValue={editingPayment.paymentDate}
+                    className="form-input"
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+                <div>
+                  <label className="form-label">Fee Month / Installment</label>
+                  <input
+                    type="text"
+                    name="feeMonth"
+                    defaultValue={editingPayment.feeMonth || 'Monthly'}
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Payment Method</label>
+                  <select name="paymentMethod" defaultValue={editingPayment.paymentMethod || 'Cash'} className="form-select">
+                    <option value="Cash">Cash</option>
+                    <option value="JazzCash">JazzCash</option>
+                    <option value="EasyPaisa">EasyPaisa</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="form-label">Correction Note / Reason</label>
+                <input
+                  type="text"
+                  name="remarks"
+                  defaultValue={editingPayment.remarks || 'Amount corrected'}
+                  className="form-input"
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEditPaymentModal(false);
+                    setEditingPayment(null);
+                  }}
+                  className="btn btn-secondary"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  <Check size={16} />
+                  <span>Save Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* MODAL: COURSE ADMITTED STUDENTS VIEW (COURSE KE HISAB SE)      */}
+      {/* ============================================================== */}
+      {selectedCourseForStudentsModal && (
+        <div className="modal-overlay">
+          <div className="modal-content modal-content-wide">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '1.25rem 1.5rem',
+                borderBottom: '1px solid #e8e6df',
+                backgroundColor: '#faf9f5'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                {settings.logoUrl ? (
+                  <img src={settings.logoUrl} alt="Logo" style={{ width: 38, height: 38, objectFit: 'contain' }} />
+                ) : (
+                  <OfficialSeal size={38} />
+                )}
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                    {selectedCourseForStudentsModal.name} - Admitted Students
+                  </h3>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                    Code: {selectedCourseForStudentsModal.code} • Total Fee: {currency}{Number(selectedCourseForStudentsModal.totalFee).toLocaleString()} • Instructor: {selectedCourseForStudentsModal.instructor}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedCourseForStudentsModal(null)}
+                style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div style={{ padding: '1.25rem' }}>
+              {(() => {
+                const enrolled = students.filter(
+                  (s) => s.courseName === selectedCourseForStudentsModal.name || s.courseId === selectedCourseForStudentsModal.id
+                );
+                if (enrolled.length === 0) {
+                  return (
+                    <div style={{ textAlign: 'center', padding: '2.5rem', color: '#64748b' }}>
+                      <Users size={36} color="#cbd5e1" style={{ margin: '0 auto 8px auto' }} />
+                      <p style={{ margin: 0, fontWeight: 600 }}>No students currently admitted in this course.</p>
+                      <button
+                        onClick={() => {
+                          setSelectedCourseForStudentsModal(null);
+                          openStudentModal(null);
+                        }}
+                        className="btn btn-primary"
+                        style={{ marginTop: '12px' }}
+                      >
+                        <Plus size={15} />
+                        <span>Enroll Student in this Course</span>
+                      </button>
+                    </div>
+                  );
+                }
+                return (
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0f172a' }}>
+                        Total Enrolled Students: {enrolled.length}
+                      </span>
+                      <button
+                        onClick={() => exportToCSV(`${selectedCourseForStudentsModal.name}_students`, enrolled)}
+                        className="btn btn-secondary"
+                        style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
+                      >
+                        <Download size={13} />
+                        <span>Export Course Roster</span>
+                      </button>
+                    </div>
+
+                    <table className="data-table">
+                      <thead>
+                        <tr>
+                          <th>Roll #</th>
+                          <th>Student Name & Father</th>
+                          <th>Parent WhatsApp</th>
+                          <th style={{ textAlign: 'right' }}>Total Fee</th>
+                          <th style={{ textAlign: 'right' }}>Paid</th>
+                          <th style={{ textAlign: 'right' }}>Remaining Due</th>
+                          <th style={{ textAlign: 'center' }}>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {enrolled.map((s) => (
+                          <tr key={s.id}>
+                            <td style={{ fontWeight: 800, color: '#2563eb' }}>{s.rollNo}</td>
+                            <td>
+                              <div style={{ fontWeight: 700, color: '#0f172a' }}>{s.name}</div>
+                              <div style={{ fontSize: '0.72rem', color: '#64748b' }}>S/D of {s.fatherName}</div>
+                            </td>
+                            <td>{s.parentPhone || s.phone}</td>
+                            <td style={{ textAlign: 'right' }}>{currency} {Number(s.totalFee).toLocaleString()}</td>
+                            <td style={{ textAlign: 'right', color: '#16a34a', fontWeight: 700 }}>
+                              {currency} {Number(s.paidFee).toLocaleString()}
+                            </td>
+                            <td
+                              style={{
+                                textAlign: 'right',
+                                fontWeight: 800,
+                                color: Number(s.remainingFee) > 0 ? '#dc2626' : '#16a34a'
+                              }}
+                            >
+                              {currency} {Number(s.remainingFee).toLocaleString()}
+                            </td>
+                            <td>
+                              <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
+                                <button
+                                  onClick={() => {
+                                    setSelectedCourseForStudentsModal(null);
+                                    setPreselectedStudentForFee(s);
+                                    setShowCollectFeeModal(true);
+                                  }}
+                                  className="btn btn-primary"
+                                  style={{ padding: '0.25rem 0.45rem', fontSize: '0.72rem' }}
+                                >
+                                  <CreditCard size={12} />
+                                  <span>Collect</span>
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setSelectedCourseForStudentsModal(null);
+                                    openPrintDocument('student_id_card', s);
+                                  }}
+                                  className="btn btn-secondary"
+                                  style={{ padding: '0.25rem 0.45rem', fontSize: '0.72rem' }}
+                                >
+                                  <Printer size={12} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* MODAL: ADD / EDIT STUDENT (WITH IMAGE UPLOAD & LOGO)           */}
+      {/* ============================================================== */}
+      {showAddStudentModal && (
+        <div className="modal-overlay">
+          <div className="modal-content modal-content-wide">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '1.25rem 1.5rem',
+                borderBottom: '1px solid #e8e6df',
+                backgroundColor: '#faf9f5'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                {settings.logoUrl ? (
+                  <img src={settings.logoUrl} alt="Logo" style={{ width: 38, height: 38, objectFit: 'contain' }} />
+                ) : (
+                  <OfficialSeal size={38} />
+                )}
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                    {editingStudent ? 'Edit Student Details' : 'Student Admission Form'}
+                  </h3>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                    {settings.academyName} • Registry & Admissions Desk
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowAddStudentModal(false)}
+                style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 const form = e.target;
-                const total = Number(form.totalFee.value);
-                const paid = Number(form.paidFee.value || 0);
-                const discount = Number(form.discount.value || 0);
-                const rem = Math.max(0, total - paid - discount);
+                const total = Number(form.totalFee.value) || 0;
+                const paid = Number(form.paidFee.value) || 0;
+                const discount = Number(form.discount?.value) || 0;
+                const remaining = Math.max(0, total - paid - discount);
 
                 if (editingStudent) {
-                  setStudents(
-                    students.map((s) =>
+                  setStudents((prev) =>
+                    prev.map((s) =>
                       s.id === editingStudent.id
                         ? {
                             ...s,
@@ -2627,10 +2505,7 @@ export default function App() {
                             courseName: form.courseName.value,
                             totalFee: total,
                             paidFee: paid,
-                            remainingFee: rem,
-                            status: form.status.value,
-                            city: form.city.value,
-                            address: form.address.value,
+                            remainingFee: remaining,
                             photoUrl: studentPhoto || s.photoUrl || ''
                           }
                         : s
@@ -2638,35 +2513,21 @@ export default function App() {
                   );
                   showToast('Student details updated successfully!');
                 } else {
+                  const rollNo = `AG-2026-${String(students.length + 1).padStart(4, '0')}`;
                   const newStudent = {
                     id: Date.now(),
-                    rollNo: `AG-2026-${String(students.length + 1).padStart(4, '0')}`,
-                    admissionNo: `ADM-${800 + students.length + 1}`,
+                    rollNo,
                     name: form.name.value,
                     fatherName: form.fatherName.value,
-                    motherName: form.motherName.value || '',
-                    guardianName: form.fatherName.value,
-                    fatherCnic: form.fatherCnic.value || '',
-                    dob: form.dob.value || '',
-                    gender: form.gender.value || 'Male',
-                    bloodGroup: form.bloodGroup.value || 'O+',
                     phone: form.phone.value,
-                    whatsapp: form.phone.value,
                     parentPhone: form.parentPhone.value,
-                    emergencyContact: form.parentPhone.value,
-                    email: form.email.value || '',
-                    address: form.address.value || '',
-                    city: form.city.value || 'Lahore',
                     courseName: form.courseName.value,
-                    batch: 'Morning Shift',
-                    admissionDate: new Date().toISOString().split('T')[0],
-                    monthlyFee: 5000,
                     totalFee: total,
-                    discount: discount,
                     paidFee: paid,
-                    remainingFee: rem,
+                    discount,
+                    remainingFee: remaining,
+                    admissionDate: new Date().toISOString().split('T')[0],
                     status: 'Active',
-                    remarks: form.remarks.value || '',
                     photoUrl: studentPhoto || ''
                   };
                   setStudents([newStudent, ...students]);
@@ -2676,100 +2537,110 @@ export default function App() {
               }}
               style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
             >
+              {/* IMAGE UPLOAD OPTION FOR STUDENT */}
               <ImageUploadField
                 value={studentPhoto}
                 onChange={setStudentPhoto}
-                label="Student Photo (Passport Size)"
-                placeholderText="Upload JPG/PNG photo for Student ID & Admission Form"
-                subText="Dimensions: Passport Size (JPG, PNG, WEBP)"
+                label="Student Passport-Size Photo"
+                placeholderText="Upload Student Photo"
+                subText="Will appear on Admission Form, Student ID Card & Certificate"
+                shape="circle"
               />
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                 <div>
                   <label className="form-label">Student Full Name *</label>
-                  <input type="text" name="name" required defaultValue={editingStudent?.name || ''} className="form-input" />
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    defaultValue={editingStudent?.name || ''}
+                    placeholder="e.g. Muhammad Ali"
+                    className="form-input"
+                  />
                 </div>
                 <div>
-                  <label className="form-label">Father's Name *</label>
-                  <input type="text" name="fatherName" required defaultValue={editingStudent?.fatherName || ''} className="form-input" />
+                  <label className="form-label">Father / Guardian Name *</label>
+                  <input
+                    type="text"
+                    name="fatherName"
+                    required
+                    defaultValue={editingStudent?.fatherName || ''}
+                    placeholder="e.g. Muhammad Tariq"
+                    className="form-input"
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+                <div>
+                  <label className="form-label">Student Phone / WhatsApp</label>
+                  <input
+                    type="text"
+                    name="phone"
+                    defaultValue={editingStudent?.phone || ''}
+                    placeholder="0300-1234567"
+                    className="form-input"
+                  />
                 </div>
                 <div>
-                  <label className="form-label">Mother's Name</label>
-                  <input type="text" name="motherName" defaultValue={editingStudent?.motherName || ''} className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Father / Guardian CNIC</label>
-                  <input type="text" name="fatherCnic" defaultValue={editingStudent?.fatherCnic || ''} placeholder="35201-XXXXXXX-X" className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Student Mobile *</label>
-                  <input type="text" name="phone" required defaultValue={editingStudent?.phone || ''} className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Parent WhatsApp (For Receipts) *</label>
-                  <input type="text" name="parentPhone" required defaultValue={editingStudent?.parentPhone || ''} className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Course / Program *</label>
-                  <select name="courseName" required defaultValue={editingStudent?.courseName || courses[0]?.name} className="form-select">
-                    {courses.map((c) => (
-                      <option key={c.id} value={c.name}>{c.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="form-label">Gender</label>
-                  <select name="gender" defaultValue={editingStudent?.gender || 'Male'} className="form-select">
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="form-label">Date of Birth</label>
-                  <input type="date" name="dob" defaultValue={editingStudent?.dob || '2005-01-01'} className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Blood Group</label>
-                  <input type="text" name="bloodGroup" defaultValue={editingStudent?.bloodGroup || 'B+'} className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Total Agreed Fee ({currency}) *</label>
-                  <input type="number" name="totalFee" required defaultValue={editingStudent?.totalFee || 25000} className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Initial Paid Fee ({currency})</label>
-                  <input type="number" name="paidFee" defaultValue={editingStudent?.paidFee || 0} className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Discount / Scholarship</label>
-                  <input type="number" name="discount" defaultValue={editingStudent?.discount || 0} className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">City</label>
-                  <input type="text" name="city" defaultValue={editingStudent?.city || 'Lahore'} className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Status</label>
-                  <select name="status" defaultValue={editingStudent?.status || 'Active'} className="form-select">
-                    <option value="Active">Active</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="form-label">Email</label>
-                  <input type="email" name="email" defaultValue={editingStudent?.email || ''} className="form-input" />
+                  <label className="form-label">Parent WhatsApp (For Fee SMS Alerts) *</label>
+                  <input
+                    type="text"
+                    name="parentPhone"
+                    required
+                    defaultValue={editingStudent?.parentPhone || ''}
+                    placeholder="0300-7654321"
+                    className="form-input"
+                  />
                 </div>
               </div>
 
               <div>
-                <label className="form-label">Home Address</label>
-                <input type="text" name="address" defaultValue={editingStudent?.address || ''} className="form-input" />
+                <label className="form-label">Select Course of Admission *</label>
+                <select
+                  name="courseName"
+                  required
+                  defaultValue={editingStudent?.courseName || courses[0]?.name}
+                  className="form-select"
+                >
+                  {courses.map((c) => (
+                    <option key={c.id} value={c.name}>
+                      {c.name} ({currency} {Number(c.totalFee).toLocaleString()})
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div>
-                <label className="form-label">Remarks / Special Notes</label>
-                <input type="text" name="remarks" defaultValue={editingStudent?.remarks || ''} className="form-input" />
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                <div>
+                  <label className="form-label">Total Course Fee ({currency}) *</label>
+                  <input
+                    type="number"
+                    name="totalFee"
+                    required
+                    defaultValue={editingStudent?.totalFee || 20000}
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Initial Fee Paid ({currency})</label>
+                  <input
+                    type="number"
+                    name="paidFee"
+                    defaultValue={editingStudent?.paidFee || 0}
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Discount / Scholarship ({currency})</label>
+                  <input
+                    type="number"
+                    name="discount"
+                    defaultValue={editingStudent?.discount || 0}
+                    className="form-input"
+                  />
+                </div>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
@@ -2786,25 +2657,45 @@ export default function App() {
         </div>
       )}
 
-      {/* ADD / EDIT TEACHER MODAL */}
+      {/* ============================================================== */}
+      {/* MODAL: ADD / EDIT TEACHER (WITH IMAGE UPLOAD & LOGO)           */}
+      {/* ============================================================== */}
       {showAddTeacherModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>
-                {editingTeacher ? 'Edit Teacher Details' : 'Add New Faculty Member'}
-              </h3>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '1.25rem 1.5rem',
+                borderBottom: '1px solid #e8e6df',
+                backgroundColor: '#faf9f5'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <OfficialSeal size={38} />
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                    {editingTeacher ? 'Edit Teacher Details' : 'Faculty Registration Form'}
+                  </h3>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                    {settings.academyName} • HR & Faculty Records
+                  </span>
+                </div>
+              </div>
               <button onClick={() => setShowAddTeacherModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
                 <X size={20} />
               </button>
             </div>
+
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 const form = e.target;
                 if (editingTeacher) {
-                  setTeachers(
-                    teachers.map((t) =>
+                  setTeachers((prev) =>
+                    prev.map((t) =>
                       t.id === editingTeacher.id
                         ? {
                             ...t,
@@ -2812,7 +2703,7 @@ export default function App() {
                             qualification: form.qualification.value,
                             assignedCourses: form.assignedCourses.value,
                             phone: form.phone.value,
-                            monthlySalary: Number(form.monthlySalary.value),
+                            monthlySalary: Number(form.monthlySalary.value) || 0,
                             photoUrl: teacherPhoto || t.photoUrl || ''
                           }
                         : t
@@ -2820,20 +2711,18 @@ export default function App() {
                   );
                   showToast('Teacher details updated!');
                 } else {
-                  const newTeacher = {
+                  const newT = {
                     id: Date.now(),
-                    teacherId: `TCH-${String(teachers.length + 1).padStart(3, '0')}`,
+                    teacherId: `TCH-${String(teachers.length + 101).padStart(3, '0')}`,
                     name: form.name.value,
                     qualification: form.qualification.value,
                     assignedCourses: form.assignedCourses.value,
                     phone: form.phone.value,
-                    monthlySalary: Number(form.monthlySalary.value),
-                    joiningDate: new Date().toISOString().split('T')[0],
-                    status: 'Active',
+                    monthlySalary: Number(form.monthlySalary.value) || 0,
                     photoUrl: teacherPhoto || ''
                   };
-                  setTeachers([newTeacher, ...teachers]);
-                  showToast(`Teacher ${newTeacher.name} added!`);
+                  setTeachers([newT, ...teachers]);
+                  showToast(`Teacher ${newT.name} added!`);
                 }
                 setShowAddTeacherModal(false);
               }}
@@ -2843,33 +2732,62 @@ export default function App() {
                 value={teacherPhoto}
                 onChange={setTeacherPhoto}
                 label="Teacher / Faculty Photo"
-                placeholderText="Upload professional instructor headshot"
-                subText="Will appear on Faculty directory, Teacher ID card & salary voucher"
+                placeholderText="Upload Instructor Headshot"
+                subText="Will appear on Teacher ID Card & Salary Voucher"
                 shape="circle"
               />
+
               <div>
                 <label className="form-label">Teacher Full Name *</label>
-                <input type="text" name="name" required defaultValue={editingTeacher?.name || ''} className="form-input" />
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  defaultValue={editingTeacher?.name || ''}
+                  className="form-input"
+                />
               </div>
-              <div>
-                <label className="form-label">Qualification / Degrees *</label>
-                <input type="text" name="qualification" required defaultValue={editingTeacher?.qualification || ''} placeholder="e.g. MS Computer Science" className="form-input" />
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+                <div>
+                  <label className="form-label">Qualification / Title</label>
+                  <input
+                    type="text"
+                    name="qualification"
+                    defaultValue={editingTeacher?.qualification || 'BS Computer Science'}
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Phone / WhatsApp *</label>
+                  <input
+                    type="text"
+                    name="phone"
+                    required
+                    defaultValue={editingTeacher?.phone || '0300-1234567'}
+                    className="form-input"
+                  />
+                </div>
               </div>
+
               <div>
-                <label className="form-label">Assigned Course / Subject *</label>
-                <select name="assignedCourses" required defaultValue={editingTeacher?.assignedCourses || courses[0]?.name} className="form-select">
-                  {courses.map((c) => (
-                    <option key={c.id} value={c.name}>{c.name}</option>
-                  ))}
-                </select>
+                <label className="form-label">Assigned Courses</label>
+                <input
+                  type="text"
+                  name="assignedCourses"
+                  defaultValue={editingTeacher?.assignedCourses || courses[0]?.name}
+                  className="form-input"
+                />
               </div>
+
               <div>
-                <label className="form-label">Phone Number *</label>
-                <input type="text" name="phone" required defaultValue={editingTeacher?.phone || ''} className="form-input" />
-              </div>
-              <div>
-                <label className="form-label">Monthly Honorarium / Salary ({currency}) *</label>
-                <input type="number" name="monthlySalary" required defaultValue={editingTeacher?.monthlySalary || 50000} className="form-input" />
+                <label className="form-label">Monthly Honorarium / Salary ({currency})</label>
+                <input
+                  type="number"
+                  name="monthlySalary"
+                  defaultValue={editingTeacher?.monthlySalary || 45000}
+                  className="form-input"
+                />
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
@@ -2878,7 +2796,7 @@ export default function App() {
                 </button>
                 <button type="submit" className="btn btn-primary">
                   <Check size={16} />
-                  <span>Save Teacher</span>
+                  <span>{editingTeacher ? 'Save Changes' : 'Register Faculty'}</span>
                 </button>
               </div>
             </form>
@@ -2886,54 +2804,64 @@ export default function App() {
         </div>
       )}
 
-      {/* ADD / EDIT COURSE MODAL */}
+      {/* ============================================================== */}
+      {/* MODAL: ADD / EDIT COURSE                                       */}
+      {/* ============================================================== */}
       {showAddCourseModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>
-                {editingCourse ? 'Edit Course' : 'Create New Course / Batch'}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '1.25rem 1.5rem',
+                borderBottom: '1px solid #e8e6df',
+                backgroundColor: '#faf9f5'
+              }}
+            >
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                {editingCourse ? 'Edit Course Program' : 'Add New Academic Course'}
               </h3>
               <button onClick={() => setShowAddCourseModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
                 <X size={20} />
               </button>
             </div>
+
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 const form = e.target;
                 if (editingCourse) {
-                  setCourses(
-                    courses.map((c) =>
+                  setCourses((prev) =>
+                    prev.map((c) =>
                       c.id === editingCourse.id
                         ? {
                             ...c,
                             name: form.name.value,
                             code: form.code.value,
                             duration: form.duration.value,
-                            totalFee: Number(form.totalFee.value),
-                            monthlyFee: Number(form.monthlyFee.value),
-                            instructor: form.instructor.value,
-                            syllabus: form.syllabus.value
+                            totalFee: Number(form.totalFee.value) || 0,
+                            monthlyFee: Number(form.monthlyFee.value) || 0,
+                            instructor: form.instructor.value
                           }
                         : c
                     )
                   );
-                  showToast('Course updated successfully!');
+                  showToast('Course program updated!');
                 } else {
-                  const newCourse = {
+                  const newC = {
                     id: Date.now(),
                     name: form.name.value,
                     code: form.code.value,
                     duration: form.duration.value,
-                    totalFee: Number(form.totalFee.value),
-                    monthlyFee: Number(form.monthlyFee.value),
+                    totalFee: Number(form.totalFee.value) || 0,
+                    monthlyFee: Number(form.monthlyFee.value) || 0,
                     instructor: form.instructor.value,
-                    syllabus: form.syllabus.value,
                     status: 'Active'
                   };
-                  setCourses([...courses, newCourse]);
-                  showToast(`Course ${newCourse.name} added!`);
+                  setCourses([...courses, newC]);
+                  showToast(`Course ${newC.name} added!`);
                 }
                 setShowAddCourseModal(false);
               }}
@@ -2941,35 +2869,68 @@ export default function App() {
             >
               <div>
                 <label className="form-label">Course Name *</label>
-                <input type="text" name="name" required defaultValue={editingCourse?.name || ''} className="form-input" />
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  defaultValue={editingCourse?.name || ''}
+                  className="form-input"
+                />
               </div>
+
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                 <div>
                   <label className="form-label">Course Code *</label>
-                  <input type="text" name="code" required defaultValue={editingCourse?.code || `CRS-${courses.length + 101}`} className="form-input" />
+                  <input
+                    type="text"
+                    name="code"
+                    required
+                    defaultValue={editingCourse?.code || `CRS-${courses.length + 101}`}
+                    className="form-input"
+                  />
                 </div>
                 <div>
                   <label className="form-label">Duration *</label>
-                  <input type="text" name="duration" required defaultValue={editingCourse?.duration || '3 Months'} className="form-input" />
+                  <input
+                    type="text"
+                    name="duration"
+                    required
+                    defaultValue={editingCourse?.duration || '3 Months'}
+                    className="form-input"
+                  />
                 </div>
               </div>
+
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                 <div>
                   <label className="form-label">Total Course Fee ({currency}) *</label>
-                  <input type="number" name="totalFee" required defaultValue={editingCourse?.totalFee || 20000} className="form-input" />
+                  <input
+                    type="number"
+                    name="totalFee"
+                    required
+                    defaultValue={editingCourse?.totalFee || 20000}
+                    className="form-input"
+                  />
                 </div>
                 <div>
                   <label className="form-label">Monthly Installment ({currency})</label>
-                  <input type="number" name="monthlyFee" defaultValue={editingCourse?.monthlyFee || 5000} className="form-input" />
+                  <input
+                    type="number"
+                    name="monthlyFee"
+                    defaultValue={editingCourse?.monthlyFee || 5000}
+                    className="form-input"
+                  />
                 </div>
               </div>
+
               <div>
                 <label className="form-label">Course Instructor</label>
-                <input type="text" name="instructor" defaultValue={editingCourse?.instructor || 'Faculty Lead'} className="form-input" />
-              </div>
-              <div>
-                <label className="form-label">Syllabus Overview / Topics</label>
-                <textarea rows={3} name="syllabus" defaultValue={editingCourse?.syllabus || ''} className="form-textarea" />
+                <input
+                  type="text"
+                  name="instructor"
+                  defaultValue={editingCourse?.instructor || 'Faculty Lead'}
+                  className="form-input"
+                />
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
@@ -2978,7 +2939,7 @@ export default function App() {
                 </button>
                 <button type="submit" className="btn btn-primary">
                   <Check size={16} />
-                  <span>Save Course</span>
+                  <span>{editingCourse ? 'Save Changes' : 'Create Course'}</span>
                 </button>
               </div>
             </form>
@@ -2986,153 +2947,111 @@ export default function App() {
         </div>
       )}
 
-      {/* ADD EXPENSE MODAL */}
+      {/* ============================================================== */}
+      {/* MODAL: ADD / EDIT EXPENSE                                      */}
+      {/* ============================================================== */}
       {showAddExpenseModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>Record Operational Expense</h3>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '1.25rem 1.5rem',
+                borderBottom: '1px solid #e8e6df',
+                backgroundColor: '#faf9f5'
+              }}
+            >
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                {editingExpense ? 'Edit Expense Record' : 'Record Operational Expense'}
+              </h3>
               <button onClick={() => setShowAddExpenseModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
                 <X size={20} />
               </button>
             </div>
+
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.target;
-                const newExp = {
-                  id: Date.now(),
-                  voucherNo: `EXP-${String(expenses.length + 1).padStart(3, '0')}`,
-                  title: form.title.value,
-                  category: form.category.value,
-                  amount: Number(form.amount.value),
-                  date: form.date.value,
-                  paidTo: form.paidTo.value,
-                  paymentMethod: form.paymentMethod.value
-                };
-                setExpenses([newExp, ...expenses]);
-                setShowAddExpenseModal(false);
-                showToast(`Expense of ${currency} ${newExp.amount.toLocaleString()} recorded!`);
-              }}
+              onSubmit={handleExpenseSubmit}
               style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
             >
               <div>
                 <label className="form-label">Expense Title *</label>
-                <input type="text" name="title" required placeholder="e.g. Fiber Internet Bill" className="form-input" />
+                <input
+                  type="text"
+                  name="title"
+                  required
+                  defaultValue={editingExpense?.title || ''}
+                  placeholder="e.g. Fiber Internet Bill"
+                  className="form-input"
+                />
               </div>
+
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                 <div>
                   <label className="form-label">Category *</label>
-                  <select name="category" required className="form-select">
-                    <option value="Utilities">Utilities (Electricity, Water, Gas)</option>
-                    <option value="Salaries">Faculty & Staff Salaries</option>
-                    <option value="Internet">Internet & Telecom</option>
+                  <select name="category" defaultValue={editingExpense?.category || 'Utilities'} className="form-select">
+                    <option value="Salaries">Staff / Faculty Salaries</option>
+                    <option value="Utilities">Electricity & Generator</option>
+                    <option value="Internet">Fiber Internet / Tech</option>
+                    <option value="Rent">Campus Building Rent</option>
+                    <option value="Marketing">Social Media & Marketing</option>
                     <option value="Stationery">Stationery & Printing</option>
-                    <option value="Marketing">Marketing & Ads</option>
-                    <option value="Rent">Campus Rent</option>
-                    <option value="Supplies">Lab Supplies</option>
-                    <option value="Other">Miscellaneous</option>
+                    <option value="Refreshment">Refreshment & Tea</option>
+                    <option value="Maintenance">Lab & AC Maintenance</option>
                   </select>
                 </div>
                 <div>
                   <label className="form-label">Amount ({currency}) *</label>
-                  <input type="number" name="amount" required min="1" className="form-input" />
+                  <input
+                    type="number"
+                    name="amount"
+                    required
+                    min="1"
+                    defaultValue={editingExpense?.amount || ''}
+                    className="form-input"
+                    style={{ fontSize: '1rem', fontWeight: 800, color: '#dc2626' }}
+                  />
                 </div>
               </div>
+
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                 <div>
-                  <label className="form-label">Date *</label>
-                  <input type="date" name="date" required defaultValue={new Date().toISOString().split('T')[0]} className="form-input" />
+                  <label className="form-label">Expense Date</label>
+                  <input
+                    type="date"
+                    name="date"
+                    defaultValue={editingExpense?.date || new Date().toISOString().split('T')[0]}
+                    className="form-input"
+                  />
                 </div>
                 <div>
-                  <label className="form-label">Payment Method *</label>
-                  <select name="paymentMethod" required className="form-select">
-                    <option value="Cash">Cash</option>
-                    <option value="Bank Transfer">Bank Transfer</option>
-                    <option value="Online">Online / Credit Card</option>
-                  </select>
+                  <label className="form-label">Paid To (Vendor / Person)</label>
+                  <input
+                    type="text"
+                    name="paidTo"
+                    defaultValue={editingExpense?.paidTo || 'Vendor'}
+                    className="form-input"
+                  />
                 </div>
               </div>
+
               <div>
-                <label className="form-label">Paid To (Vendor / Person) *</label>
-                <input type="text" name="paidTo" required placeholder="e.g. K-Electric / Landlord" className="form-input" />
+                <label className="form-label">Payment Method</label>
+                <select name="paymentMethod" defaultValue={editingExpense?.paymentMethod || 'Cash'} className="form-select">
+                  <option value="Cash">Cash</option>
+                  <option value="Online">Online Bank Transfer</option>
+                  <option value="Cheque">Cheque</option>
+                </select>
               </div>
+
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
                 <button type="button" onClick={() => setShowAddExpenseModal(false)} className="btn btn-secondary">
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-danger">
-                  <Check size={16} />
-                  <span>Record Expense</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* SCHEDULE EXAM MODAL */}
-      {showAddExamModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>Schedule New Examination</h3>
-              <button onClick={() => setShowAddExamModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
-                <X size={20} />
-              </button>
-            </div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.target;
-                const newExam = {
-                  id: Date.now(),
-                  title: form.title.value,
-                  courseName: form.courseName.value,
-                  examDate: form.examDate.value,
-                  totalMarks: Number(form.totalMarks.value || 100),
-                  passingMarks: Number(form.passingMarks.value || 50),
-                  status: 'Scheduled'
-                };
-                setExams([...exams, newExam]);
-                setShowAddExamModal(false);
-                showToast(`Exam ${newExam.title} scheduled!`);
-              }}
-              style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
-            >
-              <div>
-                <label className="form-label">Exam Title *</label>
-                <input type="text" name="title" required placeholder="e.g. Final Term Assessment 2026" className="form-input" />
-              </div>
-              <div>
-                <label className="form-label">Course *</label>
-                <select name="courseName" required className="form-select">
-                  {courses.map((c) => (
-                    <option key={c.id} value={c.name}>{c.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-                <div>
-                  <label className="form-label">Date *</label>
-                  <input type="date" name="examDate" required defaultValue={new Date().toISOString().split('T')[0]} className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Total Marks</label>
-                  <input type="number" name="totalMarks" defaultValue="100" className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Passing Marks</label>
-                  <input type="number" name="passingMarks" defaultValue="50" className="form-input" />
-                </div>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
-                <button type="button" onClick={() => setShowAddExamModal(false)} className="btn btn-secondary">
-                  Cancel
-                </button>
                 <button type="submit" className="btn btn-primary">
                   <Check size={16} />
-                  <span>Create Exam</span>
+                  <span>{editingExpense ? 'Save Changes' : 'Record Expense'}</span>
                 </button>
               </div>
             </form>
@@ -3140,232 +3059,50 @@ export default function App() {
         </div>
       )}
 
-      {/* ENTER MARKS MODAL */}
-      {showEnterMarksModal && selectedExamForMarks && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
-              <div>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>
-                  Enter Exam Marks
-                </h3>
-                <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                  {selectedExamForMarks.title} • {selectedExamForMarks.courseName}
-                </p>
-              </div>
-              <button onClick={() => setShowEnterMarksModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
-                <X size={20} />
-              </button>
-            </div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.target;
-                const studentId = Number(form.studentId.value);
-                const student = students.find((s) => s.id === studentId);
-                const marks = Number(form.obtainedMarks.value);
-                const total = selectedExamForMarks.totalMarks || 100;
-                const pct = Math.round((marks / total) * 100);
-
-                let grade = 'F';
-                if (pct >= 85) grade = 'A+';
-                else if (pct >= 75) grade = 'A';
-                else if (pct >= 65) grade = 'B';
-                else if (pct >= 55) grade = 'C';
-                else if (pct >= 45) grade = 'D';
-
-                const newRes = {
-                  id: Date.now(),
-                  examId: selectedExamForMarks.id,
-                  studentId: student.id,
-                  studentName: student.name,
-                  rollNo: student.rollNo,
-                  obtainedMarks: marks,
-                  percentage: pct,
-                  grade: grade,
-                  status: marks >= (selectedExamForMarks.passingMarks || 50) ? 'Pass' : 'Fail',
-                  remarks: form.remarks.value || 'Evaluated successfully'
-                };
-
-                setExamResults([newRes, ...examResults]);
-                setShowEnterMarksModal(false);
-                showToast(`Marks saved for ${student.name}: ${marks}/${total} (${grade})`);
-              }}
-              style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
-            >
-              <div>
-                <label className="form-label">Select Student *</label>
-                <select name="studentId" required className="form-select">
-                  <option value="">Choose Student...</option>
-                  {students.map((s) => (
-                    <option key={s.id} value={s.id}>{s.rollNo} - {s.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
-                <div>
-                  <label className="form-label">Marks Obtained (Out of {selectedExamForMarks.totalMarks || 100}) *</label>
-                  <input type="number" name="obtainedMarks" required min="0" max={selectedExamForMarks.totalMarks || 100} className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Teacher Remarks</label>
-                  <input type="text" name="remarks" placeholder="e.g. Excellent practical demo" className="form-input" />
-                </div>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
-                <button type="button" onClick={() => setShowEnterMarksModal(false)} className="btn btn-secondary">
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-primary">
-                  <Check size={16} />
-                  <span>Save Result Card</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ISSUE CERTIFICATE MODAL */}
-      {showIssueCertModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>Issue Official Certificate</h3>
-              <button onClick={() => setShowIssueCertModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
-                <X size={20} />
-              </button>
-            </div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.target;
-                const newCert = {
-                  id: Date.now(),
-                  certId: `${settings.certificatePrefix || 'AG-CERT-2026-'}${String(settings.nextCertSeq || 104).padStart(5, '0')}`,
-                  certificateNo: `${settings.certificatePrefix || 'AG-CERT-2026-'}${String(settings.nextCertSeq || 104).padStart(5, '0')}`,
-                  rollNo: form.rollNo?.value || 'AG-2026-' + Math.floor(100 + Math.random() * 900),
-                  recipientName: form.recipientName.value,
-                  fatherName: form.fatherName.value || '',
-                  type: form.type.value,
-                  courseName: form.courseName.value,
-                  duration: form.duration.value || 'Session 2026',
-                  grade: form.grade.value || 'A+ Distinction',
-                  issueDate: form.issueDate.value,
-                  verified: true
-                };
-
-                setCertificates([newCert, ...certificates]);
-                setSettings({ ...settings, nextCertSeq: (settings.nextCertSeq || 104) + 1 });
-                setShowIssueCertModal(false);
-                showToast(`Certificate issued with ID: ${newCert.certId}`);
-                openPrintDocument('certificate', newCert);
-              }}
-              style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
-            >
-              <div>
-                <label className="form-label">Certificate Type *</label>
-                <select name="type" required className="form-select">
-                  <option value="Course Completion">Course Completion Certificate</option>
-                  <option value="Character Certificate">Character Certificate</option>
-                  <option value="Best Performer Award">Best Performer / Merit Award</option>
-                  <option value="Experience Certificate">Experience Certificate (Faculty)</option>
-                  <option value="Participation Certificate">Workshop Participation</option>
-                </select>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-                <div>
-                  <label className="form-label">Recipient Name *</label>
-                  <input type="text" name="recipientName" required placeholder="Full Name" className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Father's Name</label>
-                  <input type="text" name="fatherName" placeholder="Father Name" className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Roll Number</label>
-                  <input type="text" name="rollNo" placeholder="e.g. AG-2026-081" className="form-input" />
-                </div>
-              </div>
-              <div>
-                <label className="form-label">Course / Program / Department *</label>
-                <input type="text" name="courseName" required defaultValue={courses[0]?.name} className="form-input" />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-                <div>
-                  <label className="form-label">Duration</label>
-                  <input type="text" name="duration" defaultValue="6 Months" className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Grade / Distinction</label>
-                  <input type="text" name="grade" defaultValue="A+ Distinction" className="form-input" />
-                </div>
-                <div>
-                  <label className="form-label">Issue Date</label>
-                  <input type="date" name="issueDate" required defaultValue={new Date().toISOString().split('T')[0]} className="form-input" />
-                </div>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
-                <button type="button" onClick={() => setShowIssueCertModal(false)} className="btn btn-secondary">
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-primary">
-                  <Check size={16} />
-                  <span>Issue & Preview Print</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ===================== SHARED DIALOG MODALS ===================== */}
-
-      {/* Setup Wizard Modal */}
-      <SetupWizardModal
-        isOpen={showSetupWizard}
-        onClose={() => setShowSetupWizard(false)}
-        settings={settings}
-        onSaveSettings={(newSettings) => {
-          setSettings(newSettings);
-          showToast('Institute settings and branding saved successfully!');
+      {/* ============================================================== */}
+      {/* MODAL: STUDENT PROFILE VIEW                                    */}
+      {/* ============================================================== */}
+      <StudentProfileModal
+        student={selectedStudentForProfile}
+        isOpen={showStudentProfileModal}
+        onClose={() => setShowStudentProfileModal(false)}
+        payments={payments}
+        currency={currency}
+        onPrintDocument={openPrintDocument}
+        onCollectFee={(st) => {
+          setShowStudentProfileModal(false);
+          setPreselectedStudentForFee(st);
+          setShowCollectFeeModal(true);
         }}
       />
 
-      {/* Print Document Modal */}
+      {/* ============================================================== */}
+      {/* MODAL: PRINT ALL OFFICIAL DOCUMENTS                            */}
+      {/* ============================================================== */}
       <PrintDocumentModal
         isOpen={showPrintModal}
         onClose={() => setShowPrintModal(false)}
         documentType={printDocConfig.type}
         data={printDocConfig.data}
         settings={settings}
+        currency={currency}
       />
 
-      {/* Fee Notification (WhatsApp/SMS) Modal */}
+      {/* ============================================================== */}
+      {/* MODAL: PARENTS SMS / WHATSAPP FEE NOTIFICATIONS                */}
+      {/* ============================================================== */}
       <FeeNotificationModal
         isOpen={showNotificationModal}
         onClose={() => setShowNotificationModal(false)}
         student={notificationConfig.student}
         payment={notificationConfig.payment}
         settings={settings}
-        type={notificationConfig.type}
+        currency={currency}
       />
 
-      {/* Student Profile Dossier Modal */}
-      <StudentProfileModal
-        isOpen={showStudentProfileModal}
-        onClose={() => setShowStudentProfileModal(false)}
-        student={selectedStudentForProfile}
-        payments={payments}
-        settings={settings}
-        onCollectFee={(student) => {
-          setPreselectedStudentForFee(student);
-          setShowCollectFeeModal(true);
-        }}
-        onPrintDocument={openPrintDocument}
-      />
-
-      {/* Backup and Restore Modal */}
+      {/* ============================================================== */}
+      {/* MODAL: BACKUP & RESTORE DATABASE                               */}
+      {/* ============================================================== */}
       <BackupRestoreModal
         isOpen={showBackupModal}
         onClose={() => setShowBackupModal(false)}
@@ -3376,40 +3113,32 @@ export default function App() {
           teachers,
           payments,
           expenses,
-          exams,
-          examResults,
-          certificates,
-          inquiries,
-          attendanceRecords
+          attendanceRecords,
+          certificates
         }}
-        onRestoreData={(restored) => {
-          if (restored.settings) setSettings(restored.settings);
-          if (restored.courses) setCourses(restored.courses);
-          if (restored.students) setStudents(restored.students);
-          if (restored.teachers) setTeachers(restored.teachers);
-          if (restored.payments) setPayments(restored.payments);
-          if (restored.expenses) setExpenses(restored.expenses);
-          if (restored.exams) setExams(restored.exams);
-          if (restored.examResults) setExamResults(restored.examResults);
-          if (restored.certificates) setCertificates(restored.certificates);
-          if (restored.inquiries) setInquiries(restored.inquiries);
-          if (restored.attendanceRecords) setAttendanceRecords(restored.attendanceRecords);
-          showToast('All institute data restored from backup file!');
+        onRestore={(data) => {
+          if (data.settings) setSettings(data.settings);
+          if (data.courses) setCourses(data.courses);
+          if (data.students) setStudents(data.students);
+          if (data.teachers) setTeachers(data.teachers);
+          if (data.payments) setPayments(data.payments);
+          if (data.expenses) setExpenses(data.expenses);
+          if (data.attendanceRecords) setAttendanceRecords(data.attendanceRecords);
+          if (data.certificates) setCertificates(data.certificates);
+          showToast('Database restored successfully!');
         }}
-        onClearAllRecords={handleClearAllRecords}
-        onResetToDemo={() => {
-          setSettings(initialSettings);
-          setCourses(initialCourses);
-          setStudents(initialStudents);
-          setTeachers(initialTeachers);
-          setPayments(initialPayments);
-          setExpenses(initialExpenses);
-          setExams(initialExams);
-          setExamResults(initialExamResults);
-          setCertificates(initialCertificates);
-          setInquiries(initialInquiries);
-          setAttendanceRecords({});
-          showToast('Reset to demo sample data completed.');
+      />
+
+      {/* ============================================================== */}
+      {/* MODAL: INSTITUTE SETTINGS & BRANDING WIZARD                    */}
+      {/* ============================================================== */}
+      <SetupWizardModal
+        isOpen={showSetupWizard}
+        onClose={() => setShowSetupWizard(false)}
+        settings={settings}
+        onSave={(updated) => {
+          setSettings(updated);
+          showToast('Institute settings saved!');
         }}
       />
     </div>

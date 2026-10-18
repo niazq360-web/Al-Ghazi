@@ -1,18 +1,18 @@
-import React, { useRef } from "react";
-import { Camera, Upload, Trash2, User } from "lucide-react";
+import React, { useRef } from 'react';
+import { Camera, Upload, X, User } from 'lucide-react';
 
 /**
  * ImageUploadField Component
- * Allows uploading and previewing student and teacher profile photos.
- * Converts selected image to base64 Data URL for persistent offline storage.
+ * Allows students & teachers to upload a profile photo directly from local device.
+ * Stores as base64 string for persistent localStorage storage and document printing.
  */
 export default function ImageUploadField({
-  value = "",
+  value,
   onChange,
-  label = "Upload Photo",
-  placeholderText = "Passport Size Photo (JPG/PNG/WEBP)",
-  subText = "Photo will appear on Admission Form, ID Card, and Profile",
-  shape = "square" // "square" or "circle"
+  label = 'Student Photo',
+  placeholderText = 'Click or drop passport-size photo',
+  subText = 'Used for Student ID Card, Admission Form & Certificate',
+  shape = 'circle'
 }) {
   const fileInputRef = useRef(null);
 
@@ -20,115 +20,162 @@ export default function ImageUploadField({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      alert("Please select a valid image file (JPG, PNG, or WEBP).");
-      return;
-    }
-
-    if (file.size > 4 * 1024 * 1024) {
-      alert("Image size exceeds 4MB. Please choose a smaller photo.");
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload a valid image file (JPG, PNG, WebP).');
       return;
     }
 
     const reader = new FileReader();
-    reader.onload = (event) => {
-      onChange(event.target.result);
+    reader.onload = (uploadEvent) => {
+      const img = new Image();
+      img.onload = () => {
+        // Resize image to max 400x400 to keep localStorage efficient
+        const canvas = document.createElement('canvas');
+        const maxDim = 400;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.82);
+        onChange(compressedBase64);
+      };
+      img.src = uploadEvent.target.result;
     };
     reader.readAsDataURL(file);
   };
 
-  const handleRemove = (e) => {
+  const handleClear = (e) => {
     e.stopPropagation();
-    onChange("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    onChange('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
-      <label className="form-label">{label}</label>
+    <div>
+      {label && <label className="form-label">{label}</label>}
+
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept="image/*"
+        style={{ display: 'none' }}
+      />
 
       <div
-        className="photo-upload-zone"
         onClick={() => fileInputRef.current?.click()}
-        style={{ cursor: "pointer" }}
+        style={{
+          border: '2px dashed #cbd5e1',
+          borderRadius: '0.75rem',
+          padding: '12px 16px',
+          backgroundColor: '#faf9f5',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
+          transition: 'all 0.15s ease'
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#2563eb')}
+        onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#cbd5e1')}
       >
-        <input
-          type="file"
-          ref={fileInputRef}
-          accept="image/*"
-          onChange={handleFileChange}
-          style={{ display: "none" }}
-        />
-
-        {/* Thumbnail Preview Box */}
-        <div
-          style={{
-            width: shape === "circle" ? "70px" : "72px",
-            height: shape === "circle" ? "70px" : "86px",
-            borderRadius: shape === "circle" ? "50%" : "8px",
-            border: value ? "2px solid #2563eb" : "2px dashed #94a3b8",
-            backgroundColor: "#ffffff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            overflow: "hidden",
-            flexShrink: 0,
-            boxShadow: value ? "0 2px 6px rgba(0,0,0,0.1)" : "none",
-            position: "relative"
-          }}
-        >
+        {/* Preview or Placeholder Icon */}
+        <div style={{ position: 'relative' }}>
           {value ? (
-            <img
-              src={value}
-              alt="Uploaded Preview"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          ) : (
-            <div style={{ textAlign: "center", color: "#94a3b8" }}>
-              <Camera size={26} color="#64748b" />
+            <div
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: shape === 'circle' ? '50%' : '8px',
+                overflow: 'hidden',
+                border: '2px solid #2563eb',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+              }}
+            >
+              <img
+                src={value}
+                alt="Preview"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
             </div>
+          ) : (
+            <div
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: shape === 'circle' ? '50%' : '8px',
+                backgroundColor: '#edebe3',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#64748b'
+              }}
+            >
+              <User size={30} />
+            </div>
+          )}
+
+          {value && (
+            <button
+              type="button"
+              onClick={handleClear}
+              title="Remove photo"
+              style={{
+                position: 'absolute',
+                top: -4,
+                right: -4,
+                backgroundColor: '#dc2626',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '50%',
+                width: 20,
+                height: 20,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+              }}
+            >
+              <X size={12} />
+            </button>
           )}
         </div>
 
-        {/* Action Controls & Instructions */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                fileInputRef.current?.click();
-              }}
-              className="btn btn-secondary"
-              style={{ padding: "0.35rem 0.75rem", fontSize: "0.8rem", gap: "5px" }}
-            >
-              <Upload size={14} />
-              <span>{value ? "Change Photo" : "Choose Photo"}</span>
-            </button>
-
-            {value && (
-              <button
-                type="button"
-                onClick={handleRemove}
-                className="btn btn-danger"
-                style={{ padding: "0.35rem 0.65rem", fontSize: "0.8rem", gap: "4px" }}
-                title="Remove photo"
-              >
-                <Trash2 size={13} />
-                <span>Remove</span>
-              </button>
-            )}
+        {/* Text Prompt */}
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#2563eb', fontWeight: 700, fontSize: '0.825rem' }}>
+            <Camera size={15} />
+            <span>{value ? 'Change Uploaded Photo' : placeholderText}</span>
           </div>
-
-          <p style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "0.35rem", marginBottom: 0 }}>
-            {placeholderText}
-          </p>
-          <span style={{ fontSize: "0.7rem", color: "#94a3b8", display: "block" }}>
+          <p style={{ margin: '3px 0 0 0', fontSize: '0.72rem', color: '#64748b' }}>
             {subText}
-          </span>
+          </p>
         </div>
+
+        <button
+          type="button"
+          className="btn btn-secondary"
+          style={{ padding: '0.4rem 0.75rem', fontSize: '0.75rem' }}
+        >
+          <Upload size={13} />
+          <span>Browse</span>
+        </button>
       </div>
     </div>
   );
