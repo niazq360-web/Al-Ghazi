@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { X, Download, Upload, ShieldCheck, Check, AlertTriangle, RefreshCw } from 'lucide-react';
+import { X, Download, Upload, ShieldCheck, Check } from 'lucide-react';
 
 export default function BackupRestoreModal({
   isOpen,

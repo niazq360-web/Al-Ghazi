@@ -1,9 +1,5 @@
 import React from 'react';
 
-/**
- * CertificateCorner Component
- * Renders ornate arabesque / baroque gold filigree in each of the 4 corners of the certificate.
- */
 export default function CertificateCorner({ position = 'top-left', size = 96 }) {
   let transform = '';
   let stylePosition = {};
@@ -58,19 +54,15 @@ export default function CertificateCorner({ position = 'top-left', size = 96 }) 
           </linearGradient>
         </defs>
 
-        {/* Outer Corner L-Frame */}
         <path
           d="M 4,4 L 92,4 L 92,10 L 10,10 L 10,92 L 4,92 Z"
           fill="url(#goldFiligree)"
         />
-        {/* Inner Secondary Bevel Line */}
         <path
           d="M 14,14 L 80,14 L 80,18 L 18,18 L 18,80 L 14,80 Z"
           fill="url(#goldFiligree)"
           opacity="0.85"
         />
-
-        {/* Ornate Flourish Scrolls */}
         <path
           d="M 6,6 Q 40,6 50,25 Q 60,44 42,60 Q 24,76 6,56 C 18,50 24,36 18,22 C 14,12 8,8 6,6 Z"
           fill="url(#goldFiligree)"
@@ -80,12 +72,8 @@ export default function CertificateCorner({ position = 'top-left', size = 96 }) 
           d="M 22,22 Q 45,22 56,36 Q 66,50 50,66 C 42,56 42,42 34,34 C 28,28 24,24 22,22 Z"
           fill="#ffd700"
         />
-
-        {/* Diagonal Crest Ray & Rosette */}
         <circle cx="28" cy="28" r="5" fill="url(#goldFiligree)" />
         <circle cx="28" cy="28" r="2.5" fill="#071329" />
-
-        {/* Leaf Sprigs Along Edges */}
         <path
           d="M 88,4 C 84,10 74,10 70,4 C 74,6 84,6 88,4 Z"
           fill="url(#goldFiligree)"

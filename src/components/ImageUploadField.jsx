@@ -1,11 +1,6 @@
 import React, { useRef } from 'react';
 import { Camera, Upload, X, User } from 'lucide-react';
 
-/**
- * ImageUploadField Component
- * Allows students & teachers to upload a profile photo directly from local device.
- * Stores as base64 string for persistent localStorage storage and document printing.
- */
 export default function ImageUploadField({
   value,
   onChange,
@@ -29,7 +24,6 @@ export default function ImageUploadField({
     reader.onload = (uploadEvent) => {
       const img = new Image();
       img.onload = () => {
-        // Resize image to max 400x400 to keep localStorage efficient
         const canvas = document.createElement('canvas');
         const maxDim = 400;
         let width = img.width;
@@ -94,7 +88,6 @@ export default function ImageUploadField({
         onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#2563eb')}
         onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#cbd5e1')}
       >
-        {/* Preview or Placeholder Icon */}
         <div style={{ position: 'relative' }}>
           {value ? (
             <div
@@ -157,7 +150,6 @@ export default function ImageUploadField({
           )}
         </div>
 
-        {/* Text Prompt */}
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#2563eb', fontWeight: 700, fontSize: '0.825rem' }}>
             <Camera size={15} />

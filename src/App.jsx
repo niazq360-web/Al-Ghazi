@@ -11,32 +11,17 @@ import {
   Settings,
   Plus,
   Search,
-  Filter,
   Download,
   Printer,
   Edit,
   Trash2,
   CheckCircle,
-  XCircle,
-  AlertCircle,
   Clock,
-  Phone,
-  Mail,
-  MapPin,
-  ExternalLink,
-  ChevronRight,
-  TrendingUp,
-  DollarSign,
   Send,
   Eye,
   Check,
   X,
-  Menu,
-  Globe,
-  FileText,
-  ShieldCheck,
-  RefreshCw,
-  QrCode
+  FileText
 } from 'lucide-react';
 
 import OfficialSeal from './components/OfficialSeal';
@@ -49,7 +34,6 @@ import BackupRestoreModal from './components/BackupRestoreModal';
 import SetupWizardModal from './components/SetupWizardModal';
 import StudentProfileModal from './components/StudentProfileModal';
 
-// Initial Demo Courses
 const initialCourses = [
   {
     id: 1,
@@ -97,7 +81,265 @@ const initialCourses = [
   }
 ];
 
-// Initial Settings
+const initialStudents = [
+  {
+    id: 101,
+    rollNo: 'AG-2026-0001',
+    name: 'Muhammad Usman Ali',
+    fatherName: 'Muhammad Tariq',
+    phone: '0300-1234567',
+    parentPhone: '0300-1234567',
+    courseName: 'Graphic Designing & UI/UX',
+    courseId: 1,
+    totalFee: 15000,
+    paidFee: 5000,
+    discount: 0,
+    remainingFee: 10000,
+    admissionDate: '2026-09-01',
+    status: 'Active',
+    gender: 'Male',
+    bloodGroup: 'B+',
+    city: 'Gujranwala',
+    address: 'Street 4, Model Town, Gujranwala',
+    photoUrl: ''
+  },
+  {
+    id: 102,
+    rollNo: 'AG-2026-0002',
+    name: 'Hamza Tariq',
+    fatherName: 'Tariq Mehmood',
+    phone: '0321-7654321',
+    parentPhone: '0321-7654321',
+    courseName: 'Full Stack Web Development',
+    courseId: 2,
+    totalFee: 30000,
+    paidFee: 30000,
+    discount: 0,
+    remainingFee: 0,
+    admissionDate: '2026-08-15',
+    status: 'Active',
+    gender: 'Male',
+    bloodGroup: 'O+',
+    city: 'Gujranwala',
+    address: 'Near Judicial Complex, Civil Lines',
+    photoUrl: ''
+  },
+  {
+    id: 103,
+    rollNo: 'AG-2026-0003',
+    name: 'Ayesha Noor',
+    fatherName: 'Noor Muhammad',
+    phone: '0345-9876543',
+    parentPhone: '0345-9876543',
+    courseName: 'Digital Marketing & SEO Mastery',
+    courseId: 3,
+    totalFee: 18000,
+    paidFee: 6000,
+    discount: 0,
+    remainingFee: 12000,
+    admissionDate: '2026-09-10',
+    status: 'Active',
+    gender: 'Female',
+    bloodGroup: 'A+',
+    city: 'Gujranwala',
+    address: 'Satellite Town, Block B',
+    photoUrl: ''
+  },
+  {
+    id: 104,
+    rollNo: 'AG-2026-0004',
+    name: 'Bilal Ahmed',
+    fatherName: 'Ahmed Raza',
+    phone: '0333-1122334',
+    parentPhone: '0333-1122334',
+    courseName: 'CIT & Office Management',
+    courseId: 4,
+    totalFee: 10000,
+    paidFee: 10000,
+    discount: 0,
+    remainingFee: 0,
+    admissionDate: '2026-09-05',
+    status: 'Active',
+    gender: 'Male',
+    bloodGroup: 'AB+',
+    city: 'Gujranwala',
+    address: 'G.T. Road, Gujranwala',
+    photoUrl: ''
+  },
+  {
+    id: 105,
+    rollNo: 'AG-2026-0005',
+    name: 'Zainab Fatima',
+    fatherName: 'Abdul Rehman',
+    phone: '0302-5556677',
+    parentPhone: '0302-5556677',
+    courseName: 'Graphic Designing & UI/UX',
+    courseId: 1,
+    totalFee: 15000,
+    paidFee: 0,
+    discount: 0,
+    remainingFee: 15000,
+    admissionDate: '2026-10-01',
+    status: 'Active',
+    gender: 'Female',
+    bloodGroup: 'O-',
+    city: 'Gujranwala',
+    address: 'DC Colony, Cantt Gujranwala',
+    photoUrl: ''
+  }
+];
+
+const initialTeachers = [
+  {
+    id: 1,
+    teacherId: 'TCH-101',
+    name: 'Engr. Niaz Qasim',
+    specialization: 'Full Stack Web Development & Software Arch',
+    education: 'BS Software Engineering',
+    phone: '0300-8881234',
+    monthlySalary: 65000,
+    status: 'Active',
+    photoUrl: ''
+  },
+  {
+    id: 2,
+    teacherId: 'TCH-102',
+    name: 'Sir Hamza Tariq',
+    specialization: 'Graphic Designing, UI/UX & Brand Identity',
+    education: 'BFA Visual Communication',
+    phone: '0321-5554321',
+    monthlySalary: 55000,
+    status: 'Active',
+    photoUrl: ''
+  },
+  {
+    id: 3,
+    teacherId: 'TCH-103',
+    name: 'Ma\'am Ayesha Khan',
+    specialization: 'Digital Marketing & Social Media Strategy',
+    education: 'MBA Marketing',
+    phone: '0345-6667890',
+    monthlySalary: 50000,
+    status: 'Active',
+    photoUrl: ''
+  },
+  {
+    id: 4,
+    teacherId: 'TCH-104',
+    name: 'Sir Usman Ali',
+    specialization: 'CIT, Office Management & Typing Instructor',
+    education: 'M.Sc Computer Science',
+    phone: '0333-4445566',
+    monthlySalary: 45000,
+    status: 'Active',
+    photoUrl: ''
+  }
+];
+
+const initialPayments = [
+  {
+    id: 1,
+    receiptNo: 'REC-2026-00101',
+    studentId: 102,
+    studentRollNo: 'AG-2026-0002',
+    studentName: 'Hamza Tariq',
+    fatherName: 'Tariq Mehmood',
+    courseName: 'Full Stack Web Development',
+    paidAmount: 30000,
+    totalFee: 30000,
+    discount: 0,
+    remainingDue: 0,
+    feeMonth: 'Full Course Clearance',
+    paymentMethod: 'Bank Transfer',
+    paymentDate: '2026-08-16',
+    remarks: 'Full course fee paid in single installment'
+  },
+  {
+    id: 2,
+    receiptNo: 'REC-2026-00102',
+    studentId: 104,
+    studentRollNo: 'AG-2026-0004',
+    studentName: 'Bilal Ahmed',
+    fatherName: 'Ahmed Raza',
+    courseName: 'CIT & Office Management',
+    paidAmount: 10000,
+    totalFee: 10000,
+    discount: 0,
+    remainingDue: 0,
+    feeMonth: 'Full Course Clearance',
+    paymentMethod: 'Cash',
+    paymentDate: '2026-09-05',
+    remarks: 'Admission and total tuition fee cleared'
+  },
+  {
+    id: 3,
+    receiptNo: 'REC-2026-00103',
+    studentId: 101,
+    studentRollNo: 'AG-2026-0001',
+    studentName: 'Muhammad Usman Ali',
+    fatherName: 'Muhammad Tariq',
+    courseName: 'Graphic Designing & UI/UX',
+    paidAmount: 5000,
+    totalFee: 15000,
+    discount: 0,
+    remainingDue: 10000,
+    feeMonth: '1st Installment (September 2026)',
+    paymentMethod: 'JazzCash',
+    paymentDate: '2026-09-02',
+    remarks: '1st month installment received'
+  },
+  {
+    id: 4,
+    receiptNo: 'REC-2026-00104',
+    studentId: 103,
+    studentRollNo: 'AG-2026-0003',
+    studentName: 'Ayesha Noor',
+    fatherName: 'Noor Muhammad',
+    courseName: 'Digital Marketing & SEO Mastery',
+    paidAmount: 6000,
+    totalFee: 18000,
+    discount: 0,
+    remainingDue: 12000,
+    feeMonth: '1st Installment (September 2026)',
+    paymentMethod: 'EasyPaisa',
+    paymentDate: '2026-09-11',
+    remarks: 'September installment paid'
+  }
+];
+
+const initialExpenses = [
+  {
+    id: 1,
+    voucherNo: 'EXP-0101',
+    title: 'High-Speed Fiber Internet & Networking Lab',
+    category: 'Internet & Tech',
+    amount: 14500,
+    date: '2026-10-02',
+    paidTo: 'Nayatel Telecom',
+    paymentMethod: 'Bank Transfer'
+  },
+  {
+    id: 2,
+    voucherNo: 'EXP-0102',
+    title: 'Campus Electricity Bill (GEPCO)',
+    category: 'Utilities',
+    amount: 28400,
+    date: '2026-10-05',
+    paidTo: 'GEPCO',
+    paymentMethod: 'JazzCash'
+  },
+  {
+    id: 3,
+    voucherNo: 'EXP-0103',
+    title: 'Lab Air Conditioning Maintenance & Servicing',
+    category: 'Maintenance',
+    amount: 8500,
+    date: '2026-10-08',
+    paidTo: 'Al-Madina Cool Center',
+    paymentMethod: 'Cash'
+  }
+];
+
 const initialSettings = {
   academyName: 'AL GHAZI DIGITAL INSTITUTE',
   tagline: 'Excellence in IT, Design & Digital Technology',
@@ -112,17 +354,14 @@ const initialSettings = {
   academicSession: 'Session 2026-2027',
   currencySymbol: 'Rs.',
   receiptPrefix: 'REC-2026-',
-  nextReceiptSeq: 101,
+  nextReceiptSeq: 105,
   logoUrl: '',
   officialSealUrl: ''
 };
 
 export default function App() {
-  // Navigation State
-  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'students' | 'teachers' | 'courses' | 'fees' | 'attendance' | 'expenses' | 'certificates'
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
 
-  // Core Persistent State
   const [settings, setSettings] = useState(() => {
     try {
       const saved = localStorage.getItem('ag_settings');
@@ -140,7 +379,10 @@ export default function App() {
   const [courses, setCourses] = useState(() => {
     try {
       const saved = localStorage.getItem('ag_courses');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     } catch (e) {}
     return initialCourses;
   });
@@ -148,33 +390,45 @@ export default function App() {
   const [students, setStudents] = useState(() => {
     try {
       const saved = localStorage.getItem('ag_students');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     } catch (e) {}
-    return [];
+    return initialStudents;
   });
 
   const [teachers, setTeachers] = useState(() => {
     try {
       const saved = localStorage.getItem('ag_teachers');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     } catch (e) {}
-    return [];
+    return initialTeachers;
   });
 
   const [payments, setPayments] = useState(() => {
     try {
       const saved = localStorage.getItem('ag_payments');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     } catch (e) {}
-    return [];
+    return initialPayments;
   });
 
   const [expenses, setExpenses] = useState(() => {
     try {
       const saved = localStorage.getItem('ag_expenses');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     } catch (e) {}
-    return [];
+    return initialExpenses;
   });
 
   const [attendanceRecords, setAttendanceRecords] = useState(() => {
@@ -193,7 +447,6 @@ export default function App() {
     return [];
   });
 
-  // Save to LocalStorage effects
   useEffect(() => {
     localStorage.setItem('ag_settings', JSON.stringify(settings));
   }, [settings]);
@@ -226,14 +479,12 @@ export default function App() {
     localStorage.setItem('ag_certificates', JSON.stringify(certificates));
   }, [certificates]);
 
-  // Toast Notification State
   const [toastMessage, setToastMessage] = useState('');
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 4000);
   };
 
-  // Modals State
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
   const [studentPhoto, setStudentPhoto] = useState('');
@@ -245,112 +496,188 @@ export default function App() {
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
 
-  // FEE COLLECTION STATE & MODALS
   const [showCollectFeeModal, setShowCollectFeeModal] = useState(false);
   const [preselectedStudentForFee, setPreselectedStudentForFee] = useState(null);
+  const [feeStudentId, setFeeStudentId] = useState('');
+  const [feeAmount, setFeeAmount] = useState(5000);
+  const [feeDiscount, setFeeDiscount] = useState(0);
+  const [feeMonth, setFeeMonth] = useState('October 2026');
+  const [feePaymentMethod, setFeePaymentMethod] = useState('Cash');
+  const [feePaymentDate, setFeePaymentDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [feeRemarks, setFeeRemarks] = useState('Tuition fee received');
 
-  // EDIT FEE PAYMENT MODAL (For fixing mistakes in fees)
   const [showEditPaymentModal, setShowEditPaymentModal] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
 
-  // EDIT EXPENSE MODAL
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
 
-  // COURSE-WISE STUDENTS MODAL
   const [selectedCourseForStudentsModal, setSelectedCourseForStudentsModal] = useState(null);
 
-  // STUDENT PROFILE MODAL
   const [selectedStudentForProfile, setSelectedStudentForProfile] = useState(null);
   const [showStudentProfileModal, setShowStudentProfileModal] = useState(false);
 
-  // DOCUMENT PRINTING MODAL
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [printDocConfig, setPrintDocConfig] = useState({ type: 'certificate', data: {} });
 
-  // PARENTS NOTIFICATION MODAL (SMS / WhatsApp)
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [notificationConfig, setNotificationConfig] = useState({ student: null, payment: null, type: 'payment' });
 
-  // BACKUP & RESTORE MODAL
   const [showBackupModal, setShowBackupModal] = useState(false);
-
-  // SETUP WIZARD MODAL
   const [showSetupWizard, setShowSetupWizard] = useState(false);
 
-  // FILTERS STATE
   const [globalSearch, setGlobalSearch] = useState('');
   const [studentCourseFilter, setStudentCourseFilter] = useState('ALL');
   const [studentStatusFilter, setStudentStatusFilter] = useState('ALL');
 
   const [feeCourseFilter, setFeeCourseFilter] = useState('ALL');
-  const [feeStatusFilter, setFeeStatusFilter] = useState('ALL'); // 'ALL' | 'DEFAULTERS'
+  const [feeStatusFilter, setFeeStatusFilter] = useState('ALL');
 
   const [attendanceCourseFilter, setAttendanceCourseFilter] = useState('ALL');
   const [attendanceDate, setAttendanceDate] = useState(() => new Date().toISOString().split('T')[0]);
 
   const currency = settings.currencySymbol || 'Rs.';
 
-  // Open Document Helper
   const openPrintDocument = (type, data) => {
     setPrintDocConfig({ type, data });
     setShowPrintModal(true);
   };
 
-  // Open Parents Notification Helper
   const openFeeNotification = (student, payment, type = 'payment') => {
     setNotificationConfig({ student, payment, type });
     setShowNotificationModal(true);
   };
 
-  // Open Edit Payment Helper
   const openEditPayment = (payment) => {
     setEditingPayment(payment);
     setShowEditPaymentModal(true);
   };
 
-  // Open Edit Expense Helper
   const openEditExpense = (expense) => {
     setEditingExpense(expense);
     setShowAddExpenseModal(true);
   };
 
-  // Open Student Modal Helper
   const openStudentModal = (student = null) => {
     setEditingStudent(student);
     setStudentPhoto(student?.photoUrl || '');
     setShowAddStudentModal(true);
   };
 
-  // Open Teacher Modal Helper
   const openTeacherModal = (teacher = null) => {
     setEditingTeacher(teacher);
     setTeacherPhoto(teacher?.photoUrl || '');
     setShowAddTeacherModal(true);
   };
 
-  // Open Course Modal Helper
   const openCourseModal = (course = null) => {
     setEditingCourse(course);
     setShowAddCourseModal(true);
   };
 
-  // ==============================================================
-  // 1. CRITICAL FEE COLLECTION HANDLER (WITH PARENTS SMS TRIGGER)
-  // ==============================================================
+  const openCollectFeeModal = (student = null) => {
+    if (student) {
+      setPreselectedStudentForFee(student);
+      setFeeStudentId(String(student.id));
+      const remaining = Number(student.remainingFee || 0);
+      setFeeAmount(remaining > 0 ? remaining : (student.monthlyFee || 5000));
+    } else {
+      setPreselectedStudentForFee(null);
+      const dueStudent = students.find((s) => Number(s.remainingFee) > 0) || students[0];
+      if (dueStudent) {
+        setFeeStudentId(String(dueStudent.id));
+        const rem = Number(dueStudent.remainingFee || 0);
+        setFeeAmount(rem > 0 ? rem : 5000);
+      } else {
+        setFeeStudentId('');
+        setFeeAmount(5000);
+      }
+    }
+    setFeeDiscount(0);
+    setFeeMonth('Full Course Clearance');
+    setFeePaymentMethod('Cash');
+    setFeePaymentDate(new Date().toISOString().split('T')[0]);
+    setFeeRemarks('Tuition fee received');
+    setShowCollectFeeModal(true);
+  };
+
+  const handleQuickMarkPaid = (student) => {
+    if (!student) return;
+    const remaining = Number(student.remainingFee || 0);
+    const amountToPay = remaining > 0 ? remaining : Number(student.totalFee || 0);
+
+    if (remaining <= 0) {
+      showToast(`Student ${student.name}'s fees are already fully cleared!`);
+      return;
+    }
+
+    if (window.confirm(`Mark entire pending fee of ${currency} ${remaining.toLocaleString()} as PAID for ${student.name} (${student.rollNo}) and alert parents via WhatsApp/SMS?`)) {
+      const updatedStudentsList = students.map((s) => {
+        if (String(s.id) === String(student.id) || s.rollNo === student.rollNo) {
+          return {
+            ...s,
+            paidFee: Number(s.paidFee || 0) + remaining,
+            remainingFee: 0
+          };
+        }
+        return s;
+      });
+      setStudents(updatedStudentsList);
+      localStorage.setItem('ag_students', JSON.stringify(updatedStudentsList));
+
+      const receiptSeq = (settings.nextReceiptSeq || 105);
+      const receiptNo = `${settings.receiptPrefix || 'REC-2026-'}${String(receiptSeq).padStart(5, '0')}`;
+
+      const newPaymentRecord = {
+        id: Date.now(),
+        receiptNo,
+        studentId: student.id,
+        studentRollNo: student.rollNo,
+        studentName: student.name,
+        fatherName: student.fatherName,
+        courseName: student.courseName,
+        paidAmount: remaining,
+        totalFee: Number(student.totalFee || 0),
+        discount: Number(student.discount || 0),
+        remainingDue: 0,
+        feeMonth: 'Full Course Clearance',
+        paymentMethod: 'Cash',
+        paymentDate: new Date().toISOString().split('T')[0],
+        remarks: 'Full remaining fee cleared & paid'
+      };
+
+      const updatedPaymentsList = [newPaymentRecord, ...payments];
+      setPayments(updatedPaymentsList);
+      localStorage.setItem('ag_payments', JSON.stringify(updatedPaymentsList));
+
+      setSettings((prev) => ({
+        ...prev,
+        nextReceiptSeq: receiptSeq + 1
+      }));
+
+      const fullyPaidStudent = {
+        ...student,
+        paidFee: Number(student.paidFee || 0) + remaining,
+        remainingFee: 0
+      };
+
+      showToast(`✓ Fee of ${currency} ${remaining.toLocaleString()} marked as PAID for ${student.name}! Opening Parents SMS Alert...`);
+
+      setTimeout(() => {
+        openFeeNotification(fullyPaidStudent, newPaymentRecord, 'payment');
+      }, 350);
+    }
+  };
+
+  // 1. FEE COLLECTION SUBMIT
   const handleCollectFeeSubmit = (e) => {
     e.preventDefault();
-    const form = e.target;
-    const selectedStudentId = form.studentId.value;
-    const paidAmount = Number(form.paidAmount.value) || 0;
-    const discountAmount = Number(form.discountAmount.value) || 0;
-    const feeMonth = form.feeMonth?.value || 'Monthly Installment';
-    const paymentMethod = form.paymentMethod?.value || 'Cash';
-    const paymentDate = form.paymentDate?.value || new Date().toISOString().split('T')[0];
-    const remarks = form.remarks?.value || 'Tuition Fee Payment';
+    const targetId = feeStudentId;
+    const paidAmount = Number(feeAmount) || 0;
+    const discountAmount = Number(feeDiscount) || 0;
 
-    if (!selectedStudentId) {
-      alert('Please select a student.');
+    if (!targetId) {
+      alert('Please select a student from the list.');
       return;
     }
     if (paidAmount <= 0) {
@@ -358,9 +685,8 @@ export default function App() {
       return;
     }
 
-    // Match student flexibly by ID or Roll Number
     const targetStudentIndex = students.findIndex(
-      (s) => String(s.id) === String(selectedStudentId) || s.rollNo === selectedStudentId
+      (s) => String(s.id) === String(targetId) || s.rollNo === targetId
     );
 
     if (targetStudentIndex === -1) {
@@ -375,7 +701,6 @@ export default function App() {
     const newPaidFee = currentPaid + paidAmount;
     const newRemainingDue = Math.max(0, totalFee - newPaidFee - discountAmount);
 
-    // 1. Update Student Record
     const updatedStudent = {
       ...currentStudent,
       paidFee: newPaidFee,
@@ -388,8 +713,7 @@ export default function App() {
     setStudents(updatedStudentsList);
     localStorage.setItem('ag_students', JSON.stringify(updatedStudentsList));
 
-    // 2. Generate Official Receipt
-    const receiptSeq = (settings.nextReceiptSeq || 101);
+    const receiptSeq = (settings.nextReceiptSeq || 105);
     const receiptNo = `${settings.receiptPrefix || 'REC-2026-'}${String(receiptSeq).padStart(5, '0')}`;
 
     const newPaymentRecord = {
@@ -404,17 +728,16 @@ export default function App() {
       totalFee: totalFee,
       discount: discountAmount,
       remainingDue: newRemainingDue,
-      feeMonth,
-      paymentMethod,
-      paymentDate,
-      remarks
+      feeMonth: feeMonth || 'Full Course Clearance',
+      paymentMethod: feePaymentMethod || 'Cash',
+      paymentDate: feePaymentDate || new Date().toISOString().split('T')[0],
+      remarks: feeRemarks || 'Tuition fee payment'
     };
 
     const updatedPaymentsList = [newPaymentRecord, ...payments];
     setPayments(updatedPaymentsList);
     localStorage.setItem('ag_payments', JSON.stringify(updatedPaymentsList));
 
-    // Update settings sequence
     setSettings((prev) => ({
       ...prev,
       nextReceiptSeq: receiptSeq + 1
@@ -423,17 +746,14 @@ export default function App() {
     setShowCollectFeeModal(false);
     setPreselectedStudentForFee(null);
 
-    showToast(`Fee of ${currency} ${paidAmount.toLocaleString()} received for ${updatedStudent.name}! Opening Parents Alert...`);
+    showToast(`✓ Fee of ${currency} ${paidAmount.toLocaleString()} recorded for ${updatedStudent.name}! Opening Parents SMS...`);
 
-    // 3. AUTOMATICALLY OPEN PARENTS SMS / WHATSAPP ALERT!
     setTimeout(() => {
       openFeeNotification(updatedStudent, newPaymentRecord, 'payment');
-    }, 400);
+    }, 350);
   };
 
-  // ==============================================================
-  // 2. SAVE EDITED FEE PAYMENT (FIX MISTAKES IN FEE RECORDS)
-  // ==============================================================
+  // 2. SAVE EDITED FEE PAYMENT
   const handleSaveEditedPayment = (e) => {
     e.preventDefault();
     if (!editingPayment) return;
@@ -447,7 +767,6 @@ export default function App() {
     const oldAmount = Number(editingPayment.paidAmount) || 0;
     const diff = newPaidAmount - oldAmount;
 
-    // 1. Adjust Student balance
     const updatedStudentsList = students.map((s) => {
       if (s.id === editingPayment.studentId || s.rollNo === editingPayment.studentRollNo) {
         const curPaid = Number(s.paidFee) || 0;
@@ -466,7 +785,6 @@ export default function App() {
     setStudents(updatedStudentsList);
     localStorage.setItem('ag_students', JSON.stringify(updatedStudentsList));
 
-    // 2. Update Payment record
     const updatedPaymentsList = payments.map((p) => {
       if (p.id === editingPayment.id) {
         return {
@@ -490,11 +808,9 @@ export default function App() {
     showToast('Payment record updated and student dues balance adjusted successfully!');
   };
 
-  // Delete Payment & revert balance
   const handleDeletePayment = (payment) => {
     if (window.confirm(`Are you sure you want to delete receipt #${payment.receiptNo} of ${currency} ${payment.paidAmount}? This will revert student dues.`)) {
       const amount = Number(payment.paidAmount) || 0;
-      // Revert student balance
       setStudents((prev) =>
         prev.map((s) => {
           if (s.id === payment.studentId || s.rollNo === payment.studentRollNo) {
@@ -516,9 +832,7 @@ export default function App() {
     }
   };
 
-  // ==============================================================
-  // 3. EXPENSE HANDLER (ADD & EDIT)
-  // ==============================================================
+  // 3. EXPENSE HANDLER
   const handleExpenseSubmit = (e) => {
     e.preventDefault();
     const form = e.target;
@@ -564,9 +878,7 @@ export default function App() {
     }
   };
 
-  // ==============================================================
-  // 4. ATTENDANCE HANDLERS (BY COURSE)
-  // ==============================================================
+  // 4. ATTENDANCE HANDLERS
   const handleMarkAttendance = (studentId, status) => {
     setAttendanceRecords((prev) => {
       const dayRecords = prev[attendanceDate] || {};
@@ -597,9 +909,7 @@ export default function App() {
     showToast(`Marked ${targetStudents.length} students as Present for ${attendanceDate}!`);
   };
 
-  // ==============================================================
-  // METRICS & COMPUTATIONS
-  // ==============================================================
+  // METRICS
   const totalStudents = students.length;
   const activeStudents = students.filter((s) => s.status === 'Active').length;
 
@@ -621,7 +931,6 @@ export default function App() {
     return students.filter((s) => Number(s.remainingFee) > 0);
   }, [students]);
 
-  // Filtered Students List
   const filteredStudents = useMemo(() => {
     return students.filter((s) => {
       const matchSearch =
@@ -641,7 +950,6 @@ export default function App() {
     });
   }, [students, globalSearch, studentCourseFilter, studentStatusFilter]);
 
-  // Export CSV Helper
   const exportToCSV = (filename, dataRows) => {
     if (!dataRows || !dataRows.length) {
       alert('No records available to export.');
@@ -664,7 +972,6 @@ export default function App() {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8f7f4' }}>
-      {/* Toast Notification */}
       {toastMessage && (
         <div
           style={{
@@ -690,7 +997,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ===================== SIDEBAR ===================== */}
+      {/* SIDEBAR */}
       <aside
         style={{
           width: '260px',
@@ -705,7 +1012,6 @@ export default function App() {
           zIndex: 50
         }}
       >
-        {/* Institute Brand Header */}
         <div
           style={{
             padding: '1.25rem 1rem',
@@ -741,7 +1047,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Navigation Links */}
         <nav style={{ padding: '0.75rem', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '3px' }}>
           {[
             { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
@@ -799,7 +1104,6 @@ export default function App() {
           })}
         </nav>
 
-        {/* Footer Actions */}
         <div style={{ padding: '0.75rem', borderTop: '1px solid #e8e6df', backgroundColor: '#faf9f5' }}>
           <button
             onClick={() => setShowSetupWizard(true)}
@@ -812,9 +1116,8 @@ export default function App() {
         </div>
       </aside>
 
-      {/* ===================== MAIN CANVAS ===================== */}
+      {/* MAIN CANVAS */}
       <div style={{ marginLeft: '260px', flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-        {/* Top Header Bar */}
         <header
           style={{
             height: '60px',
@@ -837,10 +1140,7 @@ export default function App() {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <button
-              onClick={() => {
-                setPreselectedStudentForFee(null);
-                setShowCollectFeeModal(true);
-              }}
+              onClick={() => openCollectFeeModal()}
               className="btn btn-primary"
               style={{ padding: '0.45rem 0.85rem', fontSize: '0.8rem' }}
             >
@@ -866,14 +1166,10 @@ export default function App() {
           </div>
         </header>
 
-        {/* Content Body */}
         <main style={{ padding: '1.5rem', flex: 1 }}>
-          {/* ============================================================== */}
-          {/* TAB 1: DASHBOARD (HALF-WHITE IVORY WITH TRACKING CHART)        */}
-          {/* ============================================================== */}
+          {/* TAB 1: DASHBOARD */}
           {activeTab === 'dashboard' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {/* Top KPI Cards Grid */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem' }}>
                 <div className="card">
                   <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>TOTAL STUDENTS</span>
@@ -908,7 +1204,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* BEHTREEN FINANCIAL TRACKING CHART (FEES VS EXPENSES) */}
               <FinancialTrackingChart
                 payments={payments}
                 expenses={expenses}
@@ -917,7 +1212,6 @@ export default function App() {
                 currency={currency}
               />
 
-              {/* Course-Wise Admitted Students Section */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.25rem' }}>
                 <div className="card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
@@ -976,7 +1270,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Recent Fee Payments (with Quick Edit & SMS Alert) */}
                 <div className="card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                     <div>
@@ -1065,12 +1358,9 @@ export default function App() {
             </div>
           )}
 
-          {/* ============================================================== */}
-          {/* TAB 2: STUDENTS DIRECTORY                                      */}
-          {/* ============================================================== */}
+          {/* TAB 2: STUDENTS */}
           {activeTab === 'students' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {/* Filter and Search Bar */}
               <div
                 className="card"
                 style={{
@@ -1120,7 +1410,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Students Table */}
               <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
                 <div style={{ overflowX: 'auto' }}>
                   <table className="data-table">
@@ -1192,11 +1481,23 @@ export default function App() {
                                 >
                                   <Eye size={13} />
                                 </button>
+                                {Number(s.remainingFee) > 0 ? (
+                                  <button
+                                    onClick={() => handleQuickMarkPaid(s)}
+                                    className="btn btn-success"
+                                    title="Instant Clear Dues & Alert Parents"
+                                    style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem', gap: '3px' }}
+                                  >
+                                    <CheckCircle size={13} />
+                                    <span>Quick Pay</span>
+                                  </button>
+                                ) : (
+                                  <span className="badge badge-paid" style={{ fontSize: '0.68rem', padding: '0.2rem 0.45rem', alignSelf: 'center' }}>
+                                    Paid
+                                  </span>
+                                )}
                                 <button
-                                  onClick={() => {
-                                    setPreselectedStudentForFee(s);
-                                    setShowCollectFeeModal(true);
-                                  }}
+                                  onClick={() => openCollectFeeModal(s)}
                                   className="btn btn-primary"
                                   title="Collect Fee"
                                   style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }}
@@ -1232,9 +1533,7 @@ export default function App() {
             </div>
           )}
 
-          {/* ============================================================== */}
-          {/* TAB 3: COURSES & ADMISSIONS                                    */}
-          {/* ============================================================== */}
+          {/* TAB 3: COURSES */}
           {activeTab === 'courses' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div
@@ -1280,7 +1579,6 @@ export default function App() {
                         <div>Admitted: <strong style={{ color: '#2563eb' }}>{enrolled} Students</strong></div>
                       </div>
 
-                      {/* Course Admitted Students Quick List */}
                       <div style={{ backgroundColor: '#faf9f5', border: '1px solid #e8e6df', borderRadius: '6px', padding: '8px 10px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                           <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#334155' }}>
@@ -1343,12 +1641,9 @@ export default function App() {
             </div>
           )}
 
-          {/* ============================================================== */}
-          {/* TAB 4: FEE COLLECTION & DUES                                  */}
-          {/* ============================================================== */}
+          {/* TAB 4: FEES */}
           {activeTab === 'fees' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {/* Fee Quick Stats Bar */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                 <div className="card">
                   <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>TOTAL COLLECTED</span>
@@ -1370,10 +1665,7 @@ export default function App() {
                 </div>
                 <div className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <button
-                    onClick={() => {
-                      setPreselectedStudentForFee(null);
-                      setShowCollectFeeModal(true);
-                    }}
+                    onClick={() => openCollectFeeModal()}
                     className="btn btn-primary"
                     style={{ width: '100%', padding: '0.75rem' }}
                   >
@@ -1383,7 +1675,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Subtabs & Course-Wise Fee Filter */}
               <div className="card" style={{ padding: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -1403,7 +1694,6 @@ export default function App() {
                     </button>
                   </div>
 
-                  {/* Course Filter for Fees */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155' }}>
                       Course Filter:
@@ -1428,7 +1718,6 @@ export default function App() {
                 </div>
 
                 {feeStatusFilter === 'ALL' ? (
-                  /* Payments Table */
                   <div style={{ overflowX: 'auto' }}>
                     <table className="data-table">
                       <thead>
@@ -1513,7 +1802,6 @@ export default function App() {
                     </table>
                   </div>
                 ) : (
-                  /* Defaulters Table */
                   <div style={{ overflowX: 'auto' }}>
                     <table className="data-table">
                       <thead>
@@ -1546,18 +1834,24 @@ export default function App() {
                             <td>
                               <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
                                 <button
+                                  onClick={() => handleQuickMarkPaid(s)}
+                                  className="btn btn-success"
+                                  title="Mark Full Dues as Paid & Alert Parents"
+                                  style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem', gap: '3px' }}
+                                >
+                                  <CheckCircle size={13} />
+                                  <span>Mark Paid & SMS</span>
+                                </button>
+                                <button
                                   onClick={() => openFeeNotification(s, null, 'due_reminder')}
                                   className="btn btn-danger"
                                   style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem', gap: '3px' }}
                                 >
                                   <Send size={13} />
-                                  <span>Send Due Reminder</span>
+                                  <span>Reminder</span>
                                 </button>
                                 <button
-                                  onClick={() => {
-                                    setPreselectedStudentForFee(s);
-                                    setShowCollectFeeModal(true);
-                                  }}
+                                  onClick={() => openCollectFeeModal(s)}
                                   className="btn btn-primary"
                                   style={{ padding: '0.3rem 0.5rem', fontSize: '0.75rem' }}
                                 >
@@ -1576,9 +1870,7 @@ export default function App() {
             </div>
           )}
 
-          {/* ============================================================== */}
-          {/* TAB 5: ATTENDANCE (BY COURSE)                                  */}
-          {/* ============================================================== */}
+          {/* TAB 5: ATTENDANCE */}
           {activeTab === 'attendance' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div
@@ -1635,7 +1927,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Attendance Sheet */}
               <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
                 <div style={{ overflowX: 'auto' }}>
                   <table className="data-table">
@@ -1705,9 +1996,7 @@ export default function App() {
             </div>
           )}
 
-          {/* ============================================================== */}
-          {/* TAB 6: FACULTY & TEACHERS                                      */}
-          {/* ============================================================== */}
+          {/* TAB 6: TEACHERS */}
           {activeTab === 'teachers' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div
@@ -1794,9 +2083,7 @@ export default function App() {
             </div>
           )}
 
-          {/* ============================================================== */}
-          {/* TAB 7: OPERATING EXPENSES                                      */}
-          {/* ============================================================== */}
+          {/* TAB 7: EXPENSES */}
           {activeTab === 'expenses' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem' }}>
@@ -1826,7 +2113,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Expenses Ledger Table */}
               <div className="card" style={{ padding: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                   <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>Expense Ledger & Vouchers</h3>
@@ -1898,9 +2184,7 @@ export default function App() {
             </div>
           )}
 
-          {/* ============================================================== */}
-          {/* TAB 8: ISSUED CERTIFICATES (4 CORNERS, OFFICIAL SEAL & QR)     */}
-          {/* ============================================================== */}
+          {/* TAB 8: CERTIFICATES */}
           {activeTab === 'certificates' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div
@@ -1941,7 +2225,6 @@ export default function App() {
                 </button>
               </div>
 
-              {/* Issue certificate for students */}
               <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
                 <div style={{ overflowX: 'auto' }}>
                   <table className="data-table">
@@ -1964,9 +2247,21 @@ export default function App() {
                           </td>
                           <td>{s.courseName}</td>
                           <td>
-                            <span className={`badge ${Number(s.remainingFee) === 0 ? 'badge-paid' : 'badge-unpaid'}`}>
-                              {Number(s.remainingFee) === 0 ? 'Fee Fully Cleared' : `Dues: ${currency}${s.remainingFee}`}
-                            </span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <span className={`badge ${Number(s.remainingFee) === 0 ? 'badge-paid' : 'badge-unpaid'}`}>
+                                {Number(s.remainingFee) === 0 ? 'Fee Fully Cleared' : `Dues: ${currency}${Number(s.remainingFee).toLocaleString()}`}
+                              </span>
+                              {Number(s.remainingFee) > 0 && (
+                                <button
+                                  onClick={() => handleQuickMarkPaid(s)}
+                                  className="btn btn-secondary"
+                                  title="Clear Pending Fee to Issue Certificate"
+                                  style={{ padding: '0.15rem 0.45rem', fontSize: '0.68rem', color: '#16a34a', borderColor: '#86efac' }}
+                                >
+                                  Clear Fee
+                                </button>
+                              )}
+                            </div>
                           </td>
                           <td style={{ textAlign: 'center' }}>
                             <button
@@ -2001,13 +2296,10 @@ export default function App() {
         </main>
       </div>
 
-      {/* ============================================================== */}
-      {/* MODAL: COLLECT STUDENT FEE (FIXED & FULLY FUNCTIONAL)          */}
-      {/* ============================================================== */}
+      {/* MODAL: COLLECT STUDENT FEE */}
       {showCollectFeeModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            {/* Modal Header with Institute Logo / Official Seal */}
             <div
               style={{
                 display: 'flex',
@@ -2051,9 +2343,17 @@ export default function App() {
               <div>
                 <label className="form-label">Select Student *</label>
                 <select
-                  name="studentId"
+                  value={feeStudentId}
+                  onChange={(e) => {
+                    const sId = e.target.value;
+                    setFeeStudentId(sId);
+                    const st = students.find((s) => String(s.id) === String(sId) || s.rollNo === sId);
+                    if (st) {
+                      const rem = Number(st.remainingFee || 0);
+                      setFeeAmount(rem > 0 ? rem : 5000);
+                    }
+                  }}
                   required
-                  defaultValue={preselectedStudentForFee?.id || ''}
                   className="form-select"
                 >
                   <option value="">-- Choose Student by Name & Roll --</option>
@@ -2065,37 +2365,121 @@ export default function App() {
                 </select>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
-                <div>
-                  <label className="form-label">Amount Paid ({currency}) *</label>
-                  <input
-                    type="number"
-                    name="paidAmount"
-                    required
-                    min="1"
-                    placeholder="e.g. 5000"
-                    defaultValue={preselectedStudentForFee?.monthlyFee || 5000}
-                    className="form-input"
-                    style={{ fontSize: '1rem', fontWeight: 800, color: '#16a34a' }}
-                  />
+              {/* Active Student Status Card */}
+              {(() => {
+                const activeSt = students.find((s) => String(s.id) === String(feeStudentId) || s.rollNo === feeStudentId);
+                if (!activeSt) return null;
+                const rem = Number(activeSt.remainingFee || 0);
+                return (
+                  <div
+                    style={{
+                      padding: '0.85rem 1rem',
+                      backgroundColor: '#faf9f5',
+                      borderRadius: '8px',
+                      border: '1px solid #e2e8f0',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: '0.75rem'
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.9rem' }}>
+                        {activeSt.name} ({activeSt.rollNo})
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                        Course: <strong>{activeSt.courseName}</strong> • Parent: <strong>{activeSt.parentPhone || activeSt.phone || 'No Phone'}</strong>
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
+                        Total Course Fee: {currency} {Number(activeSt.totalFee).toLocaleString()} • Already Paid: <span style={{ color: '#16a34a', fontWeight: 700 }}>{currency} {Number(activeSt.paidFee).toLocaleString()}</span>
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>
+                        Pending Dues Balance
+                      </span>
+                      <div
+                        style={{
+                          fontSize: '1.2rem',
+                          fontWeight: 900,
+                          color: rem > 0 ? '#dc2626' : '#16a34a'
+                        }}
+                      >
+                        {currency} {rem.toLocaleString()}
+                      </div>
+                      <span className={`badge ${rem === 0 ? 'badge-paid' : 'badge-unpaid'}`} style={{ fontSize: '0.68rem' }}>
+                        {rem === 0 ? 'Fully Cleared' : 'Payment Due'}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <label className="form-label" style={{ margin: 0 }}>Amount Paid ({currency}) *</label>
+                  {(() => {
+                    const activeSt = students.find((s) => String(s.id) === String(feeStudentId) || s.rollNo === feeStudentId);
+                    if (!activeSt) return null;
+                    const rem = Number(activeSt.remainingFee || 0);
+                    return (
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        <button
+                          type="button"
+                          onClick={() => setFeeAmount(rem > 0 ? rem : Number(activeSt.totalFee || 5000))}
+                          className="btn btn-secondary"
+                          style={{ padding: '0.15rem 0.5rem', fontSize: '0.72rem', color: '#dc2626', borderColor: '#fca5a5' }}
+                        >
+                          Pay Full Due ({currency} {rem.toLocaleString()})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setFeeAmount(5000)}
+                          className="btn btn-secondary"
+                          style={{ padding: '0.15rem 0.5rem', fontSize: '0.72rem' }}
+                        >
+                          Monthly ({currency} 5,000)
+                        </button>
+                      </div>
+                    );
+                  })()}
                 </div>
-                <div>
-                  <label className="form-label">Concession / Discount ({currency})</label>
-                  <input
-                    type="number"
-                    name="discountAmount"
-                    defaultValue="0"
-                    min="0"
-                    className="form-input"
-                  />
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+                  <div>
+                    <input
+                      type="number"
+                      required
+                      min="1"
+                      value={feeAmount}
+                      onChange={(e) => setFeeAmount(e.target.value)}
+                      placeholder="e.g. 5000"
+                      className="form-input"
+                      style={{ fontSize: '1rem', fontWeight: 800, color: '#16a34a' }}
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="number"
+                      min="0"
+                      value={feeDiscount}
+                      onChange={(e) => setFeeDiscount(e.target.value)}
+                      placeholder="Concession / Discount"
+                      className="form-input"
+                    />
+                  </div>
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                 <div>
                   <label className="form-label">Fee Month / Installment Period</label>
-                  <select name="feeMonth" className="form-select">
-                    {['Admission Installment', 'October 2026', 'November 2026', 'December 2026', 'January 2027', 'February 2027', 'Full Course Clearance'].map((m) => (
+                  <select
+                    value={feeMonth}
+                    onChange={(e) => setFeeMonth(e.target.value)}
+                    className="form-select"
+                  >
+                    {['Full Course Clearance', 'Admission Installment', 'October 2026', 'November 2026', 'December 2026', 'January 2027', 'February 2027'].map((m) => (
                       <option key={m} value={m}>{m}</option>
                     ))}
                   </select>
@@ -2104,8 +2488,8 @@ export default function App() {
                   <label className="form-label">Payment Date</label>
                   <input
                     type="date"
-                    name="paymentDate"
-                    defaultValue={new Date().toISOString().split('T')[0]}
+                    value={feePaymentDate}
+                    onChange={(e) => setFeePaymentDate(e.target.value)}
                     className="form-input"
                   />
                 </div>
@@ -2114,7 +2498,11 @@ export default function App() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                 <div>
                   <label className="form-label">Payment Mode</label>
-                  <select name="paymentMethod" className="form-select">
+                  <select
+                    value={feePaymentMethod}
+                    onChange={(e) => setFeePaymentMethod(e.target.value)}
+                    className="form-select"
+                  >
                     <option value="Cash">Cash (Campus Counter)</option>
                     <option value="JazzCash">JazzCash</option>
                     <option value="EasyPaisa">EasyPaisa</option>
@@ -2126,7 +2514,8 @@ export default function App() {
                   <label className="form-label">Remarks / Memo</label>
                   <input
                     type="text"
-                    name="remarks"
+                    value={feeRemarks}
+                    onChange={(e) => setFeeRemarks(e.target.value)}
                     placeholder="e.g. Tuition fee received in cash"
                     className="form-input"
                   />
@@ -2139,7 +2528,7 @@ export default function App() {
                   backgroundColor: '#f0fdf4',
                   borderRadius: '6px',
                   border: '1px solid #bbf7d0',
-                  fontSize: '0.78rem',
+                  fontSize: '0.8rem',
                   color: '#166534',
                   display: 'flex',
                   alignItems: 'center',
@@ -2147,7 +2536,7 @@ export default function App() {
                 }}
               >
                 <Send size={16} />
-                <span>Submitting will instantly update student balance and prompt WhatsApp/SMS alert to Parents!</span>
+                <span>Submitting will mark student balance as PAID and automatically open Parents WhatsApp & SMS Alert!</span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
@@ -2161,7 +2550,7 @@ export default function App() {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-success" style={{ padding: '0.6rem 1.25rem', gap: '6px' }}>
+                <button type="submit" className="btn btn-success" style={{ padding: '0.65rem 1.4rem', fontWeight: 800, gap: '6px' }}>
                   <Check size={16} />
                   <span>Receive Payment & Alert Parents</span>
                 </button>
@@ -2171,9 +2560,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ============================================================== */}
-      {/* MODAL: EDIT FEE PAYMENT (FIX MISTAKES IN FEE RECORDS)           */}
-      {/* ============================================================== */}
+      {/* MODAL: EDIT FEE PAYMENT */}
       {showEditPaymentModal && editingPayment && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -2293,9 +2680,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ============================================================== */}
-      {/* MODAL: COURSE ADMITTED STUDENTS VIEW (COURSE KE HISAB SE)      */}
-      {/* ============================================================== */}
+      {/* MODAL: COURSE ADMITTED STUDENTS VIEW */}
       {selectedCourseForStudentsModal && (
         <div className="modal-overlay">
           <div className="modal-content modal-content-wide">
@@ -2408,11 +2793,26 @@ export default function App() {
                             </td>
                             <td>
                               <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
+                                {Number(s.remainingFee) > 0 ? (
+                                  <button
+                                    onClick={() => {
+                                      setSelectedCourseForStudentsModal(null);
+                                      handleQuickMarkPaid(s);
+                                    }}
+                                    className="btn btn-success"
+                                    title="Mark Paid & Send Parents SMS"
+                                    style={{ padding: '0.25rem 0.45rem', fontSize: '0.72rem', gap: '2px' }}
+                                  >
+                                    <CheckCircle size={12} />
+                                    <span>Pay Due</span>
+                                  </button>
+                                ) : (
+                                  <span className="badge badge-paid" style={{ fontSize: '0.65rem' }}>Paid</span>
+                                )}
                                 <button
                                   onClick={() => {
                                     setSelectedCourseForStudentsModal(null);
-                                    setPreselectedStudentForFee(s);
-                                    setShowCollectFeeModal(true);
+                                    openCollectFeeModal(s);
                                   }}
                                   className="btn btn-primary"
                                   style={{ padding: '0.25rem 0.45rem', fontSize: '0.72rem' }}
@@ -2444,9 +2844,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ============================================================== */}
-      {/* MODAL: ADD / EDIT STUDENT (WITH IMAGE UPLOAD & LOGO)           */}
-      {/* ============================================================== */}
+      {/* MODAL: ADD / EDIT STUDENT */}
       {showAddStudentModal && (
         <div className="modal-overlay">
           <div className="modal-content modal-content-wide">
@@ -2537,7 +2935,6 @@ export default function App() {
               }}
               style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
             >
-              {/* IMAGE UPLOAD OPTION FOR STUDENT */}
               <ImageUploadField
                 value={studentPhoto}
                 onChange={setStudentPhoto}
@@ -2657,9 +3054,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ============================================================== */}
-      {/* MODAL: ADD / EDIT TEACHER (WITH IMAGE UPLOAD & LOGO)           */}
-      {/* ============================================================== */}
+      {/* MODAL: ADD / EDIT TEACHER */}
       {showAddTeacherModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -2804,9 +3199,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ============================================================== */}
-      {/* MODAL: ADD / EDIT COURSE                                       */}
-      {/* ============================================================== */}
+      {/* MODAL: ADD / EDIT COURSE */}
       {showAddCourseModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -2947,9 +3340,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ============================================================== */}
-      {/* MODAL: ADD / EDIT EXPENSE                                      */}
-      {/* ============================================================== */}
+      {/* MODAL: ADD / EDIT EXPENSE */}
       {showAddExpenseModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -3059,9 +3450,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ============================================================== */}
-      {/* MODAL: STUDENT PROFILE VIEW                                    */}
-      {/* ============================================================== */}
+      {/* MODAL: STUDENT PROFILE */}
       <StudentProfileModal
         student={selectedStudentForProfile}
         isOpen={showStudentProfileModal}
@@ -3071,14 +3460,12 @@ export default function App() {
         onPrintDocument={openPrintDocument}
         onCollectFee={(st) => {
           setShowStudentProfileModal(false);
-          setPreselectedStudentForFee(st);
-          setShowCollectFeeModal(true);
+          openCollectFeeModal(st);
         }}
+        onQuickMarkPaid={handleQuickMarkPaid}
       />
 
-      {/* ============================================================== */}
-      {/* MODAL: PRINT ALL OFFICIAL DOCUMENTS                            */}
-      {/* ============================================================== */}
+      {/* MODAL: PRINT OFFICIAL DOCUMENTS */}
       <PrintDocumentModal
         isOpen={showPrintModal}
         onClose={() => setShowPrintModal(false)}
@@ -3088,9 +3475,7 @@ export default function App() {
         currency={currency}
       />
 
-      {/* ============================================================== */}
-      {/* MODAL: PARENTS SMS / WHATSAPP FEE NOTIFICATIONS                */}
-      {/* ============================================================== */}
+      {/* MODAL: PARENTS SMS / WHATSAPP FEE NOTIFICATIONS */}
       <FeeNotificationModal
         isOpen={showNotificationModal}
         onClose={() => setShowNotificationModal(false)}
@@ -3098,11 +3483,10 @@ export default function App() {
         payment={notificationConfig.payment}
         settings={settings}
         currency={currency}
+        type={notificationConfig.type || 'payment'}
       />
 
-      {/* ============================================================== */}
-      {/* MODAL: BACKUP & RESTORE DATABASE                               */}
-      {/* ============================================================== */}
+      {/* MODAL: BACKUP & RESTORE */}
       <BackupRestoreModal
         isOpen={showBackupModal}
         onClose={() => setShowBackupModal(false)}
@@ -3129,9 +3513,7 @@ export default function App() {
         }}
       />
 
-      {/* ============================================================== */}
-      {/* MODAL: INSTITUTE SETTINGS & BRANDING WIZARD                    */}
-      {/* ============================================================== */}
+      {/* MODAL: SETUP WIZARD */}
       <SetupWizardModal
         isOpen={showSetupWizard}
         onClose={() => setShowSetupWizard(false)}

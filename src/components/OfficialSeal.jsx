@@ -86,14 +86,12 @@ export default function OfficialSeal({
               <stop offset="100%" stopColor="#b45309" />
             </linearGradient>
           </defs>
-          {/* Left Ribbon */}
           <path
             d="M 38,0 L 22,48 L 35,40 L 48,48 L 46,0 Z"
             fill="url(#ribbonGradLeft)"
             stroke="url(#ribbonGoldEdge)"
             strokeWidth="1.2"
           />
-          {/* Right Ribbon */}
           <path
             d="M 74,0 L 72,48 L 85,40 L 98,48 L 82,0 Z"
             fill="url(#ribbonGradRight)"
@@ -115,7 +113,6 @@ export default function OfficialSeal({
         }}
       >
         <defs>
-          {/* 24K Polished Gold Gradient */}
           <linearGradient id="goldPlate" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#fff2a3" />
             <stop offset="25%" stopColor="#ffd700" />
@@ -124,27 +121,23 @@ export default function OfficialSeal({
             <stop offset="100%" stopColor="#8c6d1f" />
           </linearGradient>
 
-          {/* Deep Royal Midnight Blue */}
           <radialGradient id="royalNavy" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#1e40af" />
             <stop offset="65%" stopColor="#172554" />
             <stop offset="100%" stopColor="#0a1024" />
           </radialGradient>
 
-          {/* Gold Inner Bevel */}
           <linearGradient id="goldBevel" x1="0%" y1="100%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#8c6d1f" />
             <stop offset="50%" stopColor="#ffd700" />
             <stop offset="100%" stopColor="#fff2a3" />
           </linearGradient>
 
-          {/* Circular Text Path - Top (AL GHAZI DIGITAL INSTITUTE) */}
           <path
             id="textPathTop"
             d="M 30,100 A 70,70 0 1,1 170,100"
             fill="none"
           />
-          {/* Circular Text Path - Bottom (GOVT REG & VERIFIED EXCELLENCE) */}
           <path
             id="textPathBottom"
             d="M 170,100 A 70,70 0 0,1 30,100"
@@ -152,7 +145,7 @@ export default function OfficialSeal({
           />
         </defs>
 
-        {/* 1. Outer Starburst Scallop Teeth (48 Serrated Points) */}
+        {/* 1. Outer Starburst Scallop Teeth */}
         <path
           d={(() => {
             const points = 48;
@@ -178,7 +171,7 @@ export default function OfficialSeal({
         <circle cx="100" cy="100" r="83" fill="none" stroke="#785314" strokeWidth="1" />
         <circle cx="100" cy="100" r="80" fill="none" stroke="url(#goldPlate)" strokeWidth="2.5" />
 
-        {/* 3. Deep Navy / Black Center Shield */}
+        {/* 3. Center Navy Shield */}
         <circle cx="100" cy="100" r="77" fill="url(#royalNavy)" stroke="#ffd700" strokeWidth="1.8" />
 
         {/* 4. Dashed Security Perimeter Ring */}
@@ -221,9 +214,8 @@ export default function OfficialSeal({
           </textPath>
         </text>
 
-        {/* 7. Center Emblem - Laurel Wreath & Royal Crown / Monogram */}
+        {/* 7. Center Crest */}
         <g transform="translate(100, 100)">
-          {/* Central Laurel Wreath Branches */}
           <path
             d="M -36,12 C -42,2 -40,-16 -30,-28 C -22,-38 -8,-44 0,-44 C 8,-44 22,-38 30,-28 C 40,-16 42,2 36,12 C 28,24 16,34 0,36 C -16,34 -28,24 -36,12 Z"
             fill="none"
@@ -232,7 +224,6 @@ export default function OfficialSeal({
             opacity="0.3"
           />
 
-          {/* Laurel Leaf Sprigs */}
           {[-26, -20, -14, -8, 8, 14, 20, 26].map((deg, idx) => (
             <ellipse
               key={idx}
@@ -246,7 +237,6 @@ export default function OfficialSeal({
             />
           ))}
 
-          {/* Royal Crown / Crest at Core */}
           <path
             d="M -18,-12 L -22,4 L 22,4 L 18,-12 L 8,-4 L 0,-18 L -8,-4 Z"
             fill="url(#goldPlate)"
@@ -254,12 +244,10 @@ export default function OfficialSeal({
             strokeWidth="1"
             filter="drop-shadow(0 2px 4px rgba(0,0,0,0.6))"
           />
-          {/* Jewels on crown peaks */}
           <circle cx="-18" cy="-13" r="2" fill="#ffffff" />
           <circle cx="0" cy="-19" r="2.5" fill="#ffffff" />
           <circle cx="18" cy="-13" r="2" fill="#ffffff" />
 
-          {/* Monogram "AG" */}
           <text
             x="0"
             y="20"
@@ -274,7 +262,6 @@ export default function OfficialSeal({
             AG
           </text>
 
-          {/* Five Stars Below Crown */}
           {[-16, -8, 0, 8, 16].map((x, i) => (
             <polygon
               key={i}

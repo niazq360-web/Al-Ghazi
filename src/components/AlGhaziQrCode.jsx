@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
 
-/**
- * AlGhaziQrCode Component
- * Generates high-resolution verifiable QR code pointing to http://alghazidigital.site.je/
- * with official institute link prominently styled underneath.
- */
 export default function AlGhaziQrCode({
   value = 'http://alghazidigital.site.je/',
   websiteUrl = 'http://alghazidigital.site.je/',

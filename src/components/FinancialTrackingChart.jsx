@@ -13,15 +13,6 @@ import {
   AlertCircle
 } from 'lucide-react';
 
-/**
- * FinancialTrackingChart Component
- * Comprehensive visual analytics for fee revenues and operational expenses.
- * Includes:
- * 1. KPI Ribbon (Total Collected, Total Expenses, Net Surplus/Balance, Profit Margin)
- * 2. Visual Monthly Cashflow Bar Comparison (Revenue vs Expense)
- * 3. Course-Wise Fee Revenue Distribution
- * 4. Expense Breakdown by Category
- */
 export default function FinancialTrackingChart({
   payments = [],
   expenses = [],
@@ -29,9 +20,8 @@ export default function FinancialTrackingChart({
   courses = [],
   currency = 'Rs.'
 }) {
-  const [chartView, setChartView] = useState('monthly'); // 'monthly' | 'courses' | 'categories'
+  const [chartView, setChartView] = useState('monthly');
 
-  // 1. Core KPIs
   const totalFeeCollected = useMemo(() => {
     return payments.reduce((sum, p) => sum + (Number(p.paidAmount) || 0), 0);
   }, [payments]);
@@ -49,7 +39,6 @@ export default function FinancialTrackingChart({
     return students.reduce((sum, s) => sum + (Number(s.remainingFee) || 0), 0);
   }, [students]);
 
-  // 2. Monthly Trend Data (Last 6 Months)
   const monthlyData = useMemo(() => {
     const months = [];
     const now = new Date();
@@ -85,7 +74,6 @@ export default function FinancialTrackingChart({
     return months;
   }, [payments, expenses]);
 
-  // 3. Course-Wise Revenue
   const courseRevenueData = useMemo(() => {
     const map = {};
     courses.forEach((c) => {
@@ -111,7 +99,6 @@ export default function FinancialTrackingChart({
     return Object.values(map);
   }, [courses, payments, students]);
 
-  // 4. Expense Categories Breakdown
   const expenseCategoryData = useMemo(() => {
     const map = {};
     expenses.forEach((e) => {
@@ -128,7 +115,6 @@ export default function FinancialTrackingChart({
     return entries.sort((a, b) => b.amount - a.amount);
   }, [expenses, totalExpensesAmount]);
 
-  // Helper for max bar height
   const maxMonthlyVal = Math.max(
     ...monthlyData.map((m) => Math.max(m.revenue, m.expense)),
     1000
@@ -145,7 +131,6 @@ export default function FinancialTrackingChart({
         boxShadow: '0 2px 6px rgba(0,0,0,0.03)'
       }}
     >
-      {/* Header & View Switcher */}
       <div
         style={{
           display: 'flex',
@@ -179,7 +164,6 @@ export default function FinancialTrackingChart({
           </div>
         </div>
 
-        {/* Tab Controls */}
         <div style={{ display: 'flex', gap: '4px', backgroundColor: '#f4f3ee', padding: '3px', borderRadius: '8px' }}>
           <button
             onClick={() => setChartView('monthly')}
@@ -229,7 +213,6 @@ export default function FinancialTrackingChart({
         </div>
       </div>
 
-      {/* KPI Ribbon */}
       <div
         style={{
           display: 'grid',
@@ -287,7 +270,6 @@ export default function FinancialTrackingChart({
         </div>
       </div>
 
-      {/* VIEW 1: MONTHLY CASHFLOW COMPARISON (REVENUE VS EXPENSES BAR CHART) */}
       {chartView === 'monthly' && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
@@ -324,7 +306,6 @@ export default function FinancialTrackingChart({
               return (
                 <div key={idx} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px', width: '100%', justifyContent: 'center' }}>
-                    {/* Revenue Bar */}
                     <div
                       title={`${m.label} Revenue: ${currency} ${m.revenue.toLocaleString()}`}
                       style={{
@@ -336,7 +317,6 @@ export default function FinancialTrackingChart({
                         transition: 'height 0.2s ease'
                       }}
                     ></div>
-                    {/* Expense Bar */}
                     <div
                       title={`${m.label} Expense: ${currency} ${m.expense.toLocaleString()}`}
                       style={{
@@ -359,7 +339,6 @@ export default function FinancialTrackingChart({
         </div>
       )}
 
-      {/* VIEW 2: COURSE REVENUE DISTRIBUTION */}
       {chartView === 'courses' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {courseRevenueData.map((cr, idx) => {
@@ -388,7 +367,6 @@ export default function FinancialTrackingChart({
         </div>
       )}
 
-      {/* VIEW 3: EXPENSES BREAKDOWN BY CATEGORY */}
       {chartView === 'categories' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {expenseCategoryData.length === 0 ? (

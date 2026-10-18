@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { X, Printer, Download, Award, ShieldCheck, CheckCircle2, QrCode } from 'lucide-react';
+import { X, Printer, Download, Award, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import OfficialSeal from './OfficialSeal';
@@ -9,7 +9,7 @@ import CertificateCorner from './CertificateCorner';
 export default function PrintDocumentModal({
   isOpen,
   onClose,
-  documentType, // 'certificate' | 'fee_receipt' | 'admission_form' | 'teacher_form' | 'student_id_card' | 'teacher_id_card' | 'teacher_salary_slip' | 'defaulters_list' | 'result_card'
+  documentType,
   data = {},
   settings = {},
   currency = 'Rs.'
@@ -49,7 +49,6 @@ export default function PrintDocumentModal({
   };
 
   const handleDownloadDOC = () => {
-    // Generate clean HTML format suitable for Microsoft Word (.doc)
     if (!printAreaRef.current) return;
     const content = printAreaRef.current.innerHTML;
     const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
@@ -74,7 +73,6 @@ export default function PrintDocumentModal({
   return (
     <div className="modal-overlay">
       <div className={`modal-content ${documentType === 'certificate' ? 'modal-content-full' : 'modal-content-wide'}`}>
-        {/* Modal Top Control Bar */}
         <div
           className="no-print"
           style={{
@@ -112,7 +110,6 @@ export default function PrintDocumentModal({
           </div>
         </div>
 
-        {/* Printable Canvas */}
         <div style={{ padding: '1.5rem', overflowX: 'auto', backgroundColor: '#f1f0eb' }}>
           <div
             ref={printAreaRef}
@@ -124,9 +121,7 @@ export default function PrintDocumentModal({
               fontFamily: 'inherit'
             }}
           >
-            {/* ============================================================== */}
-            {/* 1. MASTERPIECE CERTIFICATE OF EXCELLENCE                       */}
-            {/* ============================================================== */}
+            {/* 1. MASTERPIECE CERTIFICATE */}
             {documentType === 'certificate' && (
               <div
                 style={{
@@ -140,7 +135,6 @@ export default function PrintDocumentModal({
                   boxSizing: 'border-box'
                 }}
               >
-                {/* 24K Gold Foil Accent Inset Border */}
                 <div
                   style={{
                     border: '3.5px solid #d4af37',
@@ -149,7 +143,6 @@ export default function PrintDocumentModal({
                     background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(255, 255, 255, 0) 100%)'
                   }}
                 >
-                  {/* Ornate Inner Frame with Luxury Cream Guilloche Background */}
                   <div
                     style={{
                       border: '1.5px solid #c59b27',
@@ -162,13 +155,11 @@ export default function PrintDocumentModal({
                       overflow: 'hidden'
                     }}
                   >
-                    {/* 4 CORNERS LUXURY BAROQUE ORNAMENTS */}
                     <CertificateCorner position="top-left" size={100} />
                     <CertificateCorner position="top-right" size={100} />
                     <CertificateCorner position="bottom-left" size={100} />
                     <CertificateCorner position="bottom-right" size={100} />
 
-                    {/* Top Crest / Institute Logo Header */}
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '14px', marginBottom: '8px' }}>
                       {settings.logoUrl ? (
                         <img
@@ -186,7 +177,6 @@ export default function PrintDocumentModal({
                       )}
                     </div>
 
-                    {/* Academy Name in Grand Royal Serif */}
                     <h1
                       className="font-serif-cert"
                       style={{
@@ -225,7 +215,6 @@ export default function PrintDocumentModal({
                       <div style={{ height: '1.5px', width: '80px', background: 'linear-gradient(to right, #d4af37, transparent)' }}></div>
                     </div>
 
-                    {/* Certificate Title Banner */}
                     <div
                       style={{
                         display: 'inline-block',
@@ -253,7 +242,6 @@ export default function PrintDocumentModal({
                       This official academic credential is proudly awarded to
                     </p>
 
-                    {/* Recipient Full Name */}
                     <h2
                       className="font-serif-cert"
                       style={{
@@ -274,7 +262,6 @@ export default function PrintDocumentModal({
                       {data.rollNo ? ` • Roll No: ${data.rollNo}` : ''}
                     </p>
 
-                    {/* Curriculum Statement */}
                     <p style={{ fontSize: '0.93rem', color: '#1e293b', maxWidth: '760px', margin: '12px auto 16px auto', lineHeight: 1.68 }}>
                       for successfully fulfilling all prescribed academic requirements, completing hands-on practical projects,
                       and demonstrating commendable technical proficiency in the specialized discipline of:
@@ -286,7 +273,6 @@ export default function PrintDocumentModal({
                       with an overall evaluation grade of <strong style={{ color: '#16a34a' }}>{data.grade || 'A+ Distinction'}</strong> during the academic session of <strong>{data.duration || settings.academicSession || 'Session 2026-2027'}</strong>.
                     </p>
 
-                    {/* SIGNATURES & CENTER OFFICIAL SEAL */}
                     <div
                       style={{
                         display: 'grid',
@@ -296,7 +282,6 @@ export default function PrintDocumentModal({
                         padding: '0 16px'
                       }}
                     >
-                      {/* Left Signature: Course Instructor */}
                       <div style={{ textAlign: 'center', paddingBottom: '8px' }}>
                         <svg width="120" height="34" viewBox="0 0 140 40" style={{ margin: '0 auto' }}>
                           <path
@@ -312,7 +297,6 @@ export default function PrintDocumentModal({
                         <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Head of Department</span>
                       </div>
 
-                      {/* CENTER: OFFICIAL SEAL (MEDALLION RECREATED FROM ASSET 1792081856717.jpg) */}
                       <div style={{ textAlign: 'center', margin: '0 20px', position: 'relative' }}>
                         <OfficialSeal
                           size={145}
@@ -323,7 +307,6 @@ export default function PrintDocumentModal({
                         />
                       </div>
 
-                      {/* Right Signature: Principal / Director */}
                       <div style={{ textAlign: 'center', paddingBottom: '8px' }}>
                         <svg width="120" height="34" viewBox="0 0 140 40" style={{ margin: '0 auto' }}>
                           <path
@@ -342,7 +325,6 @@ export default function PrintDocumentModal({
                       </div>
                     </div>
 
-                    {/* BOTTOM SECURITY BAR WITH OFFICIAL QR CODE & WEBSITE UNDERNEATH */}
                     <div
                       style={{
                         display: 'flex',
@@ -355,7 +337,6 @@ export default function PrintDocumentModal({
                         color: '#64748b'
                       }}
                     >
-                      {/* OFFICIAL QR CODE MATCHING "Al Ghazi Qr code.png" WITH WEBSITE UNDERNEATH */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'left' }}>
                         <AlGhaziQrCode
                           value={settings.website || "http://alghazidigital.site.je/"}
@@ -365,7 +346,6 @@ export default function PrintDocumentModal({
                         />
                       </div>
 
-                      {/* Center Verification Code & Security Note */}
                       <div style={{ textAlign: 'center' }}>
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', backgroundColor: '#f1f5f9', padding: '3px 10px', borderRadius: '4px', border: '1px solid #cbd5e1' }}>
                           <ShieldCheck size={14} color="#16a34a" />
@@ -378,7 +358,6 @@ export default function PrintDocumentModal({
                         </p>
                       </div>
 
-                      {/* Right Details */}
                       <div style={{ textAlign: 'right' }}>
                         <div>Issued: <strong>{data.issueDate || data.date || new Date().toISOString().split('T')[0]}</strong></div>
                         <div style={{ color: '#1e3a8a', fontWeight: 600 }}>Al Ghazi Academic Registry</div>
@@ -389,12 +368,9 @@ export default function PrintDocumentModal({
               </div>
             )}
 
-            {/* ============================================================== */}
-            {/* 2. OFFICIAL FEE RECEIPT                                         */}
-            {/* ============================================================== */}
+            {/* 2. OFFICIAL FEE RECEIPT */}
             {documentType === 'fee_receipt' && (
               <div style={{ width: '680px', padding: '30px', margin: '0 auto', border: '1px solid #cbd5e1' }}>
-                {/* Header with Institute Logo / Official Seal */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #0f172a', paddingBottom: '16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                     {settings.logoUrl ? (
@@ -428,17 +404,15 @@ export default function PrintDocumentModal({
                   </div>
                 </div>
 
-                {/* Student Particulars */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', padding: '16px 0', borderBottom: '1px solid #e2e8f0', fontSize: '0.825rem' }}>
                   <div><strong>Student Name:</strong> {data.studentName}</div>
                   <div><strong>Roll Number:</strong> {data.studentRollNo}</div>
                   <div><strong>Course Enrolled:</strong> {data.courseName}</div>
-                  <div><strong>Fee Month / Installment:</strong> {data.feeMonth || 'Monthly'}</div>
+                  <div><strong>Fee Month:</strong> {data.feeMonth || 'Monthly'}</div>
                   <div><strong>Payment Mode:</strong> {data.paymentMethod || 'Cash'}</div>
                   <div><strong>Remarks / Memo:</strong> {data.remarks || 'Tuition Fee Payment'}</div>
                 </div>
 
-                {/* Financial Table */}
                 <table style={{ width: '100%', borderCollapse: 'collapse', margin: '16px 0', fontSize: '0.85rem' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#f1f5f9' }}>
@@ -448,11 +422,11 @@ export default function PrintDocumentModal({
                   </thead>
                   <tbody>
                     <tr>
-                      <td style={{ padding: '8px 12px', borderBottom: '1px solid #e2e8f0' }}>Total Course Fee Contracted</td>
+                      <td style={{ padding: '8px 12px', borderBottom: '1px solid #e2e8f0' }}>Total Course Fee</td>
                       <td style={{ padding: '8px 12px', textAlign: 'right', borderBottom: '1px solid #e2e8f0' }}>{Number(data.totalFee || 0).toLocaleString()}</td>
                     </tr>
                     <tr>
-                      <td style={{ padding: '8px 12px', borderBottom: '1px solid #e2e8f0' }}>Discount / Scholarship Applied</td>
+                      <td style={{ padding: '8px 12px', borderBottom: '1px solid #e2e8f0' }}>Concession / Discount</td>
                       <td style={{ padding: '8px 12px', textAlign: 'right', borderBottom: '1px solid #e2e8f0' }}>- {Number(data.discount || 0).toLocaleString()}</td>
                     </tr>
                     <tr style={{ backgroundColor: '#f0fdf4', fontWeight: 800 }}>
@@ -462,7 +436,7 @@ export default function PrintDocumentModal({
                       </td>
                     </tr>
                     <tr style={{ fontWeight: 700 }}>
-                      <td style={{ padding: '8px 12px', color: '#991b1b' }}>Net Outstanding Dues Balance</td>
+                      <td style={{ padding: '8px 12px', color: '#991b1b' }}>Remaining Balance Due</td>
                       <td style={{ padding: '8px 12px', textAlign: 'right', color: '#dc2626' }}>
                         {currency} {Number(data.remainingDue || 0).toLocaleString()}
                       </td>
@@ -470,7 +444,6 @@ export default function PrintDocumentModal({
                   </tbody>
                 </table>
 
-                {/* Footer with Signatures & Seal */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '30px' }}>
                   <div style={{ textAlign: 'center', width: '160px' }}>
                     <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '4px' }}></div>
@@ -488,14 +461,12 @@ export default function PrintDocumentModal({
                 </div>
 
                 <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.68rem', color: '#94a3b8', borderTop: '1px dotted #cbd5e1', paddingTop: '8px' }}>
-                  This is a computer-generated official receipt • Fee once paid is non-refundable • Verify: {settings.website || 'http://alghazidigital.site.je/'}
+                  Computer-generated official receipt • Fee once paid is non-refundable • {settings.website || 'http://alghazidigital.site.je/'}
                 </div>
               </div>
             )}
 
-            {/* ============================================================== */}
-            {/* 3. STUDENT ADMISSION FORM                                      */}
-            {/* ============================================================== */}
+            {/* 3. STUDENT ADMISSION FORM */}
             {documentType === 'admission_form' && (
               <div style={{ width: '700px', padding: '36px', margin: '0 auto', border: '1.5px solid #0f172a' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #0f172a', paddingBottom: '14px' }}>
@@ -507,10 +478,9 @@ export default function PrintDocumentModal({
                     )}
                     <div>
                       <h2 style={{ fontSize: '1.35rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>{settings.academyName || 'AL GHAZI DIGITAL INSTITUTE'}</h2>
-                      <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '2px 0 0 0' }}>Official Student Admission & Enrollment Dossier</p>
+                      <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '2px 0 0 0' }}>Student Admission & Enrollment Dossier</p>
                     </div>
                   </div>
-                  {/* Photo Frame */}
                   <div style={{ width: '90px', height: '110px', border: '1.5px solid #0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                     {data.photoUrl ? (
                       <img src={data.photoUrl} alt={data.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -526,9 +496,7 @@ export default function PrintDocumentModal({
                   <div><strong>Father Name:</strong> {data.fatherName}</div>
                   <div><strong>Parent WhatsApp:</strong> {data.parentPhone || data.phone}</div>
                   <div><strong>Selected Course:</strong> {data.courseName}</div>
-                  <div><strong>Batch / Shift:</strong> {data.batch || 'Regular Shift'}</div>
                   <div><strong>Date of Admission:</strong> {data.admissionDate || new Date().toISOString().split('T')[0]}</div>
-                  <div><strong>Gender / Blood:</strong> {data.gender || 'Male'} • {data.bloodGroup || 'O+'}</div>
                   <div><strong>Total Fee:</strong> {currency} {Number(data.totalFee || 0).toLocaleString()}</div>
                   <div><strong>Fee Paid at Admission:</strong> {currency} {Number(data.paidFee || 0).toLocaleString()}</div>
                   <div style={{ gridColumn: 'span 2' }}><strong>Residential Address:</strong> {data.address || 'N/A'}, {data.city || 'Lahore'}</div>
@@ -548,12 +516,9 @@ export default function PrintDocumentModal({
               </div>
             )}
 
-            {/* ============================================================== */}
-            {/* 4. STUDENT ID CARD (FRONT & BACK)                              */}
-            {/* ============================================================== */}
+            {/* 4. STUDENT ID CARD */}
             {documentType === 'student_id_card' && (
               <div style={{ display: 'flex', gap: '24px', justifyContent: 'center', padding: '20px' }}>
-                {/* Front of ID Card */}
                 <div
                   style={{
                     width: '260px',
@@ -595,7 +560,6 @@ export default function PrintDocumentModal({
                   </div>
                 </div>
 
-                {/* Back of ID Card */}
                 <div
                   style={{
                     width: '260px',
@@ -617,9 +581,9 @@ export default function PrintDocumentModal({
                       TERMS & CONDITIONS
                     </h4>
                     <ul style={{ fontSize: '0.65rem', color: '#475569', paddingLeft: '14px', marginTop: '8px', lineHeight: 1.5 }}>
-                      <li>This card must be worn at all times inside campus.</li>
-                      <li>Lost card must be reported immediately to registry.</li>
-                      <li>Card is non-transferable and property of the institute.</li>
+                      <li>This card must be worn inside campus at all times.</li>
+                      <li>Lost card must be reported to the registry.</li>
+                      <li>Card is property of the institute.</li>
                     </ul>
                   </div>
 
@@ -639,9 +603,7 @@ export default function PrintDocumentModal({
               </div>
             )}
 
-            {/* ============================================================== */}
-            {/* 5. FACULTY / TEACHER ID CARD                                   */}
-            {/* ============================================================== */}
+            {/* 5. TEACHER ID CARD */}
             {documentType === 'teacher_id_card' && (
               <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
                 <div

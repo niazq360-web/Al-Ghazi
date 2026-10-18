@@ -1,7 +1,5 @@
 import React from 'react';
-import { X, Settings, Check, Globe, Shield, Phone, MapPin, Award } from 'lucide-react';
-import ImageUploadField from './ImageUploadField';
-import OfficialSeal from './OfficialSeal';
+import { X, Settings, Check } from 'lucide-react';
 
 export default function SetupWizardModal({
   isOpen,
